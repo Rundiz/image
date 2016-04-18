@@ -221,20 +221,31 @@ class Gd extends ImageAbstractClass
         if ($this->destination_image_object != null && get_resource_type($this->destination_image_object) === 'gd') {
             imagedestroy($this->destination_image_object);
         }
-        $this->destination_image_object = null;
 
         if ($this->source_image_object != null && get_resource_type($this->source_image_object) === 'gd') {
             imagedestroy($this->source_image_object);
         }
+
+        if ($this->watermark_image_object != null && get_resource_type($this->watermark_image_object) === 'gd') {
+            imagedestroy($this->watermark_image_object);
+        }
+
+        $this->destination_image_object = null;
         $this->source_image_object = null;
+        $this->watermark_image_object = null;
+
+        $this->watermark_image_height = null;
+        $this->watermark_image_type = null;
+        $this->watermark_image_width = null;
 
         $this->status = false;
         $this->status_msg = null;
-        $this->buildSourceImageData($this->source_image_path);
         $this->destination_image_height = null;
         $this->destination_image_width = null;
         $this->last_modified_image_height = null;
         $this->last_modified_image_width = null;
+
+        $this->buildSourceImageData($this->source_image_path);
     }// clear
 
 
@@ -305,6 +316,7 @@ class Gd extends ImageAbstractClass
             $fill = 'transparent';
         }
 
+        // begins crop
         if ($this->source_image_type == '1') {
             // gif
             if ($fill == 'transparent') {
@@ -315,12 +327,22 @@ class Gd extends ImageAbstractClass
             }
 
             imagecopy($this->destination_image_object, $this->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
+
+            // fill "again" in case that cropping image is larger than source image.
+            if ($width > imagesx($this->source_image_object) || $height > imagesy($this->source_image_object)) {
+                if ($fill == 'transparent') {
+                    imagefill($this->destination_image_object, 0, 0, $transwhite);
+                    imagecolortransparent($this->destination_image_object, $transwhite);
+                } else {
+                    imagefill($this->destination_image_object, 0, 0, $$fill);
+                }
+            }
         } elseif ($this->source_image_type == '2') {
             // jpg
             imagecopy($this->destination_image_object, $this->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
 
             if ($fill != 'transparent') {
-                imagefill($this->destination_image_object, 0, 0, $white);
+                imagefill($this->destination_image_object, 0, 0, $$fill);
             }
         } elseif ($this->source_image_type == '3') {
             // png
@@ -334,6 +356,18 @@ class Gd extends ImageAbstractClass
             }
 
             imagecopy($this->destination_image_object, $this->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
+
+            // fill "again" in case that cropping image is larger than source image.
+            if ($width > imagesx($this->source_image_object) || $height > imagesy($this->source_image_object)) {
+                if ($fill == 'transparent') {
+                    imagefill($this->destination_image_object, 0, 0, $transwhite);
+                    imagecolortransparent($this->destination_image_object, $black);
+                    imagealphablending($this->destination_image_object, false);
+                    imagesavealpha($this->destination_image_object, true);
+                } else {
+                    imagefill($this->destination_image_object, 0, 0, $$fill);
+                }
+            }
         } else {
             $this->status = false;
             $this->status_msg = 'Unable to crop this kind of image.';
@@ -350,7 +384,8 @@ class Gd extends ImageAbstractClass
             imagedestroy($this->source_image_object);
             $this->source_image_object = null;
         }
-        unset($black, $canvas_height, $canvas_width, $fill, $object_height, $object_width, $transwhite, $white);
+        unset($black, $fill, $transwhite, $white);
+        return true;
     }// crop
 
 
@@ -507,6 +542,7 @@ class Gd extends ImageAbstractClass
             $this->source_image_object = null;
         }
         unset($source_image_height, $source_image_width);
+        return true;
     }// resizeNoRatio
 
 
@@ -651,6 +687,11 @@ class Gd extends ImageAbstractClass
 
         $check_file_ext = strtolower($file_ext);
 
+        // in case that it was called new Gd object and then save without any modification.
+        if ($this->destination_image_object == null && $this->source_image_object == null) {
+            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+        }
+
         // check previous step contain errors?
         if ($this->isPreviousError() === true) {
             return false;
@@ -687,6 +728,17 @@ class Gd extends ImageAbstractClass
 
             $save_result = imagejpeg($this->destination_image_object, $file_name, $this->jpg_quality);
         } elseif ($check_file_ext == 'png') {
+            if ($this->source_image_type == '1') {
+                // source image is gif file. convert transparency gif to white before save.
+                // source transparent png to gif have no problem but source transparent gif to png it always left transparency. it must be filled.
+                $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
+                $white = imagecolorallocate($temp_image_object, 255, 255, 255);
+                imagefill($temp_image_object, 0, 0, $white);
+                imagecopy($temp_image_object, $this->destination_image_object, 0, 0, 0, 0, $this->destination_image_width, $this->destination_image_height);
+                $this->destination_image_object = $temp_image_object;
+                unset($temp_image_object, $white);
+            }
+
             $this->png_quality = intval($this->png_quality);
             if ($this->png_quality < 0 || $this->png_quality > 9) {
                 $this->png_quality = 0;
@@ -702,7 +754,7 @@ class Gd extends ImageAbstractClass
         // clear
         unset($check_file_ext, $file_ext);
 
-        if ($save_result !== false) {
+        if (isset($save_result) && $save_result !== false) {
             $this->status = true;
             $this->status_msg = null;
             return true;
@@ -876,6 +928,11 @@ class Gd extends ImageAbstractClass
         $file_ext = ltrim($file_ext, '.');
 
         $check_file_ext = strtolower($file_ext);
+
+        // in case that it was called new Gd object and then save without any modification.
+        if ($this->destination_image_object == null && $this->source_image_object == null) {
+            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+        }
 
         // check previous step contain errors?
         if ($this->isPreviousError() === true) {

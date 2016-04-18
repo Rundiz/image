@@ -38,11 +38,12 @@ function displayTestResizes(array $test_data_set)
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
                 echo 'Source image: <a href="'.$item['source_image_path'].'">link</a>.<br>'."\n";
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
-                $Image->resizeNoRatio(900, 600);
                 $file_name = '../processed-images/rundiz-gd-image-resize-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x600';
                 echo 'Save as ';
                 foreach ($test_exts as $ext) {
+                    $Image->resizeNoRatio(900, 600);
                     $save_result = $Image->save($file_name . '.' . $ext);
+                    $Image->clear();
                     if ($save_result === true) {
                         echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
                         $img_data = getimagesize($file_name . '.' . $ext);
@@ -54,7 +55,6 @@ function displayTestResizes(array $test_data_set)
                     }
                     unset($img_data, $save_result);
                 }
-                $Image->clear();
                 unset($ext, $file_name, $Image);
                 
                 echo '<br>Use show() method as ';
@@ -72,7 +72,7 @@ function displayTestResizes(array $test_data_set)
 
 function displayTestCrop(array $test_data_set)
 {
-    $test_crop = array(array(0, 0), array(90, 90), array('center', 'middle'));
+    $test_crop = array(array(0, 0, 'transparent'), array(90, 90, 'black'), array('center', 'middle', 'white'));
     echo '<h2>Crop the images</h2>'."\n";
     if (is_array($test_data_set)) {
         foreach ($test_data_set as $img_type_name => $item) {
@@ -87,10 +87,10 @@ function displayTestCrop(array $test_data_set)
                 }
                 unset($source_image_exp);
                 foreach ($test_crop as $crop_xy) {
-                    if (isset($crop_xy[0]) && isset($crop_xy[1])) {
-                        $file_name = '../processed-images/rundiz-gd-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x900-start'.$crop_xy[0].','.$crop_xy[1];
-                        echo 'Cropping at <a href="'.$file_name.$file_ext.'">'.$crop_xy[0].', '.$crop_xy[1].'</a><br>'."\n";
-                        $Image->crop(900, 900, $crop_xy[0], $crop_xy[1]);
+                    if (isset($crop_xy[0]) && isset($crop_xy[1]) && isset($crop_xy[2])) {
+                        $file_name = '../processed-images/rundiz-gd-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x900-start'.$crop_xy[0].','.$crop_xy[1].'-fill-'.$crop_xy[2];
+                        echo 'Cropping at <a href="'.$file_name.$file_ext.'">'.$crop_xy[0].', '.$crop_xy[1].'</a> fill '.$crop_xy[2].'<br>'."\n";
+                        $Image->crop(900, 900, $crop_xy[0], $crop_xy[1], $crop_xy[2]);
                         $save_result = $Image->save($file_name.$file_ext);
                         if ($save_result != true) {
                             echo ' &nbsp; &nbsp; Error: '.$Image->status_msg.'<br>'."\n";
@@ -99,6 +99,10 @@ function displayTestCrop(array $test_data_set)
                         $Image->clear();
                     }
                 }// endforeach;
+                $Image->crop(2000, 2000, 'center', 'middle', 'white');
+                $file_name = '../processed-images/rundiz-gd-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-2000x2000-startcenter,middle-fill-white';
+                echo 'Cropping at <a href="'.$file_name.$file_ext.'">center, middle</a> (2000x2000) fill white<br>'."\n";
+                $Image->save($file_name.$file_ext);
                 $Image->clear();
                 unset($crop_xy, $file_ext, $Image);
             }

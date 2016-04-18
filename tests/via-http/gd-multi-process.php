@@ -66,9 +66,9 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
         $file_ext = 'jpg';
         echo '<br>';
-        $file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
+        $file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-center,middle-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->crop($crop_width, $crop_height);
+        $Image->crop($crop_width, $crop_height, 'center', 'middle');
         $Image->rotate($rotate);
         $Image->save($file_name);
         $Image->clear();
