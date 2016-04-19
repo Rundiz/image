@@ -75,7 +75,7 @@ interface ImageInterface
      * @param integer|string $degree Degree of rotation (0, 90, 180, 270). For php >= 5.5, you can use 'hor', 'vrt', 'horvrt' as degree to flip the image.
      * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
-    public function rotate($degree = '90');
+    public function rotate($degree = 90);
 
 
     /**
@@ -91,7 +91,7 @@ interface ImageInterface
      * Show the image.
      * 
      * @param string $file_ext The file extension that this image will be display as.
-     * @return string Return image content, return false on failed. Call to status_msg property to see the details on failure.
+     * @return mixed Show image content, return false on failed. Call to status_msg property to see the details on failure.
      */
     public function show($file_ext = '');
 

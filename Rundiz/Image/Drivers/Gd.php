@@ -549,21 +549,20 @@ class Gd extends ImageAbstractClass
     /**
      * {@inheritDoc}
      */
-    public function rotate($degree = '90')
+    public function rotate($degree = 90)
     {
         if (false === $this->isClassSetup()) {
             return false;
         }
 
         // check degree
-        $allowed_degree = array(0, 90, 180, 270, 'hor', 'vrt', 'horvrt');
-        if (!in_array($degree, $allowed_degree)) {
-            $degree = 90;
-        }
+        $allowed_flip = array('hor', 'vrt', 'horvrt');
         if (is_numeric($degree)) {
             $degree = intval($degree);
+        } elseif (!is_numeric($degree) && !in_array($degree, $allowed_flip)) {
+            $degree = 90;
         }
-        unset($allowed_degree);
+        unset($allowed_flip);
 
         // setup source image object
         if (false === $this->setupSourceImageObject()) {
@@ -1058,6 +1057,10 @@ class Gd extends ImageAbstractClass
         if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
             $this->setupWatermarkImageObject($wm_img_path);
 
+            if ($this->isPreviousError()) {
+                return false;
+            }
+
             if (!is_numeric($wm_img_start_x)) {
                 switch (strtolower($wm_img_start_x)) {
                     case 'center':
@@ -1134,11 +1137,13 @@ class Gd extends ImageAbstractClass
     {
         $this->setupWatermarkImageObject($wm_img_path);
 
+        if ($this->isPreviousError()) {
+            return false;
+        }
+
         switch ($this->watermark_image_type) {
             case '1':
                 // gif
-                imagecopy($this->source_image_object, $this->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
-                break;
             case '2':
                 // jpg
                 imagecopy($this->source_image_object, $this->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
@@ -1164,7 +1169,7 @@ class Gd extends ImageAbstractClass
                 return false;
         }
 
-        if ($this->watermark_image_object != null && !is_bool($this->watermark_image_object) && get_resource_type($this->watermark_image_object)) {
+        if ($this->watermark_image_object != null && !is_bool($this->watermark_image_object) && get_resource_type($this->watermark_image_object) === 'gd') {
             imagedestroy($this->watermark_image_object);
         }
         if ($this->destination_image_object == null) {
@@ -1211,7 +1216,7 @@ class Gd extends ImageAbstractClass
 
         // find text width and height
         // @link copy from here http://stackoverflow.com/questions/11696920/calculating-text-width-with-php-gd
-        // +10 will be -5 padding on calling imagettftext() function.
+        // +10 will be -5 padding on watermark text area
         $type_space = imagettfbbox($wm_txt_font_size, 0, $wm_txt_font_path, $wm_txt_text);
         $wm_txt_height = abs($type_space[5] - $type_space[1]) + 10;
         $wm_txt_width = abs($type_space[4] - $type_space[0]) + 10;
@@ -1277,6 +1282,7 @@ class Gd extends ImageAbstractClass
             }
         }
 
+        // begins watermark text --------------------------------------------------------------------------------------------
         // create watermark text canvas
         $wm_txt_object = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
         imagealphablending($wm_txt_object, false);
@@ -1321,6 +1327,7 @@ class Gd extends ImageAbstractClass
                 imagecopy($this->source_image_object, $wm_txt_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height);
                 break;
         }
+        // end watermark text -----------------------------------------------------------------------------------------------
 
         imagedestroy($wm_txt_object);
         unset($black, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width);
