@@ -100,4 +100,17 @@ echo '<a href="'.$processed_images_folder.$save_image_link.'">resized image</a>'
 $image_data = getimagesize($processed_images_fullpath.$save_image_link);
 echo '<pre>'.print_r($image_data, true).'</pre>';
 echo '<hr>'."\n\n";
+
+// resize 9 (crop and save to .gif)
+$Imagick = new \Imagick(realpath($source_image_jpg));
+$Imagick->cropImage($crop_width, $crop_height, 0, 0);
+$save_image_link = 'imagick-crop-460x460-from-jpg.gif';
+$Imagick->setImagePage(0, 0, 0, 0);// required to save as gif even from other format.
+$save_result = $Imagick->writeImage($processed_images_fullpath.$save_image_link);
+$Imagick->clear();
+var_dump($save_result);
+echo '<a href="'.$processed_images_folder.$save_image_link.'">cropped image</a>'."\n";
+$image_data = getimagesize($processed_images_fullpath.$save_image_link);
+echo '<pre>'.print_r($image_data, true).'</pre>';
+echo '<hr>'."\n\n";
 include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
