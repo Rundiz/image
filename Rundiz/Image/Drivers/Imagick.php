@@ -5,6 +5,7 @@
  * @package Image
  * @author Vee W.
  * @license http://opensource.org/licenses/MIT
+ * @link http://php.net/manual/en/book.imagick.php Reference of PHP Imagick classes/methods.
  */
 
 
@@ -94,6 +95,127 @@ class Imagick extends ImageAbstractClass
     {
         $this->clear();
     }// __destruct
+
+
+    /**
+     * Calculate image size by aspect ratio.
+     * 
+     * @param integer $width New width set to calculate.
+     * @param integer $height New height set to calculate.
+     * @return array Return array with 'height' and 'width' in array key and the values are calculated sizes.
+     */
+    private function calculateImageSizeRatio($width, $height)
+    {
+        // convert width, height to integer
+        $width = intval($width);
+        $height = intval($height);
+
+        if ($height <= 0) {
+            $height = 100;
+        }
+        if ($width <= 0) {
+            $width = 100;
+        }
+
+        // get and set source (or last modified) image width and height
+        $source_image_width = $this->source_image_width;
+        if ($this->last_modified_image_width != null) {
+            $source_image_width = $this->last_modified_image_width;
+        }
+        $source_image_height = $this->source_image_height;
+        if ($this->last_modified_image_height != null) {
+            $source_image_height = $this->last_modified_image_height;
+        }
+
+        $source_image_orientation = $this->getSourceImageOrientation();
+        // find height and width by aspect ratio.
+        $find_h = round(($source_image_height/$source_image_width)*$width);
+        $find_w = round(($source_image_width/$source_image_height)*$height);
+
+        $this->verifyMasterDimension();
+
+        switch ($this->master_dim) {
+            case 'width':
+                $new_width = $width;
+                $new_height = $find_h;
+
+                // if not allow resize larger.
+                if ($this->allow_resize_larger == false) {
+                    // if new width larger than source image width
+                    if ($width > $source_image_width) {
+                        $new_width = $source_image_width;
+                        $new_height = $source_image_height;
+                    }
+                }
+                break;
+            case 'height':
+                $new_width = $find_w;
+                $new_height = $height;
+
+                // if not allow resize larger.
+                if ($this->allow_resize_larger == false) {
+                    // if new height is larger than source image height
+                    if ($height > $source_image_height) {
+                        $new_width = $source_image_width;
+                        $new_height = $source_image_height;
+                    }
+                }
+                break;
+            case 'auto':
+            default:
+                // master dimension auto.
+                switch ($source_image_orientation) {
+                    case 'P':
+                        // image orientation portrait
+                        $new_width = $find_w;
+                        $new_height = $height;
+
+                        // if not allow resize larger
+                        if ($this->allow_resize_larger == false) {
+                            // determine new image size must not larger than source image size.
+                            if ($height > $source_image_height && $width <= $source_image_width) {
+                                // if new height larger than source image height and width smaller or equal to source image width
+                                $new_width = $width;
+                                $new_height = $find_h;
+                            } else {
+                                if ($height > $source_image_height) {
+                                    $new_width = $source_image_width;
+                                    $new_height = $source_image_height;
+                                }
+                            }
+                        }
+                        break;
+                    case 'L':
+                    // image orientation landscape
+                    case 'S':
+                    // image orientation square
+                    default:
+                        // image orientation landscape and square
+                        $new_width = $width;
+                        $new_height = $find_h;
+
+                        // if not allow resize larger
+                        if ($this->allow_resize_larger == false) {
+                            // determine new image size must not larger than source image size.
+                            if ($width > $source_image_width && $height <= $source_image_height) {
+                                // if new width larger than source image width and height smaller or equal to source image height
+                                $new_width = $find_w;
+                                $new_height = $height;
+                            } else {
+                                if ($width > $source_image_width) {
+                                    $new_width = $source_image_width;
+                                    $new_height = $source_image_height;
+                                }
+                            }
+                        }
+                        break;
+                }
+                break;
+        }// endswitch;
+
+        unset($find_h, $find_w, $source_image_height, $source_image_orientation, $source_image_width);
+        return array('height' => $new_height, 'width' => $new_width);
+    }// calculateImageSizeRatio
 
 
     /**
@@ -205,6 +327,30 @@ class Imagick extends ImageAbstractClass
 
 
     /**
+     * Convert alpha number (0 - 127) to rgba value (1.0 - 0).
+     * 
+     * @param integer $number Alpha number (0 to 127).
+     * @return string Return rgba value (1.0 to 0).
+     */
+    private function convertAlpha127ToRgba($number)
+    {
+        $alpha_min = 0; // 100%
+        $alpha_max = 127; // 0%
+
+        if ($number < $alpha_min) {
+            $number = 0;
+        } elseif ($number > $alpha_max) {
+            $number = 127;
+        }
+
+        $find_percent = ($alpha_max - $number) / ($alpha_max / 100);
+
+        unset($alpha_max, $alpha_min);
+        return number_format(($find_percent / 100), 2);
+    }// convertAlpha127ToRgba
+
+
+    /**
      * {@inheritDoc}
      */
     public function crop($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent')
@@ -283,7 +429,7 @@ class Imagick extends ImageAbstractClass
                             $Frame->setImageBackgroundColor($$fill);
                             $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                         }
-                        if ($i == 1 && $this->ImagickFirstFrame == null) {
+                        if ($i == 1) {
                             $this->ImagickFirstFrame = $Frame->getImage();
                         }
                         $i++;
@@ -342,6 +488,26 @@ class Imagick extends ImageAbstractClass
 
 
     /**
+     * Get source image orientation.
+     * 
+     * @return string Return S for square, L for landscape, P for portrait.
+     */
+    private function getSourceImageOrientation()
+    {
+        if ($this->source_image_height == $this->source_image_width) {
+            // square image
+            return 'S';
+        } elseif ($this->source_image_height < $this->source_image_width) {
+            // landscape image
+            return 'L';
+        } else {
+            // portrait image
+            return 'P';
+        }
+    }// getSourceImageOrientation
+
+
+    /**
      * Check is previous operation contain error?
      * 
      * @return boolean Return true if there is some error, false if there is not.
@@ -360,7 +526,25 @@ class Imagick extends ImageAbstractClass
      */
     public function resize($width, $height)
     {
-        
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        $sizes = $this->calculateImageSizeRatio($width, $height);
+
+        if (
+            !is_array($sizes) || 
+            (
+                is_array($sizes) && 
+                (!array_key_exists('height', $sizes) || !array_key_exists('width', $sizes))
+            )
+        ) {
+            $this->status = false;
+            $this->status_msg = 'Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio instead.';
+            return false;
+        }
+
+        return $this->resizeNoRatio($sizes['width'], $sizes['height']);
     }// resize
 
 
@@ -405,7 +589,7 @@ class Imagick extends ImageAbstractClass
                     foreach ($this->Imagick as $Frame) {
                         $Frame->resizeImage($width, $height, $this->imagick_filter, 1);
                         $Frame->setImagePage(0, 0, 0, 0);
-                        if ($i == 1 && $this->ImagickFirstFrame == null) {
+                        if ($i == 1) {
                             $this->ImagickFirstFrame = $Frame->getImage();
                         }
                         $i++;
@@ -414,6 +598,7 @@ class Imagick extends ImageAbstractClass
                 }
             } else {
                 $this->Imagick->resizeImage($width, $height, $this->imagick_filter, 1);
+                $this->Imagick->setImagePage(0, 0, 0, 0);
                 $this->ImagickFirstFrame = null;
             }
         } elseif ($this->source_image_type == '2' || $this->source_image_type == '3') {
@@ -438,21 +623,20 @@ class Imagick extends ImageAbstractClass
     /**
      * {@inheritDoc}
      */
-    public function rotate($degree = '90')
+    public function rotate($degree = 90)
     {
         if (false === $this->isClassSetup()) {
             return false;
         }
 
         // check degree
-        $allowed_degree = array(0, 90, 180, 270, 'hor', 'vrt', 'horvrt');
-        if (!in_array($degree, $allowed_degree)) {
-            $degree = 90;
-        }
+        $allowed_flip = array('hor', 'vrt', 'horvrt');
         if (is_numeric($degree)) {
             $degree = intval($degree);
+        } elseif (!is_numeric($degree) && !in_array($degree, $allowed_flip)) {
+            $degree = 90;
         }
-        unset($allowed_degree);
+        unset($allowed_flip);
 
         // setup source image object
         if (false === $this->setupSourceImageObject()) {
@@ -477,7 +661,7 @@ class Imagick extends ImageAbstractClass
                             foreach ($this->Imagick as $Frame) {
                                 $Frame->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
                                 $Frame->setImagePage(0, 0, 0, 0);
-                                if ($i == 1 && $this->ImagickFirstFrame == null) {
+                                if ($i == 1) {
                                     $this->ImagickFirstFrame = $Frame->getImage();
                                 }
                                 $i++;
@@ -486,16 +670,15 @@ class Imagick extends ImageAbstractClass
                         }
                     } else {
                         $this->Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
+                        $this->Imagick->setImagePage(0, 0, 0, 0);
                         $this->ImagickFirstFrame = null;
                     }
                     break;
                 case '2':
                     // jpg
-                    // @todo continue.
-                    break;
                 case '3':
                     // png
-                    
+                    $this->Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
                     break;
                 default:
                     $this->status = false;
@@ -506,10 +689,80 @@ class Imagick extends ImageAbstractClass
             $this->destination_image_height = $this->Imagick->getImageHeight();
             $this->destination_image_width = $this->Imagick->getImageWidth();
 
+            $this->last_modified_image_height = $this->destination_image_height;
+            $this->last_modified_image_width = $this->destination_image_width;
             $this->source_image_height = $this->destination_image_height;
             $this->source_image_width = $this->destination_image_width;
         } else {
-            
+            // flip image
+            if (version_compare(phpversion(), '5.5', '<')) {
+                $this->status = false;
+                $this->status_msg = 'Unable to flip image using PHP older than 5.5.';
+                return false;
+            }
+
+            // begins flip/flop image
+            switch ($this->source_image_type) {
+                case '1':
+                    if ($this->source_image_frames > 1) {
+                        $this->Imagick = $this->Imagick->coalesceImages();
+                        if (is_object($this->Imagick)) {
+                            $i = 1;
+                            foreach ($this->Imagick as $Frame) {
+                                if ($degree === 'hor') {
+                                    $Frame->flopImage();
+                                } elseif ($degree == 'vrt') {
+                                    $Frame->flipImage();
+                                } else {
+                                    $Frame->flopImage();
+                                    $Frame->flipImage();
+                                }
+                                $Frame->setImagePage(0, 0, 0, 0);
+                                if ($i == 1 && $this->ImagickFirstFrame == null) {
+                                    $this->ImagickFirstFrame = $Frame->getImage();
+                                }
+                                $i++;
+                            }
+                            unset($Frame, $i);
+                        }
+                    } else {
+                        if ($degree === 'hor') {
+                            $this->Imagick->flopImage();
+                        } elseif ($degree == 'vrt') {
+                            $this->Imagick->flipImage();
+                        } else {
+                            $this->Imagick->flopImage();
+                            $this->Imagick->flipImage();
+                        }
+                        $this->ImagickFirstFrame = null;
+                    }
+                    break;
+                case '2':
+                    // jpg
+                case '3':
+                    // png
+                    if ($degree === 'hor') {
+                        $this->Imagick->flopImage();
+                    } elseif ($degree == 'vrt') {
+                        $this->Imagick->flipImage();
+                    } else {
+                        $this->Imagick->flopImage();
+                        $this->Imagick->flipImage();
+                    }
+                    break;
+                default:
+                    $this->status = false;
+                    $this->status_msg = 'Unable to flip this kind of image.';
+                    return false;
+            }
+
+            $this->destination_image_height = $this->Imagick->getImageHeight();
+            $this->destination_image_width = $this->Imagick->getImageWidth();
+
+            $this->last_modified_image_height = $this->destination_image_height;
+            $this->last_modified_image_width = $this->destination_image_width;
+            $this->source_image_height = $this->destination_image_height;
+            $this->source_image_width = $this->destination_image_width;
         }
 
         if (!$this->isPreviousError()) {
@@ -568,6 +821,9 @@ class Imagick extends ImageAbstractClass
             if ($this->source_image_type == '3') {
                 // source file is png
                 // convert from transparent to white before save
+                $this->Imagick->setImagePage(0, 0, 0, 0);
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
@@ -582,25 +838,33 @@ class Imagick extends ImageAbstractClass
                     $this->ImagickFirstFrame = null;
                 }
 
+                if ($this->source_image_type !== '1') {
+                    // source image is other than gif, it is required to set image page.
+                    $this->Imagick->setImagePage(0, 0, 0, 0);
+                }
+
                 $save_result = $this->Imagick->writeImage($real_file_name);
             }
         } elseif ($check_file_ext == 'jpg') {
             if ($this->source_image_type == '1') {
                 // source file is gif
-                // covnert from transparent to white before save
-                $this->Imagick->setImageBackgroundColor('white');// convert from transparent to white. for GIF source
-                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);// convert from transparent to white. for GIF source
-                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
-
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
                     $this->Imagick->clear();
                     $this->Imagick = $this->ImagickFirstFrame;
                     $this->ImagickFirstFrame = null;
                 }
+
+                // covnert from transparent to white before save
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             } elseif ($this->source_image_type == '3') {
                 // source file is png
                 // convert from transparent to white before save
+                $this->Imagick->setImagePage(0, 0, 0, 0);
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
@@ -614,17 +878,17 @@ class Imagick extends ImageAbstractClass
         } elseif ($check_file_ext == 'png') {
             if ($this->source_image_type == '1') {
                 // source file is gif
-                // covnert from transparent to white before save
-                $this->Imagick->setImageBackgroundColor('white');// convert from transparent to white. for GIF source
-                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);// convert from transparent to white. for GIF source
-                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
-
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
                     $this->Imagick->clear();
                     $this->Imagick = $this->ImagickFirstFrame;
                     $this->ImagickFirstFrame = null;
                 }
+
+                // covnert from transparent to white before save
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
             // png compression for imagick does not work!!!
@@ -690,12 +954,205 @@ class Imagick extends ImageAbstractClass
 
 
     /**
+     * Setup watermark image object.
+     * After calling this the ImagickWatermark will get new Image Magick object if it does not set before.
+     * 
+     * @param string $wm_img_path Path to watermark image.
+     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     */
+    private function setupWatermarkImageObject($wm_img_path)
+    {
+        if (!is_file($wm_img_path)) {
+            $this->status = false;
+            $this->status_msg = 'Watermark image was not found.';
+            return false;
+        }
+        $wm_img_path = realpath($wm_img_path);
+
+        list($wm_width, $wm_height, $wm_type) = getimagesize($wm_img_path);
+
+        if ($wm_height == null || $wm_width == null || $wm_type == null) {
+            $this->status = false;
+            $this->status_msg = 'Watermark is not an image.';
+            return false;
+        }
+
+        if (is_object($this->ImagickWatermark)) {
+            $this->ImagickWatermark->clear();
+            $this->ImagickWatermark = null;
+        }
+
+        if ($this->ImagickWatermark == null || !is_object($this->ImagickWatermark)) {
+            $this->ImagickWatermark = new \Imagick($wm_img_path);
+
+            if ($this->ImagickWatermark == null || !is_object($this->ImagickWatermark)) {
+                $this->status = false;
+                $this->status_msg = 'Unable to set watermark from this kind of image.';
+                return false;
+            }
+        }
+
+        $this->watermark_image_height = $wm_height;
+        $this->watermark_image_width = $wm_width;
+        $this->watermark_image_type = $wm_type;
+
+        unset($wm_height, $wm_img_path, $wm_type, $wm_width);
+        $this->status = true;
+        $this->status_msg = null;
+        return true;
+    }// setupWatermarkImageObject
+
+
+    /**
      * {@inheritDoc}
      */
     public function show($file_ext = '')
     {
-        
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        if ($file_ext == null) {
+            $file_ext = str_replace('.', '', $this->source_image_ext);
+        }
+        $file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
+        $file_ext = ltrim($file_ext, '.');
+
+        $check_file_ext = strtolower($file_ext);
+
+        // in case that it was called new Imagick object and then save without any modification.
+        if ($this->Imagick == null) {
+            // use resizeNoRatio instead of setupSourceImageObject in case that source file is animated gif it can setup first frame object.
+            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+        }
+
+        // check previous step contain errors?
+        if ($this->isPreviousError() === true) {
+            return false;
+        }
+
+        // show image to browser.
+        // http://php.net/manual/en/imagick.getimageblob.php for single frame of image or non-animated picture.
+        // http://php.net/manual/en/imagick.getimagesblob.php for animated gif.
+        if ($check_file_ext == 'gif') {
+            if ($this->source_image_type == '3') {
+                // source file is png
+                // convert from transparent to white before save
+                $this->Imagick->setImagePage(0, 0, 0, 0);
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+            }
+
+            if ($this->source_image_type == '1' && $this->save_animate_gif === true) {
+                // source file is gif and allow to show animated
+                $show_result = $this->Imagick->getImagesBlob();
+            } else {
+                if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
+                    // if source image is animated gif and save to non-animated gif, get the first frame.
+                    $this->Imagick->clear();
+                    $this->Imagick = $this->ImagickFirstFrame;
+                    $this->ImagickFirstFrame = null;
+                }
+
+                if ($this->source_image_type !== '1') {
+                    // source image is other than gif, it is required to set image page.
+                    $this->Imagick->setImagePage(0, 0, 0, 0);
+                }
+
+                $this->Imagick->setImageFormat('gif');
+                $show_result = $this->Imagick->getImageBlob();
+            }
+        } elseif ($check_file_ext == 'jpg') {
+            if ($this->source_image_type == '1') {
+                // source file is gif
+                if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
+                    // if source image is animated gif and save to non-animated gif, get the first frame.
+                    $this->Imagick->clear();
+                    $this->Imagick = $this->ImagickFirstFrame;
+                    $this->ImagickFirstFrame = null;
+                }
+
+                // covnert from transparent to white before save
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+            } elseif ($this->source_image_type == '3') {
+                // source file is png
+                // convert from transparent to white before save
+                $this->Imagick->setImagePage(0, 0, 0, 0);
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+            }
+
+            $this->jpg_quality = intval($this->jpg_quality);
+            if ($this->jpg_quality < 0 || $this->jpg_quality > 100) {
+                $this->jpg_quality = 100;
+            }
+
+            $this->Imagick->setImageFormat('jpg');
+            $this->Imagick->setImageCompressionQuality($this->jpg_quality);
+            $show_result = $this->Imagick->getImageBlob();
+        } elseif ($check_file_ext == 'png') {
+            if ($this->source_image_type == '1') {
+                // source file is gif
+                if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
+                    // if source image is animated gif and save to non-animated gif, get the first frame.
+                    $this->Imagick->clear();
+                    $this->Imagick = $this->ImagickFirstFrame;
+                    $this->ImagickFirstFrame = null;
+                }
+
+                // covnert from transparent to white before save
+                $this->Imagick->setImageBackgroundColor('white');
+                $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+            }
+
+            // png compression for imagick does not work!!!
+            $this->png_quality = intval($this->png_quality);
+            if ($this->png_quality < 0 || $this->png_quality > 9) {
+                $this->png_quality = 0;
+            }
+
+            $this->Imagick->setImageFormat('png');
+            $show_result = $this->Imagick->getImageBlob();
+        } else {
+            $this->status = false;
+            $this->status_msg = 'Unable to show this kind of image.';
+            return false;
+        }
+
+        // clear
+        unset($check_file_ext, $file_ext);
+
+        if ($show_result !== false) {
+            $this->status = true;
+            $this->status_msg = null;
+            // Because in PHP GD it is automatically show the image content by calling show() method without echo command.
+            // But in PHP Imagick it must echo content that got from getImageBlob() of Imagick class, then we have to echo it here to make this image class work in the same way.
+            echo $show_result;
+            return $show_result;
+        } else {
+            $this->status = false;
+            $this->status_msg = 'Failed to show the image.';
+            return false;
+        }
     }// show
+
+
+    /**
+     * Verify master dimension value must be correctly.
+     */
+    private function verifyMasterDimension() 
+    {
+       $this->master_dim = strtolower($this->master_dim);
+
+       if ($this->master_dim != 'auto' && $this->master_dim != 'width' && $this->master_dim != 'height') {
+           $this->master_dim = 'auto';
+       }
+    }// verifyMasterDimension
 
 
     /**
@@ -703,8 +1160,174 @@ class Imagick extends ImageAbstractClass
      */
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
-        
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        // check watermark image path exists
+        if (!is_file($wm_img_path)) {
+            $this->status = false;
+            $this->status_msg = 'Watermark image was not found.';
+            return false;
+        }
+
+        // setup source image object
+        if (false === $this->setupSourceImageObject()) {
+            return false;
+        }
+
+        // check previous step contain errors?
+        if ($this->isPreviousError() === true) {
+            return false;
+        }
+
+        // if start x or y is number, convert to integer value
+        if (is_numeric($wm_img_start_x)) {
+            $wm_img_start_x = intval($wm_img_start_x);
+        }
+        if (is_numeric($wm_img_start_y)) {
+            $wm_img_start_y = intval($wm_img_start_y);
+        }
+
+        // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
+        if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
+            $this->setupWatermarkImageObject($wm_img_path);
+
+            if ($this->isPreviousError()) {
+                return false;
+            }
+
+            if (!is_numeric($wm_img_start_x)) {
+                switch (strtolower($wm_img_start_x)) {
+                    case 'center':
+                        $image_width = $this->Imagick->getImageWidth();
+                        $watermark_width = $this->ImagickWatermark->getImageWidth();
+
+                        $wm_img_start_x = $this->calculateStartXOfCenter($watermark_width, $image_width);
+
+                        unset($image_width, $watermark_width);
+                        break;
+                    case 'right':
+                        $source_image_width = $this->source_image_width;
+                        if ($this->last_modified_image_width != null) {
+                            $source_image_width = $this->last_modified_image_width;
+                        }
+
+                        if ($source_image_width > ($this->watermark_image_width + 5)) {
+                            $wm_img_start_x = intval($source_image_width - ($this->watermark_image_width + 5));
+                        } else {
+                            $wm_img_start_x = intval($source_image_width - $this->watermark_image_width);
+                        }
+                        unset($source_image_width);
+                        break;
+                    case 'left':
+                    default:
+                        $wm_img_start_x = 5;
+                        break;
+                }
+            }
+
+            if (!is_numeric($wm_img_start_y)) {
+                switch (strtolower($wm_img_start_y)) {
+                    case 'middle':
+                        $image_height = $this->Imagick->getImageHeight();
+                        $watermark_height = $this->ImagickWatermark->getImageHeight();
+
+                        $wm_img_start_y = $this->calculateStartXOfCenter($watermark_height, $image_height);
+
+                        unset($image_height, $watermark_height);
+                        break;
+                    case 'bottom':
+                        $source_image_height = $this->source_image_height;
+                        if ($this->last_modified_image_height != null) {
+                            $source_image_height = $this->last_modified_image_height;
+                        }
+
+                        if ($source_image_height - ($this->watermark_image_height + 5) > '0') {
+                            $wm_img_start_y = intval($source_image_height - ($this->watermark_image_height + 5));
+                        } else {
+                            $wm_img_start_y = intval($source_image_height - $this->watermark_image_height);
+                        }
+                        break;
+                    case 'top':
+                    default:
+                        $wm_img_start_y = 5;
+                        break;
+                }
+            }
+        }
+
+        return $this->watermarkImageProcess($wm_img_path, $wm_img_start_x, $wm_img_start_y);
     }// watermarkImage
+
+
+    /**
+     * Process watermark image to the main image.
+     * 
+     * @param string $wm_img_path Path to watermark image.
+     * @param integer $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
+     * @param integer $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     */
+    private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
+    {
+        $this->setupWatermarkImageObject($wm_img_path);
+
+        if ($this->isPreviousError()) {
+            return false;
+        }
+
+        switch ($this->watermark_image_type) {
+            case '1':
+                // gif
+            case '2':
+                // jpg
+            case '3':
+                // png
+                if ($this->source_image_frames > 1) {
+                    // if source image is animated gif
+                    $this->Imagick = $this->Imagick->coalesceImages();
+                    if (is_object($this->Imagick)) {
+                        $i = 1;
+                        foreach ($this->Imagick as $Frame) {
+                            $Frame->compositeImage($this->ImagickWatermark, \Imagick::COMPOSITE_DEFAULT, $wm_img_start_x, $wm_img_start_y);
+                            $Frame->setImagePage(0, 0, 0, 0);
+                            if ($i == 1) {
+                                $this->ImagickFirstFrame = $Frame->getImage();
+                            }
+                            $i++;
+                        }
+                        unset($Frame, $i);
+                    }
+                } else {
+                    $this->Imagick->compositeImage($this->ImagickWatermark, \Imagick::COMPOSITE_DEFAULT, $wm_img_start_x, $wm_img_start_y);
+                    if ($this->source_image_type == '1') {
+                        // if source image is gif, set image page to prevent sizing error.
+                        $this->Imagick->setImagePage(0, 0, 0, 0);
+                    }
+                    $this->ImagickFirstFrame = null;
+                }
+                break;
+            default:
+                $this->status = false;
+                $this->status_msg = 'Unable to set watermark from this kind of image.';
+                return false;
+        }
+
+        if (is_object($this->ImagickWatermark)) {
+            $this->ImagickWatermark->clear();
+        }
+
+        $this->destination_image_height = $this->Imagick->getImageHeight();
+        $this->destination_image_width = $this->Imagick->getImageWidth();
+
+        $this->source_image_height = $this->destination_image_height;
+        $this->source_image_width = $this->destination_image_width;
+
+        $this->status = true;
+        $this->status_msg = null;
+        return true;
+    }// watermarkImageProcess
 
 
     /**
@@ -712,7 +1335,135 @@ class Imagick extends ImageAbstractClass
      */
     public function watermarkText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x = 0, $wm_txt_start_y = 0, $wm_txt_font_size = 10, $wm_txt_font_color = 'transwhitetext', $wm_txt_font_alpha = 60)
     {
-        
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        // setup source image object
+        if (false === $this->setupSourceImageObject()) {
+            return false;
+        }
+
+        // check previous step contain errors?
+        if ($this->isPreviousError() === true) {
+            return false;
+        }
+
+        if (!is_file($wm_txt_font_path)) {
+            $this->status = false;
+            $this->status_msg = 'Unable to load font file.';
+            return false;
+        }
+        $wm_txt_font_path = realpath($wm_txt_font_path);
+
+        // find text width and height
+        // +10 will be -5 padding on watermark text area.
+        $ImagickDraw = new \ImagickDraw();
+        $ImagickDraw->setFont($wm_txt_font_path);
+        $ImagickDraw->setFontSize($wm_txt_font_size);
+        $ImagickDraw->setGravity(\Imagick::GRAVITY_NORTHWEST);
+        // set new resolution for font due to it is smaller than GD if it was not set.
+        $ImagickDraw->setresolution(96, 96);
+        $type_space = $this->Imagick->queryFontMetrics($ImagickDraw, $wm_txt_text, false);
+        if (is_array($type_space) && array_key_exists('textWidth', $type_space) && array_key_exists('textHeight', $type_space)) {
+            $wm_txt_height = $type_space['textHeight'];
+            $wm_txt_width = $type_space['textWidth'];
+        }
+        unset($type_space);
+
+        // if start x or y is number, convert to integer value
+        if (is_numeric($wm_txt_start_x)) {
+            $wm_txt_start_x = intval($wm_txt_start_x);
+        }
+        if (is_numeric($wm_txt_start_y)) {
+            $wm_txt_start_y = intval($wm_txt_start_y);
+        }
+
+        // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
+        if (!is_numeric($wm_txt_start_x) || !is_numeric($wm_txt_start_y)) {
+            if (!is_numeric($wm_txt_start_x)) {
+                switch (strtolower($wm_txt_start_x)) {
+                    case 'center':
+                        $image_width = $this->Imagick->getImageWidth();
+                        $watermark_width = $wm_txt_width;
+
+                        $wm_txt_start_x = $this->calculateStartXOfCenter($watermark_width, $image_width);
+
+                        unset($image_width, $watermark_width);
+                        break;
+                    case 'right':
+                        $image_width = $this->Imagick->getImageWidth();
+                        $wm_txt_start_x = intval($image_width - $wm_txt_width) - 5;// minus 5 because Imagick is different from GD.
+
+                        unset($image_width);
+                        break;
+                    case 'left':
+                    default:
+                        $wm_txt_start_x = 10;// Imagick is different from GD, so increase it.
+                        break;
+                }
+            }
+
+            if (!is_numeric($wm_txt_start_y)) {
+                switch (strtolower($wm_txt_start_y)) {
+                    case 'middle':
+                        $image_height = $this->Imagick->getImageHeight();
+                        $watermark_height = $wm_txt_height;
+
+                        $wm_txt_start_y = $this->calculateStartXOfCenter($watermark_height, $image_height);
+
+                        unset($image_height, $watermark_height);
+                        break;
+                    case 'bottom':
+                        $image_height = $this->Imagick->getImageHeight();
+                        if ($image_height - ($wm_txt_height + 5) > '0') {
+                            $wm_txt_start_y = intval($image_height - ($wm_txt_height + 5));
+                        } else {
+                            $wm_txt_start_y = intval($image_height - $wm_txt_height);
+                        }
+                        unset($image_height);
+                        break;
+                    case 'top':
+                    default:
+                        $wm_txt_start_y = 10;// Imagick is different from GD, so increase it.
+                        break;
+                }
+            }
+        }
+
+        // begins watermark text --------------------------------------------------------------------------------------------
+        // set color
+        $black = new \ImagickPixel('black');
+        $white = new \ImagickPixel('white');
+        $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');// set color transparent white
+        $transwhitetext = new \ImagickPixel('rgba(255, 255, 255, '.$this->convertAlpha127ToRgba($wm_txt_font_alpha).')');
+        if (!isset($$wm_txt_font_color)) {
+            $wm_txt_font_color = 'transwhitetext';
+        }
+
+        // fill font color
+        $ImagickDraw->setFillColor($$wm_txt_font_color);
+
+        // write text on image
+        $this->Imagick->annotateImage($ImagickDraw, $wm_txt_start_x, $wm_txt_start_y, 0, $wm_txt_text);
+        // end watermark text -----------------------------------------------------------------------------------------------
+
+        $ImagickDraw->clear();
+        $black->destroy();
+        $transwhite->destroy();
+        $transwhitetext->destroy();
+        $white->destroy();
+        unset($black, $ImagickDraw, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width);
+
+        $this->destination_image_height = $this->Imagick->getImageHeight();
+        $this->destination_image_width = $this->Imagick->getImageWidth();
+
+        $this->source_image_height = $this->destination_image_height;
+        $this->source_image_width = $this->destination_image_width;
+
+        $this->status = true;
+        $this->status_msg = null;
+        return true;
     }// watermarkText
 
 
