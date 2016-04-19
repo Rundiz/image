@@ -1,0 +1,26 @@
+html, body {
+	background-color: #fff;
+	color: #333;
+	margin: 0;
+	padding: 0;
+}
+body {
+	margin: 20px;
+}
+
+
+.mini-data-box {
+	background-color: #eee;
+	height: 150px;
+	overflow: auto;
+	padding: 5px;
+}
+
+
+.thumbnail {
+	background-color: #0f0;
+	margin: 5px 3px 0;
+	max-height: 100px;
+	max-width: 100px;
+	padding: 3px;
+}

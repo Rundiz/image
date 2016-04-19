@@ -8,13 +8,13 @@ require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 function displayTestWatermarkImage(array $test_data_set)
 {
     foreach ($test_data_set as $image_ext => $items) {
-        echo '<h3><a href="'.$items['source_image_path'].'">'.$image_ext.'</a></h3>'."\n";
+        echo '<h3><a href="'.$items['source_image_path'].'">'.$image_ext.'</a><img src="'.$items['source_image_path'].'" alt="" class="thumbnail"></h3>'."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($items['source_image_path']);
         $main_save_file_name = '../processed-images/rundiz-gd-image-watermarkImage-testpage-source-'.  strtolower($image_ext);
         foreach ($items['watermark_exts'] as $wm_ext) {
             $wmext_save_file_name = $main_save_file_name.'-watermark-'.$wm_ext;
             $watermark_image_path = '../source-images/watermark.'.$wm_ext;
-            echo '<h4>watermark from <a href="'.$watermark_image_path.'">'.$wm_ext.'</a></h4>'."\n";
+            echo '<h4>watermark from <a href="'.$watermark_image_path.'">'.$wm_ext.'</a><img src="'.$watermark_image_path.'" alt="" class="thumbnail"></h4>'."\n";
             foreach ($items['watermark_positions'] as $wm_pos) {
                 $save_file_name = $wmext_save_file_name.'-position-'.$wm_pos[0].','.$wm_pos[1];
                 echo 'position '.$wm_pos[0].', '.$wm_pos[1].'<br>';
@@ -22,7 +22,7 @@ function displayTestWatermarkImage(array $test_data_set)
                     $Image->watermarkImage($watermark_image_path, $wm_pos[0], $wm_pos[1]);
                     $Image->save($save_file_name.'.'.$save_ext);
                     $Image->clear();
-                    echo '<a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a> ';
+                    echo '<a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a><img src="'.$save_file_name.'.'.$save_ext.'" alt="" class="thumbnail"> ';
                 }
                 echo '<br>'."\n";
                 unset($save_file_name);
@@ -38,20 +38,7 @@ function displayTestWatermarkImage(array $test_data_set)
     <head>
         <meta charset="utf-8">
         <title>Test Image manipulation class.</title>
-        <style>
-            body {
-                background-color: #fff;
-                color: #333;
-                margin: 20px;
-                padding: 0;
-            }
-            .mini-data-box {
-                background-color: #eee;
-                height: 150px;
-                overflow: auto;
-                padding: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="./style.css">
     </head>
     <body>
         <h1>GD test watermark</h1>

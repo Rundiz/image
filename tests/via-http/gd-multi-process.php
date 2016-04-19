@@ -18,26 +18,13 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
     <head>
         <meta charset="utf-8">
         <title>Test Image manipulation class.</title>
-        <style>
-            body {
-                background-color: #fff;
-                color: #333;
-                margin: 20px;
-                padding: 0;
-            }
-            .mini-data-box {
-                background-color: #eee;
-                height: 150px;
-                overflow: auto;
-                padding: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="./style.css">
     </head>
     <body>
         <h1>GD test multi process <small>resize <?php echo $resize_w.'x'.$resize_h; ?> &gt; rotate <?php echo $rotate; ?>&deg; &gt; crop <?php echo $crop_width.'x'.$crop_height; ?></small></h1>
         <h2>JPG</h2>
         <?php
-        echo '<a href="'.$source_image_jpg.'">source image</a><br>'."\n";
+        echo '<a href="'.$source_image_jpg.'">source image</a><img src="'.$source_image_jpg.'" alt="" class="thumbnail"><br>'."\n";
         echo 'Save as: '."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($source_image_jpg);
         $file_ext = 'jpg';
@@ -47,7 +34,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'png';
         $file_name = $base_save_file_name.'-sourcejpg.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -55,7 +42,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'gif';
         $file_name = $base_save_file_name.'-sourcejpg.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -63,7 +50,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'jpg';
         echo '<br>';
         $file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-center,middle-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
@@ -72,35 +59,35 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->rotate($rotate);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (resize &gt; crop &gt; rotate)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (resize &gt; crop &gt; rotate)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-crop-'.$crop_width.'x'.$crop_height.'-resize-'.$resize_w.'x'.$resize_h.'-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
         $Image->crop($crop_width, $crop_height);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->rotate($rotate);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; resize &gt; rotate)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; resize &gt; rotate)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-crop-'.$crop_width.'x'.$crop_height.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-sourcejpg.'.$file_ext;
         $Image->crop($crop_width, $crop_height);
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; rotate &gt; resize)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; rotate &gt; resize)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-rotate-'.$rotate.'-crop-'.$crop_width.'x'.$crop_height.'-resize-'.$resize_w.'x'.$resize_h.'-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->crop($crop_width, $crop_height);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; crop &gt; resize)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; crop &gt; resize)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image-crop-900x900-crop-600x600-crop-'.$crop_width.'x'.$crop_height.'-crop-400x400-sourcejpg.'.$file_ext;
         $Image->crop(900, 900);
         $Image->crop(600, 600);
@@ -108,7 +95,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop(400, 400);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; crop &gt; crop &gt; crop)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (crop &gt; crop &gt; crop &gt; crop)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarkimage-right,bottom-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -116,7 +103,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->watermarkImage('../source-images/watermark.png', 'right', 'bottom');
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark image)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark image)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         $file_name = '../processed-images/rundiz-gd-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarktext-right,bottom-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -124,14 +111,14 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->watermarkText('Rundiz Image สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         unset($file_name, $Image);
 
         // -------------------------------------------------------------------------------------------------------------------
         ?> 
         <h2>PNG</h2>
         <?php
-        echo '<a href="'.$source_image_png.'">source image</a><br>'."\n";
+        echo '<a href="'.$source_image_png.'">source image</a><img src="'.$source_image_png.'" alt="" class="thumbnail"><br>'."\n";
         echo 'Save as: '."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($source_image_png);
         $file_ext = 'jpg';
@@ -141,7 +128,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'png';
         $file_name = $base_save_file_name.'-sourcepng.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -149,7 +136,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'gif';
         $file_name = $base_save_file_name.'-sourcepng.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -157,14 +144,14 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         unset($file_name, $Image);
 
         // -------------------------------------------------------------------------------------------------------------------
         ?> 
         <h2>GIF</h2>
         <?php
-        echo '<a href="'.$source_image_gif.'">source image</a><br>'."\n";
+        echo '<a href="'.$source_image_gif.'">source image</a><img src="'.$source_image_gif.'" alt="" class="thumbnail"><br>'."\n";
         echo 'Save as: '."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($source_image_gif);
         $file_ext = 'jpg';
@@ -174,7 +161,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'png';
         $file_name = $base_save_file_name.'-sourcegif.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -182,7 +169,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         $file_ext = 'gif';
         $file_name = $base_save_file_name.'-sourcegif.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
@@ -190,7 +177,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->crop($crop_width, $crop_height);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a> ';
+        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
         unset($file_name, $Image);
 
         // -------------------------------------------------------------------------------------------------------------------
