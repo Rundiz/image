@@ -15,7 +15,7 @@ function displayTestsConstructor(array $test_data_set)
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
                 echo 'Source image: ';
                 if (is_file($item['source_image_path'])) {
-                    echo '<a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" style="width: 300px;"></a>'."\n";
+                    echo '<a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>'."\n";
                 }
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
                 echo '<pre class="mini-data-box">'.print_r($Image, true).'</pre>'."\n";
@@ -36,7 +36,7 @@ function displayTestResizes(array $test_data_set)
         foreach ($test_data_set as $img_type_name => $item) {
             echo '<h3>'.$img_type_name.'</h3>'."\n";
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo 'Source image: <a href="'.$item['source_image_path'].'">link</a>.<br>'."\n";
+                echo 'Source image: <a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>'."\n";
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
                 $file_name = '../processed-images/rundiz-gd-image-resize-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x600';
                 echo 'Save as ';
@@ -45,7 +45,7 @@ function displayTestResizes(array $test_data_set)
                     $save_result = $Image->save($file_name . '.' . $ext);
                     $Image->clear();
                     if ($save_result === true) {
-                        echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
+                        echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
                         $img_data = getimagesize($file_name . '.' . $ext);
                         if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                             echo '(' . $img_data['mime'] . ')'."\n";
@@ -59,7 +59,8 @@ function displayTestResizes(array $test_data_set)
                 
                 echo '<br>Use show() method as ';
                 foreach ($test_exts as $ext) {
-                    echo ' <a href="gd-show-image.php?source_image_file='.$item['source_image_path'].'&amp;show_ext='.$ext.'&amp;act=resizenoratio&amp;width=900&amp;height=600">' . $ext . '</a>'."\n";
+                    $image_class_show_url = 'gd-show-image.php?source_image_file='.$item['source_image_path'].'&amp;show_ext='.$ext.'&amp;act=resizenoratio&amp;width=900&amp;height=600';
+                    echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
                 }
                 unset($ext);
             }
@@ -78,7 +79,7 @@ function displayTestCrop(array $test_data_set)
         foreach ($test_data_set as $img_type_name => $item) {
             echo '<h3>'.$img_type_name.'</h3>'."\n";
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo 'Source image: <a href="'.$item['source_image_path'].'">link</a>.<br>'."\n";
+                echo 'Source image: <a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>'."\n";
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
                 $source_image_exp = explode('.', $item['source_image_path']);
                 $file_ext = '.';
@@ -89,7 +90,7 @@ function displayTestCrop(array $test_data_set)
                 foreach ($test_crop as $crop_xy) {
                     if (isset($crop_xy[0]) && isset($crop_xy[1]) && isset($crop_xy[2])) {
                         $file_name = '../processed-images/rundiz-gd-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x900-start'.$crop_xy[0].','.$crop_xy[1].'-fill-'.$crop_xy[2];
-                        echo 'Cropping at <a href="'.$file_name.$file_ext.'">'.$crop_xy[0].', '.$crop_xy[1].'</a> fill '.$crop_xy[2].'<br>'."\n";
+                        echo 'Cropping at <a href="'.$file_name.$file_ext.'">'.$crop_xy[0].', '.$crop_xy[1].'</a> fill '.$crop_xy[2].'<img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>'."\n";
                         $Image->crop(900, 900, $crop_xy[0], $crop_xy[1], $crop_xy[2]);
                         $save_result = $Image->save($file_name.$file_ext);
                         if ($save_result != true) {
@@ -101,7 +102,7 @@ function displayTestCrop(array $test_data_set)
                 }// endforeach;
                 $Image->crop(2000, 2000, 'center', 'middle', 'white');
                 $file_name = '../processed-images/rundiz-gd-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-2000x2000-startcenter,middle-fill-white';
-                echo 'Cropping at <a href="'.$file_name.$file_ext.'">center, middle</a> (2000x2000) fill white<br>'."\n";
+                echo 'Cropping at <a href="'.$file_name.$file_ext.'">center, middle</a> (2000x2000) fill white<img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>'."\n";
                 $Image->save($file_name.$file_ext);
                 $Image->clear();
                 unset($crop_xy, $file_ext, $Image);
@@ -121,7 +122,7 @@ function displayTestRotate(array $test_data_set)
         foreach ($test_data_set as $img_type_name => $item) {
             echo '<h3>'.$img_type_name.'</h3>'."\n";
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo 'Source image: <a href="'.$item['source_image_path'].'">link</a>.<br>'."\n";
+                echo 'Source image: <a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>'."\n";
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
                 $source_image_exp = explode('.', $item['source_image_path']);
                 $file_ext = '.';
@@ -131,7 +132,7 @@ function displayTestRotate(array $test_data_set)
                 unset($source_image_exp);
                 foreach ($test_rotate as $rotate) {
                     $file_name = '../processed-images/rundiz-gd-image-rotate-'.str_replace(' ', '-', strtolower($img_type_name)).'-rotate'.$rotate;
-                    echo 'Rotate at <a href="'.$file_name.$file_ext.'">'.$rotate.'</a><br>'."\n";
+                    echo 'Rotate at <a href="'.$file_name.$file_ext.'">'.$rotate.'</a><img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>'."\n";
                     $Image->rotate($rotate);
                     $save_result = $Image->save($file_name.$file_ext);
                     if ($save_result != true) {
@@ -154,20 +155,7 @@ function displayTestRotate(array $test_data_set)
     <head>
         <meta charset="utf-8">
         <title>Test Image manipulation class.</title>
-        <style>
-            body {
-                background-color: #fff;
-                color: #333;
-                margin: 20px;
-                padding: 0;
-            }
-            .mini-data-box {
-                background-color: #eee;
-                height: 150px;
-                overflow: auto;
-                padding: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="./style.css">
     </head>
     <body>
         <h1>GD basic tests</h1>

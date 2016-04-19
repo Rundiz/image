@@ -9,6 +9,10 @@ $show_ext = (isset($_GET['show_ext']) ? $_GET['show_ext'] : '');
 $act = (isset($_GET['act']) ? $_GET['act'] : 'resize');
 $width = (isset($_GET['width']) ? intval($_GET['width']) : 100);
 $height = (isset($_GET['height']) ? intval($_GET['height']) : 100);
+$degree = (isset($_GET['degree']) ? $_GET['degree'] : 0);
+$start_x = (isset($_GET['startx']) ? $_GET['startx'] : 0);
+$start_y = (isset($_GET['starty']) ? $_GET['starty'] : 0);
+$fontsize = (isset($_GET['fontsize']) ? $_GET['fontsize'] : 15);
 
 if ($source_image_file == null) {
     die('Unable to load source image.');
@@ -37,10 +41,42 @@ if ($height < 0) {
     $height = 100;
 }
 
+if (is_numeric($degree) && ($degree < 0 || $degree > 360)) {
+    $degree = 0;
+} elseif (is_numeric($degree)) {
+    $degree = intval($degree);
+} else {
+    if ($degree != 'hor' && $degree != 'vrt' && $degree != 'horvrt') {
+        $degree = 0;
+    }
+}
+
+if (is_numeric($start_x)) {
+    $start_x = intval($start_x);
+}
+if (is_numeric($start_y)) {
+    $start_y = intval($start_y);
+}
+
+if (!is_numeric($fontsize)) {
+    $fontsize = 15;
+} else {
+    $fontsize = intval($fontsize);
+}
+
 
 $Image = new \Rundiz\Image\Drivers\Gd($source_image_file);
 
 switch ($act) {
+    case 'watermarktext':
+        $Image->watermarkText('Rundiz watermark ภาษาไทย สั้น ญู ให้.', '../source-images/cschatthai.ttf', $start_x, $start_y, $fontsize);
+        break;
+    case 'crop':
+        $Image->crop($width, $height);
+        break;
+    case 'rotate':
+        $Image->rotate($degree);
+        break;
     case 'resizenoratio':
         $Image->resizeNoRatio($width, $height);
         break;

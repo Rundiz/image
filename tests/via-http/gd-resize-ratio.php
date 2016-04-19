@@ -8,7 +8,7 @@ require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 function displayTestResizeRatio(array $test_data_set)
 {
     foreach ($test_data_set as $main_ext => $items) {
-        echo '<h2><a href="'.$items['source_image_path'].'">'.$main_ext.'</a></h2>'."\n";
+        echo '<h2><a href="'.$items['source_image_path'].'">'.$main_ext.'</a><img src="'.$items['source_image_path'].'" alt="" class="thumbnail"></h2>'."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($items['source_image_path']);
         $master_dim = 'auto';
         echo '<h3>Not allow resize larger, master dimension '.$master_dim.'</h3>'."\n";
@@ -25,7 +25,7 @@ function displayTestResizeRatio(array $test_data_set)
             if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
                 echo $sizes[0].'x'.$sizes[1].' =&gt; ';
             }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a> ';
+            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a><img src="'.$base_save_file_name3.'" alt="" class="thumbnail"> ';
             echo ' &nbsp; &nbsp;';
             unset($base_save_file_name3, $saved_h, $saved_w);
         }
@@ -47,7 +47,7 @@ function displayTestResizeRatio(array $test_data_set)
             if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
                 echo $sizes[0].'x'.$sizes[1].' =&gt; ';
             }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a> ';
+            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a><img src="'.$base_save_file_name3.'" alt="" class="thumbnail"> ';
             echo ' &nbsp; &nbsp;';
             unset($base_save_file_name3, $saved_h, $saved_w);
         }
@@ -70,7 +70,7 @@ function displayTestResizeRatio(array $test_data_set)
             if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
                 echo $sizes[0].'x'.$sizes[1].' =&gt; ';
             }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a> ';
+            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a><img src="'.$base_save_file_name3.'" alt="" class="thumbnail"> ';
             echo ' &nbsp; &nbsp;';
             unset($base_save_file_name3, $saved_h, $saved_w);
         }
@@ -86,20 +86,7 @@ function displayTestResizeRatio(array $test_data_set)
     <head>
         <meta charset="utf-8">
         <title>Test Image manipulation class.</title>
-        <style>
-            body {
-                background-color: #fff;
-                color: #333;
-                margin: 20px;
-                padding: 0;
-            }
-            .mini-data-box {
-                background-color: #eee;
-                height: 150px;
-                overflow: auto;
-                padding: 5px;
-            }
-        </style>
+        <link rel="stylesheet" href="./style.css">
     </head>
     <body>
         <h1>GD test resize by aspect ratio</h1>
