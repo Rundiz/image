@@ -53,6 +53,12 @@
         <h3>Rundiz Imagick Image class test</h3>
         <ul>
             <li><a href="imagick-basic-tests.php">Imagick basic tests</a></li>
+            <li><a href="imagick-resize-ratio.php">Imagick test resize by aspect ratio</a></li>
+            <li><a href="imagick-rotate.php">Imagick test rotate</a></li>
+            <li><a href="imagick-flip.php">Imagick test flip</a></li>
+            <li><a href="imagick-multi-process.php">Imagick test multiple process</a></li>
+            <li><a href="imagick-watermark-image.php">Imagick test watermark image</a></li>
+            <li><a href="imagick-watermark-text.php">Imagick test watermark text</a></li>
         </ul>
         <footer>
             <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>
