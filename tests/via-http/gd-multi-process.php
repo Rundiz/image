@@ -108,7 +108,7 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->crop($crop_width, $crop_height);
-        $Image->watermarkText('Rundiz Image สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
+        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
         $Image->save($file_name);
         $Image->clear();
         echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';

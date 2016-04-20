@@ -12,7 +12,7 @@ function displayTestResizeRatio(array $test_data_set)
         $Image = new \Rundiz\Image\Drivers\Imagick($items['source_image_path']);
         $master_dim = 'auto';
         echo '<h3>Not allow resize larger, master dimension '.$master_dim.'</h3>'."\n";
-        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage';
+        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage-source-'.strtolower(str_replace(array('\\', '/', ' '), '', $main_ext));
         $base_save_file_name2 = $base_save_file_name . '-nolarger-masterdim-'.$master_dim;
         $Image->master_dim = $master_dim;
         echo 'Saved as: ';
@@ -34,7 +34,7 @@ function displayTestResizeRatio(array $test_data_set)
         // allow resize larger
         $Image->allow_resize_larger = true;
         echo '<h3>Allow resize larger, master dimension '.$master_dim.'</h3>'."\n";
-        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage';
+        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage-source-'.strtolower(str_replace(array('\\', '/', ' '), '', $main_ext));
         $base_save_file_name2 = $base_save_file_name . '-allowlarger-masterdim-'.$master_dim;
         $Image->master_dim = $master_dim;
         echo 'Saved as: ';
@@ -57,7 +57,7 @@ function displayTestResizeRatio(array $test_data_set)
         $master_dim = 'height';
         $Image->allow_resize_larger = false;
         echo '<h3>Not allow resize larger, master dimension '.$master_dim.'</h3>'."\n";
-        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage';
+        $base_save_file_name = '../processed-images/rundiz-imagick-image-resizeratio-testpage-source-'.strtolower(str_replace(array('\\', '/', ' '), '', $main_ext));
         $base_save_file_name2 = $base_save_file_name . '-nolarger-masterdim-'.$master_dim;
         $Image->master_dim = $master_dim;
         echo 'Saved as: ';

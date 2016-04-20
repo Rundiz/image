@@ -21,7 +21,7 @@ function displayTestWatermarkText(array $test_data_set)
                 $save_file_name = $wmext_save_file_name.'-position-'.$wm_pos[0].','.$wm_pos[1];
                 echo 'position '.$wm_pos[0].', '.$wm_pos[1].'<br>';
                 foreach ($items['save_exts'] as $save_ext) {
-                    $Image->watermarkText('Rundiz watermark ภาษาไทย สั้น ญู ให้.', $font_path, $wm_pos[0], $wm_pos[1], 15);
+                    $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $font_path, $wm_pos[0], $wm_pos[1], 15);
                     $Image->save($save_file_name.'.'.$save_ext);
                     $Image->clear();
                     echo '<a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a><img src="'.$save_file_name.'.'.$save_ext.'" alt="" class="thumbnail"> ';
@@ -80,7 +80,7 @@ function displayTestWatermarkText(array $test_data_set)
                 'save_exts' => $save_exts,
             ),*/
         );
-        /*displayTestWatermarkText($test_data_set);
+        displayTestWatermarkText($test_data_set);
         ?><hr>
         <?php
         $test_data_set = array(
@@ -102,21 +102,18 @@ function displayTestWatermarkText(array $test_data_set)
                 'save_exts' => $save_exts,
             ),
         );
-        displayTestWatermarkText($test_data_set);*/
-        /*$Image = new \Rundiz\Image\Drivers\Imagick($source_image_jpg);
-        $Image->watermarkText('Rundiz watermark ภาษาไทย สั้น ญู ให้.', $source_font, 'left', 'top', 15);
-        $save_name = '../processed-images/test-watermark-text.jpg';
-        $Image->save($save_name);
-        $Image->clear();
-        unset($Image);
-        echo '<a href="'.$save_name.'"><img src="'.$save_name.'" class="thumbnail" alt=""></a>';*/
-        $test_start_x = 'right';
-        $test_start_y = 'bottom';
-        $fontsize = 15;
-        $show_link = 'imagick-show-image.php?source_image_file='.$source_image_jpg.'&amp;show_ext=jpg&amp;act=watermarktext&amp;startx='.$test_start_x.'&amp;starty='.$test_start_y.'&amp;fontsize='.$fontsize;
-        echo '<a href="'.$show_link.'"><img src="'.$show_link.'" alt="" class="thumbnail" style="width: 1800px; max-width: none; max-height: none;"></a>';
-        $show_link2 = 'gd-show-image.php?source_image_file='.$source_image_jpg.'&amp;show_ext=jpg&amp;act=watermarktext&amp;startx='.$test_start_x.'&amp;starty='.$test_start_y.'&amp;fontsize='.$fontsize;
-        echo '<a href="'.$show_link2.'"><img src="'.$show_link2.'" alt="" class="thumbnail" style="width: 1800px; max-width: none; max-height: none;"></a>';
+        displayTestWatermarkText($test_data_set);
+        ?><hr>
+        <?php
+        $test_data_set = array(
+            'Animated GIF' => array(
+                'source_image_path' => $source_image_animated_gif,
+                'watermark_fonts' => $watermark_fonts,
+                'watermark_positions' => $watermark_positions,
+                'save_exts' => $save_exts,
+            ),
+        );
+        displayTestWatermarkText($test_data_set);
         ?><hr>
         <?php
         // ------------------------------------------------------------------------------------------------------

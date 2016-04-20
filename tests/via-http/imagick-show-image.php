@@ -69,7 +69,7 @@ $Image = new \Rundiz\Image\Drivers\Imagick($source_image_file);
 
 switch ($act) {
     case 'watermarktext':
-        $Image->watermarkText('Rundiz watermark ภาษาไทย สั้น ญู ให้.', '../source-images/cschatthai.ttf', $start_x, $start_y, $fontsize);
+        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', $start_x, $start_y, $fontsize);
         break;
     case 'crop':
         $Image->crop($width, $height);
