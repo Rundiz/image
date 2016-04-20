@@ -104,14 +104,14 @@ $base_save_file_name = '../processed-images/rundiz-imagick-image-resize-'.$resiz
         $Image->save($file_name);
         $Image->clear();
         echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark image)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
-        /*$file_name = '../processed-images/rundiz-imagick-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarktext-right,bottom-sourcejpg.'.$file_ext;
+        $file_name = '../processed-images/rundiz-imagick-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarktext-right,bottom-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->crop($crop_width, $crop_height);
-        $Image->watermarkText('Rundiz Image สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
+        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
         $Image->save($file_name);
         $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';*/// @todo enable this
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         unset($file_name, $Image);
 
         // -------------------------------------------------------------------------------------------------------------------
@@ -220,6 +220,22 @@ $base_save_file_name = '../processed-images/rundiz-imagick-image-resize-'.$resiz
         $Image->save($file_name);
         $Image->clear();
         echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark image)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
+        $file_name = '../processed-images/rundiz-imagick-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarktext-right,bottom-sourceanimatedgif.'.$file_ext;
+        $Image->rotate($rotate);
+        $Image->resizeNoRatio($resize_w, $resize_h);
+        $Image->crop($crop_width, $crop_height);
+        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', 'right', 'bottom', 13);
+        $Image->save($file_name);
+        $Image->clear();
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
+        $file_name = '../processed-images/rundiz-imagick-image'.'-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-sourceanimatedgif-savenonanimated.'.$file_ext;
+        $Image->save_animate_gif = false;
+        $Image->rotate($rotate);
+        $Image->resizeNoRatio($resize_w, $resize_h);
+        $Image->crop($crop_width, $crop_height);
+        $Image->save($file_name);
+        $Image->clear();
+        echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; save non animated)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         unset($file_name, $Image);
 
         // -------------------------------------------------------------------------------------------------------------------

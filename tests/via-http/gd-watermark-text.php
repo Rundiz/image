@@ -21,7 +21,7 @@ function displayTestWatermarkText(array $test_data_set)
                 $save_file_name = $wmext_save_file_name.'-position-'.$wm_pos[0].','.$wm_pos[1];
                 echo 'position '.$wm_pos[0].', '.$wm_pos[1].'<br>';
                 foreach ($items['save_exts'] as $save_ext) {
-                    $Image->watermarkText('Rundiz watermark ภาษาไทย สั้น ญู ให้.', $font_path, $wm_pos[0], $wm_pos[1], 15);
+                    $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $font_path, $wm_pos[0], $wm_pos[1], 15);
                     $Image->save($save_file_name.'.'.$save_ext);
                     $Image->clear();
                     echo '<a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a><img src="'.$save_file_name.'.'.$save_ext.'" alt="" class="thumbnail"> ';

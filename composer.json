@@ -1,0 +1,23 @@
+{
+	"name": "rundiz/image",
+	"type": "library",
+	"description": "Image manipulation use GD or Imagick as drivers. It support watermark image or text, resize, crop, rotate, transparency gif or png and also support animation gif (Imagick only).",
+	"keywords": ["image", "thumbnail", "resize image", "rotate image", "crop image", "watermark", "animation", "animated gif", "transparency image"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Vee W.",
+			"email": "kawewong@gmail.com",
+			"homepage": "http://rundiz.com",
+			"role": "Developer"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"Rundiz\\Image\\" : "Rundiz/Image"
+		}
+	}
+}

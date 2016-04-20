@@ -31,15 +31,6 @@ class Gd extends ImageAbstractClass
     private $source_image_object = null;
 
     /**
-     * @var integer Last modified image width
-     */
-    private $last_modified_image_width;
-    /**
-     * @var integer Last modified image height
-     */
-    private $last_modified_image_height;
-
-    /**
      * @var mixed Image resource identifier for watermark image.
      */
     private $watermark_image_object = null;
@@ -73,127 +64,6 @@ class Gd extends ImageAbstractClass
     {
         $this->clear();
     }// __destruct
-
-
-    /**
-     * Calculate image size by aspect ratio.
-     * 
-     * @param integer $width New width set to calculate.
-     * @param integer $height New height set to calculate.
-     * @return array Return array with 'height' and 'width' in array key and the values are calculated sizes.
-     */
-    private function calculateImageSizeRatio($width, $height)
-    {
-        // convert width, height to integer
-        $width = intval($width);
-        $height = intval($height);
-
-        if ($height <= 0) {
-            $height = 100;
-        }
-        if ($width <= 0) {
-            $width = 100;
-        }
-
-        // get and set source (or last modified) image width and height
-        $source_image_width = $this->source_image_width;
-        if ($this->last_modified_image_width != null) {
-            $source_image_width = $this->last_modified_image_width;
-        }
-        $source_image_height = $this->source_image_height;
-        if ($this->last_modified_image_height != null) {
-            $source_image_height = $this->last_modified_image_height;
-        }
-
-        $source_image_orientation = $this->getSourceImageOrientation();
-        // find height and width by aspect ratio.
-        $find_h = round(($source_image_height/$source_image_width)*$width);
-        $find_w = round(($source_image_width/$source_image_height)*$height);
-
-        $this->verifyMasterDimension();
-
-        switch ($this->master_dim) {
-            case 'width':
-                $new_width = $width;
-                $new_height = $find_h;
-
-                // if not allow resize larger.
-                if ($this->allow_resize_larger == false) {
-                    // if new width larger than source image width
-                    if ($width > $source_image_width) {
-                        $new_width = $source_image_width;
-                        $new_height = $source_image_height;
-                    }
-                }
-                break;
-            case 'height':
-                $new_width = $find_w;
-                $new_height = $height;
-
-                // if not allow resize larger.
-                if ($this->allow_resize_larger == false) {
-                    // if new height is larger than source image height
-                    if ($height > $source_image_height) {
-                        $new_width = $source_image_width;
-                        $new_height = $source_image_height;
-                    }
-                }
-                break;
-            case 'auto':
-            default:
-                // master dimension auto.
-                switch ($source_image_orientation) {
-                    case 'P':
-                        // image orientation portrait
-                        $new_width = $find_w;
-                        $new_height = $height;
-
-                        // if not allow resize larger
-                        if ($this->allow_resize_larger == false) {
-                            // determine new image size must not larger than source image size.
-                            if ($height > $source_image_height && $width <= $source_image_width) {
-                                // if new height larger than source image height and width smaller or equal to source image width
-                                $new_width = $width;
-                                $new_height = $find_h;
-                            } else {
-                                if ($height > $source_image_height) {
-                                    $new_width = $source_image_width;
-                                    $new_height = $source_image_height;
-                                }
-                            }
-                        }
-                        break;
-                    case 'L':
-                    // image orientation landscape
-                    case 'S':
-                    // image orientation square
-                    default:
-                        // image orientation landscape and square
-                        $new_width = $width;
-                        $new_height = $find_h;
-
-                        // if not allow resize larger
-                        if ($this->allow_resize_larger == false) {
-                            // determine new image size must not larger than source image size.
-                            if ($width > $source_image_width && $height <= $source_image_height) {
-                                // if new width larger than source image width and height smaller or equal to source image height
-                                $new_width = $find_w;
-                                $new_height = $height;
-                            } else {
-                                if ($width > $source_image_width) {
-                                    $new_width = $source_image_width;
-                                    $new_height = $source_image_height;
-                                }
-                            }
-                        }
-                        break;
-                }
-                break;
-        }// endswitch;
-
-        unset($find_h, $find_w, $source_image_height, $source_image_orientation, $source_image_width);
-        return array('height' => $new_height, 'width' => $new_width);
-    }// calculateImageSizeRatio
 	
 	
     /**
@@ -399,26 +269,6 @@ class Gd extends ImageAbstractClass
             'width' => $this->source_image_width,
         );
     }// getImageSize
-
-
-    /**
-     * Get source image orientation.
-     * 
-     * @return string Return S for square, L for landscape, P for portrait.
-     */
-    private function getSourceImageOrientation()
-    {
-        if ($this->source_image_height == $this->source_image_width) {
-            // square image
-            return 'S';
-        } elseif ($this->source_image_height < $this->source_image_width) {
-            // landscape image
-            return 'L';
-        } else {
-            // portrait image
-            return 'P';
-        }
-    }// getSourceImageOrientation
 
 
     /**
@@ -1004,19 +854,6 @@ class Gd extends ImageAbstractClass
             return false;
         }
     }// show
-
-
-    /**
-     * Verify master dimension value must be correctly.
-     */
-    private function verifyMasterDimension() 
-    {
-       $this->master_dim = strtolower($this->master_dim);
-
-       if ($this->master_dim != 'auto' && $this->master_dim != 'width' && $this->master_dim != 'height') {
-           $this->master_dim = 'auto';
-       }
-    }// verifyMasterDimension
 
 
     /**

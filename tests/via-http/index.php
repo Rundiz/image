@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Test Image manipulation class.</title>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <h1>Rundiz Image manipulation class</h1>
@@ -33,6 +34,11 @@
             <li><a href="native-gd-gif-watermark-png.php">gif image with watermark png</a></li>
         </ul>
         <h3>Native PHP Imagick functions test</h3>
+        <?php
+        if (!extension_loaded('imagick')) {
+            echo '<p class="alert">You don\'t have Imagick extension for PHP installed on this server, please skip these test.</p>';
+        }
+        ?> 
         <ul>
             <li><a href="native-imagick-jpg-resize.php">resize jpg image</a></li>
             <li><a href="native-imagick-png-resize.php">resize png image</a></li>
@@ -51,6 +57,11 @@
             <li><a href="gd-watermark-text.php">GD test watermark text</a></li>
         </ul>
         <h3>Rundiz Imagick Image class test</h3>
+        <?php
+        if (!extension_loaded('imagick')) {
+            echo '<p class="alert">You don\'t have Imagick extension for PHP installed on this server, please skip these test.</p>';
+        }
+        ?> 
         <ul>
             <li><a href="imagick-basic-tests.php">Imagick basic tests</a></li>
             <li><a href="imagick-resize-ratio.php">Imagick test resize by aspect ratio</a></li>
