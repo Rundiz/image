@@ -191,7 +191,7 @@ class ImageImagickTest extends CommonTestAbstractClass
 
 
     /**
-     * @depends testRequireFilesExistsAndFolderWritable
+     * @depends testRequiredImagickImageMagickPhpVersions
      */
     public function testImagickWatermarkText()
     {
