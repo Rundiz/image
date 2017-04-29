@@ -3,7 +3,7 @@
 
 namespace Rundiz\Image\Tests;
 
-abstract class CommonTestAbstractClass extends \PHPUnit_Framework_TestCase
+abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
 {
 
 
