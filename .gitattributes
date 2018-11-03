@@ -1,5 +1,10 @@
 # Disable LF normalization for all files
 * -text
+
+# Export ignore folders, files.
+tests export-ignore
+.gitattributes export-ignore
+phpunit.xml export-ignore
 tests/source-images/watermark.jpg !text !filter !merge !diff
 tests/source-images/city-amsterdam.png !text !filter !merge !diff
 tests/source-images/city-amsterdam-jpg.png !text !filter !merge !diff
