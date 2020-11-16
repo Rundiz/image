@@ -55,6 +55,7 @@
             <li><a href="gd-multi-process.php">GD test multiple process</a></li>
             <li><a href="gd-watermark-image.php">GD test watermark image</a></li>
             <li><a href="gd-watermark-text.php">GD test watermark text</a></li>
+            <li><a href="gd-transparent-nontransparent-gif.php">GD test transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Imagick Image class test</h3>
         <?php
@@ -70,6 +71,8 @@
             <li><a href="imagick-multi-process.php">Imagick test multiple process</a></li>
             <li><a href="imagick-watermark-image.php">Imagick test watermark image</a></li>
             <li><a href="imagick-watermark-text.php">Imagick test watermark text</a></li>
+            <li><a href="imagick-animate-gif-watermark-text.php">Imagick test animate gif and watermark text</a></li>
+            <li><a href="imagick-transparent-nontransparent-gif.php">Imagick test transparent &amp; non-transparent gif</a></li>
         </ul>
         <footer>
             <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>
