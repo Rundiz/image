@@ -43,7 +43,7 @@ function displayTestWatermarkText(array $test_data_set)
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>Imagick test watermark</h1>
+        <h1>Imagick test animate gif and watermark</h1>
         <h2>Watermark text</h2>
         <?php
         $save_exts = array('jpg', 'png', 'gif');
@@ -61,42 +61,8 @@ function displayTestWatermarkText(array $test_data_set)
             array('right', 'bottom'),
         );
         $test_data_set = array(
-            'JPG' => array(
-                'source_image_path' => $source_image_jpg,
-                'watermark_fonts' => $watermark_fonts,
-                'watermark_positions' => $watermark_positions,
-                'save_exts' => $save_exts,
-            ),
-            /*'PNG' => array(
-                'source_image_path' => $source_image_png,
-                'watermark_fonts' => $watermark_fonts,
-                'watermark_positions' => $watermark_positions,
-                'save_exts' => $save_exts,
-            ),
-            'GIF' => array(
-                'source_image_path' => $source_image_gif,
-                'watermark_fonts' => $watermark_fonts,
-                'watermark_positions' => $watermark_positions,
-                'save_exts' => $save_exts,
-            ),*/
-        );
-        displayTestWatermarkText($test_data_set);
-        ?><hr>
-        <?php
-        $test_data_set = array(
-            'PNG' => array(
-                'source_image_path' => $source_image_png,
-                'watermark_fonts' => $watermark_fonts,
-                'watermark_positions' => $watermark_positions,
-                'save_exts' => $save_exts,
-            ),
-        );
-        displayTestWatermarkText($test_data_set);
-        ?><hr>
-        <?php
-        $test_data_set = array(
-            'GIF' => array(
-                'source_image_path' => $source_image_gif,
+            'Animated GIF' => array(
+                'source_image_path' => $source_image_animated_gif,
                 'watermark_fonts' => $watermark_fonts,
                 'watermark_positions' => $watermark_positions,
                 'save_exts' => $save_exts,
