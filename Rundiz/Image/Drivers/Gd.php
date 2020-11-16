@@ -560,8 +560,8 @@ class Gd extends ImageAbstractClass
 
             $save_result = imagegif($this->destination_image_object, $file_name);
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type === IMAGETYPE_PNG) {
-                // source image is png file. convert transparency png to white before save.
+            if ($this->source_image_type === IMAGETYPE_PNG || $this->source_image_type === IMAGETYPE_GIF) {
+                // source image is png or gif file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
                 imagefill($temp_image_object, 0, 0, $white);
@@ -807,8 +807,8 @@ class Gd extends ImageAbstractClass
                 unset($temp_image_object);
             }
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type === IMAGETYPE_PNG) {
-                // source image is png file. convert transparency png to white before save.
+            if ($this->source_image_type === IMAGETYPE_PNG || $this->source_image_type === IMAGETYPE_GIF) {
+                // source image is png or gif file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
                 imagefill($temp_image_object, 0, 0, $white);
@@ -829,6 +829,17 @@ class Gd extends ImageAbstractClass
                 unset($temp_image_object);
             }
         } elseif ($check_file_ext == 'png') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
+                // source image is gif file. convert transparency gif to white before save.
+                // source transparent png to gif have no problem but source transparent gif to png it always left transparency. it must be filled.
+                $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
+                $white = imagecolorallocate($temp_image_object, 255, 255, 255);
+                imagefill($temp_image_object, 0, 0, $white);
+                imagecopy($temp_image_object, $this->destination_image_object, 0, 0, 0, 0, $this->destination_image_width, $this->destination_image_height);
+                $this->destination_image_object = $temp_image_object;
+                unset($temp_image_object, $white);
+            }
+
             $this->png_quality = intval($this->png_quality);
             if ($this->png_quality < 0 || $this->png_quality > 9) {
                 $this->png_quality = 0;
