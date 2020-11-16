@@ -289,7 +289,7 @@ class Imagick extends ImageAbstractClass
         }
 
         // begins crop
-        if ($this->source_image_type == '1') {
+        if ($this->source_image_type === IMAGETYPE_GIF) {
             // gif
             if ($this->source_image_frames > 1) {
                 $this->Imagick = $this->Imagick->coalesceImages();
@@ -320,7 +320,7 @@ class Imagick extends ImageAbstractClass
                     $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 }
             }
-        } elseif ($this->source_image_type == '2' || $this->source_image_type == '3') {
+        } elseif ($this->source_image_type === IMAGETYPE_JPEG || $this->source_image_type === IMAGETYPE_PNG ) {
             // jpg OR png
             $this->Imagick->cropImage($width, $height, $start_x, $start_y);
             $this->Imagick->setImageBackgroundColor($transwhite);// for transparent png and allow to fill other bg color than black in jpg.
@@ -434,7 +434,7 @@ class Imagick extends ImageAbstractClass
         }
 
         // begins resize
-        if ($this->source_image_type == '1') {
+        if ($this->source_image_type === IMAGETYPE_GIF) {
             // gif
             if ($this->source_image_frames > 1) {
                 $this->Imagick = $this->Imagick->coalesceImages();
@@ -455,7 +455,7 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick->setImagePage(0, 0, 0, 0);
                 $this->ImagickFirstFrame = null;
             }
-        } elseif ($this->source_image_type == '2' || $this->source_image_type == '3') {
+        } elseif ($this->source_image_type === IMAGETYPE_JPEG || $this->source_image_type === IMAGETYPE_PNG) {
             // jpg or png
             $this->Imagick->resizeImage($width, $height, $this->imagick_filter, 1);
         } else {
@@ -506,7 +506,7 @@ class Imagick extends ImageAbstractClass
         if (is_int($degree)) {
             // rotate by degree
             switch ($this->source_image_type) {
-                case '1':
+                case IMAGETYPE_GIF:
                     // gif
                     if ($this->source_image_frames > 1) {
                         $this->Imagick = $this->Imagick->coalesceImages();
@@ -528,9 +528,9 @@ class Imagick extends ImageAbstractClass
                         $this->ImagickFirstFrame = null;
                     }
                     break;
-                case '2':
+                case IMAGETYPE_JPEG:
                     // jpg
-                case '3':
+                case IMAGETYPE_PNG:
                     // png
                     $this->Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
                     break;
@@ -550,7 +550,7 @@ class Imagick extends ImageAbstractClass
         } else {
             // flip image
             switch ($this->source_image_type) {
-                case '1':
+                case IMAGETYPE_GIF:
                     if ($this->source_image_frames > 1) {
                         $this->Imagick = $this->Imagick->coalesceImages();
                         if (is_object($this->Imagick)) {
@@ -584,9 +584,9 @@ class Imagick extends ImageAbstractClass
                         $this->ImagickFirstFrame = null;
                     }
                     break;
-                case '2':
+                case IMAGETYPE_JPEG:
                     // jpg
-                case '3':
+                case IMAGETYPE_PNG:
                     // png
                     if ($degree === 'hor') {
                         $this->Imagick->flopImage();
@@ -665,7 +665,7 @@ class Imagick extends ImageAbstractClass
 
         // save to file. each image types use different ways to save.
         if ($check_file_ext == 'gif') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source file is png
                 // convert from transparent to white before save
                 $this->Imagick->setImagePage(0, 0, 0, 0);
@@ -674,7 +674,7 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
-            if ($this->source_image_type == '1' && $this->save_animate_gif === true) {
+            if ($this->source_image_type === IMAGETYPE_GIF && $this->save_animate_gif === true) {
                 // source file is gif and allow to save animated
                 $save_result = $this->Imagick->writeImages($real_file_name, true);
             } else {
@@ -685,7 +685,7 @@ class Imagick extends ImageAbstractClass
                     $this->ImagickFirstFrame = null;
                 }
 
-                if ($this->source_image_type !== '1') {
+                if ($this->source_image_type !== IMAGETYPE_GIF) {
                     // source image is other than gif, it is required to set image page.
                     $this->Imagick->setImagePage(0, 0, 0, 0);
                 }
@@ -693,7 +693,7 @@ class Imagick extends ImageAbstractClass
                 $save_result = $this->Imagick->writeImage($real_file_name);
             }
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source file is gif
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
@@ -706,7 +706,7 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick->setImageBackgroundColor('white');
                 $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
-            } elseif ($this->source_image_type == '3') {
+            } elseif ($this->source_image_type === IMAGETYPE_PNG) {
                 // source file is png
                 // convert from transparent to white before save
                 $this->Imagick->setImagePage(0, 0, 0, 0);
@@ -723,7 +723,7 @@ class Imagick extends ImageAbstractClass
             $this->Imagick->setImageCompressionQuality($this->jpg_quality);
             $save_result = $this->Imagick->writeImage($real_file_name);
         } elseif ($check_file_ext == 'png') {
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source file is gif
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
@@ -882,7 +882,7 @@ class Imagick extends ImageAbstractClass
         // http://php.net/manual/en/imagick.getimageblob.php for single frame of image or non-animated picture.
         // http://php.net/manual/en/imagick.getimagesblob.php for animated gif.
         if ($check_file_ext == 'gif') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source file is png
                 // convert from transparent to white before save
                 $this->Imagick->setImagePage(0, 0, 0, 0);
@@ -891,7 +891,7 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
-            if ($this->source_image_type == '1' && $this->save_animate_gif === true) {
+            if ($this->source_image_type === IMAGETYPE_GIF && $this->save_animate_gif === true) {
                 // source file is gif and allow to show animated
                 $show_result = $this->Imagick->getImagesBlob();
             } else {
@@ -902,7 +902,7 @@ class Imagick extends ImageAbstractClass
                     $this->ImagickFirstFrame = null;
                 }
 
-                if ($this->source_image_type !== '1') {
+                if ($this->source_image_type !== IMAGETYPE_GIF) {
                     // source image is other than gif, it is required to set image page.
                     $this->Imagick->setImagePage(0, 0, 0, 0);
                 }
@@ -911,7 +911,7 @@ class Imagick extends ImageAbstractClass
                 $show_result = $this->Imagick->getImageBlob();
             }
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source file is gif
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
@@ -924,7 +924,7 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick->setImageBackgroundColor('white');
                 $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
-            } elseif ($this->source_image_type == '3') {
+            } elseif ($this->source_image_type === IMAGETYPE_PNG) {
                 // source file is png
                 // convert from transparent to white before save
                 $this->Imagick->setImagePage(0, 0, 0, 0);
@@ -942,7 +942,7 @@ class Imagick extends ImageAbstractClass
             $this->Imagick->setImageCompressionQuality($this->jpg_quality);
             $show_result = $this->Imagick->getImageBlob();
         } elseif ($check_file_ext == 'png') {
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source file is gif
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
@@ -1198,7 +1198,7 @@ class Imagick extends ImageAbstractClass
                     }
                 } else {
                     $this->Imagick->compositeImage($this->ImagickWatermark, \Imagick::COMPOSITE_DEFAULT, $wm_img_start_x, $wm_img_start_y);
-                    if ($this->source_image_type == '1') {
+                    if ($this->source_image_type === IMAGETYPE_GIF) {
                         // if source image is gif, set image page to prevent sizing error.
                         $this->Imagick->setImagePage(0, 0, 0, 0);
                     }
@@ -1359,7 +1359,7 @@ class Imagick extends ImageAbstractClass
             }
         } else {
             $this->Imagick->annotateImage($ImagickDraw, $wm_txt_start_x, $wm_txt_start_y, 0, $wm_txt_text);
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // if source image is gif, set image page to prevent sizing error.
                 $this->Imagick->setImagePage(0, 0, 0, 0);
             }

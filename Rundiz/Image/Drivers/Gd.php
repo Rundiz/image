@@ -187,7 +187,7 @@ class Gd extends ImageAbstractClass
         }
 
         // begins crop
-        if ($this->source_image_type == '1') {
+        if ($this->source_image_type === IMAGETYPE_GIF) {
             // gif
             if ($fill == 'transparent') {
                 imagefill($this->destination_image_object, 0, 0, $transwhite);
@@ -207,14 +207,14 @@ class Gd extends ImageAbstractClass
                     imagefill($this->destination_image_object, 0, 0, $$fill);
                 }
             }
-        } elseif ($this->source_image_type == '2') {
+        } elseif ($this->source_image_type === IMAGETYPE_JPEG) {
             // jpg
             imagecopy($this->destination_image_object, $this->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
 
             if ($fill != 'transparent') {
                 imagefill($this->destination_image_object, 0, 0, $$fill);
             }
-        } elseif ($this->source_image_type == '3') {
+        } elseif ($this->source_image_type === IMAGETYPE_PNG) {
             // png
             if ($fill == 'transparent') {
                 imagefill($this->destination_image_object, 0, 0, $transwhite);
@@ -357,17 +357,17 @@ class Gd extends ImageAbstractClass
         }
 
         // begins resize
-        if ($this->source_image_type == '1') {
+        if ($this->source_image_type === IMAGETYPE_GIF) {
             // gif
             $transwhite = imagecolorallocatealpha($this->destination_image_object, 255, 255, 255, 127);
             imagefill($this->destination_image_object, 0, 0, $transwhite);
             imagecolortransparent($this->destination_image_object, $transwhite);
             imagecopyresampled($this->destination_image_object, $this->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
             unset($transwhite);
-        } elseif ($this->source_image_type == '2') {
+        } elseif ($this->source_image_type === IMAGETYPE_JPEG) {
             // jpg
             imagecopyresampled($this->destination_image_object, $this->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
-        } elseif ($this->source_image_type == '3') {
+        } elseif ($this->source_image_type === IMAGETYPE_PNG) {
             // png
             imagealphablending($this->destination_image_object, false);
             imagesavealpha($this->destination_image_object, true);
@@ -428,7 +428,7 @@ class Gd extends ImageAbstractClass
         if (is_int($degree)) {
             // rotate by degree
             switch ($this->source_image_type) {
-                case '1':
+                case IMAGETYPE_GIF:
                     // gif
                     // set source image width and height
                     $source_image_width = imagesx($this->source_image_object);
@@ -442,13 +442,13 @@ class Gd extends ImageAbstractClass
                     $this->destination_image_object = imagerotate($this->destination_image_object, $degree, $transwhite);
                     unset($source_image_height, $source_image_width, $transwhite);
                     break;
-                case '2':
+                case IMAGETYPE_JPEG:
                     // jpg
                     $white = imagecolorallocate($this->source_image_object, 255, 255, 255);
                     $this->destination_image_object = imagerotate($this->source_image_object, $degree, $white);
                     unset($white);
                     break;
-                case '3':
+                case IMAGETYPE_PNG:
                     // png
                     $transwhite = imageColorAllocateAlpha($this->source_image_object, 0, 0, 0, 127);
                     $this->destination_image_object = imagerotate($this->source_image_object, $degree, $transwhite);
@@ -548,7 +548,7 @@ class Gd extends ImageAbstractClass
 
         // save to file. each image types use different ways to save.
         if ($check_file_ext == 'gif') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source image is png file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
@@ -560,7 +560,7 @@ class Gd extends ImageAbstractClass
 
             $save_result = imagegif($this->destination_image_object, $file_name);
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source image is png file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
@@ -577,7 +577,7 @@ class Gd extends ImageAbstractClass
 
             $save_result = imagejpeg($this->destination_image_object, $file_name, $this->jpg_quality);
         } elseif ($check_file_ext == 'png') {
-            if ($this->source_image_type == '1') {
+            if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source image is gif file. convert transparency gif to white before save.
                 // source transparent png to gif have no problem but source transparent gif to png it always left transparency. it must be filled.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
@@ -668,15 +668,15 @@ class Gd extends ImageAbstractClass
                 $this->status_msg = null;
                 return true;
             } else {
-                if ($this->source_image_type == '1') {
+                if ($this->source_image_type === IMAGETYPE_GIF) {
                     // gif
                     $this->source_image_object = imagecreatefromgif($this->source_image_path);
                     // add alpha to support transparency gif
                     imagesavealpha($this->source_image_object, true);
-                } elseif ($this->source_image_type == '2') {
+                } elseif ($this->source_image_type === IMAGETYPE_JPEG) {
                     // jpg
                     $this->source_image_object = imagecreatefromjpeg($this->source_image_path);
-                } elseif ($this->source_image_type == '3') {
+                } elseif ($this->source_image_type === IMAGETYPE_PNG) {
                     // png
                     $this->source_image_object = imagecreatefrompng($this->source_image_path);
                     // add alpha, alpha blending to support transparency png
@@ -790,7 +790,7 @@ class Gd extends ImageAbstractClass
 
         // show image to browser.
         if ($check_file_ext == 'gif') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source image is png file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
@@ -807,7 +807,7 @@ class Gd extends ImageAbstractClass
                 unset($temp_image_object);
             }
         } elseif ($check_file_ext == 'jpg') {
-            if ($this->source_image_type == '3') {
+            if ($this->source_image_type === IMAGETYPE_PNG) {
                 // source image is png file. convert transparency png to white before save.
                 $temp_image_object = imagecreatetruecolor($this->destination_image_width, $this->destination_image_height);
                 $white = imagecolorallocate($temp_image_object, 255, 255, 255);
@@ -987,7 +987,7 @@ class Gd extends ImageAbstractClass
                 break;
             case '3':
                 // png
-                if ($this->source_image_type == '1') {
+                if ($this->source_image_type === IMAGETYPE_GIF) {
                     // source image is gif (which maybe transparent) and watermark image is png. so, this cannot just use imagecopy() function.
                     // see more at http://stackoverflow.com/questions/4437557/using-gd-in-php-how-can-i-make-a-transparent-png-watermark-on-png-and-gif-files
                     $cut_resource_object = imagecreatetruecolor($this->watermark_image_width, $this->watermark_image_height);
@@ -1147,7 +1147,7 @@ class Gd extends ImageAbstractClass
 
         // copy text to image
         switch ($this->source_image_type) {
-            case '1':
+            case IMAGETYPE_GIF:
                 // gif
                 $cut_resource_object = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
                 imagecopy($cut_resource_object, $this->source_image_object, 0, 0, $wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height);
@@ -1155,10 +1155,10 @@ class Gd extends ImageAbstractClass
                 imagecopymerge($this->source_image_object, $cut_resource_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height, 100);
                 imagedestroy($cut_resource_object);
                 break;
-            case '3':
+            case IMAGETYPE_PNG:
                 // png
                 imagealphablending($this->source_image_object, true);
-            case '2':
+            case IMAGETYPE_JPEG:
                 // jpg
             default:
                 imagecopy($this->source_image_object, $wm_txt_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height);
