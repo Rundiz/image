@@ -1,6 +1,6 @@
 # Image manipulation
 
-Image manipulation use GD or Imagick as drivers. It support watermark image or text, resize, crop, rotate, transparency gif or png and also support animation gif (Imagick only).
+Image manipulation use GD or Imagick as drivers. It support watermark image or text, resize, crop, rotate (flip - see API doc), transparency gif or png and also support animation gif (Imagick only).
 
 [![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
 [![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
