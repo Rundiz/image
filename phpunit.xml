@@ -13,15 +13,13 @@
 >
 	<testsuites>
 		<testsuite name="tests/phpunit">
-			<directory suffix=".php">./tests/phpunit/</directory>
-			<file>./tests/phpunit/CommonTestAbstractClass.php</file>
+			<directory suffix=".php" phpVersion="7.2" phpVersionOperator="&lt;">./tests/phpunit/PHPB72/</directory>
+			<file phpVersion="7.2" phpVersionOperator="&lt;">./tests/phpunit/PHPB72/CommonTestAbstractClass.php</file>
+
+			<directory suffix=".php" phpVersion="7.2" phpVersionOperator=">=">./tests/phpunit/PHP72/</directory>
+			<file phpVersion="7.2" phpVersionOperator=">=">./tests/phpunit/PHP72/CommonTestAbstractClass.php</file>
 		</testsuite>
 	</testsuites>
-	<filter>
-		<whitelist>
-			<directory suffix=".php">./Rundiz/Image/</directory>
-		</whitelist>
-	</filter>
     <php>
         <ini name="memory_limit" value="512M" />
     </php>

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Rundiz\Image\Tests;
+namespace Rundiz\Image\Tests\PHP72;
 
 abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
 {
@@ -42,10 +42,10 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     }// rrmdir
 
 
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass(): void
     {
-        self::$source_images_dir = dirname(__DIR__).DIRECTORY_SEPARATOR.'source-images'.DIRECTORY_SEPARATOR;
-        self::$processed_images_dir = dirname(__DIR__).DIRECTORY_SEPARATOR.'processed-images'.DIRECTORY_SEPARATOR;
+        self::$source_images_dir = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR.'source-images'.DIRECTORY_SEPARATOR;
+        self::$processed_images_dir = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR.'processed-images'.DIRECTORY_SEPARATOR;
 
         $processed_images_folder = self::$processed_images_dir;
         self::rrmdir($processed_images_folder, $processed_images_folder);
@@ -53,7 +53,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     }// setUpBeforeClass
 
 
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass(): void
     {
         $processed_images_folder = self::$processed_images_dir;
         self::rrmdir($processed_images_folder, $processed_images_folder);

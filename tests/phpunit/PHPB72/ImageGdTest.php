@@ -1,11 +1,10 @@
 <?php
 
 
-namespace Rundiz\Image\Tests;
+namespace Rundiz\Image\Tests\PHPB72;
 
-use Rundiz\Image\Tests\CommonTestAbstractClass;
 
-class ImageGdTest extends CommonTestAbstractClass
+class ImageGdTest extends \Rundiz\Image\Tests\PHPB72\CommonTestAbstractClass
 {
 
 
