@@ -88,15 +88,15 @@ class Gd extends ImageAbstractClass
      */
     public function clear()
     {
-        if ($this->destination_image_object != null && get_resource_type($this->destination_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->destination_image_object)) {
             imagedestroy($this->destination_image_object);
         }
 
-        if ($this->source_image_object != null && get_resource_type($this->source_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->source_image_object)) {
             imagedestroy($this->source_image_object);
         }
 
-        if ($this->watermark_image_object != null && get_resource_type($this->watermark_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->watermark_image_object)) {
             imagedestroy($this->watermark_image_object);
         }
 
@@ -250,7 +250,7 @@ class Gd extends ImageAbstractClass
         $this->destination_image_width = $width;
 
         // clear unused variables
-        if (get_resource_type($this->source_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->source_image_object)) {
             imagedestroy($this->source_image_object);
             $this->source_image_object = null;
         }
@@ -283,6 +283,22 @@ class Gd extends ImageAbstractClass
         }
         return false;
     }// isPreviousError
+
+
+    /**
+     * Check if image variable is resource of GD or is object of `\GDImage` (PHP 8.0) or not.
+     *
+     * @since 3.0.2
+     * @param mixed $image
+     * @return boolean Return `true` if it is resource or instance of `\GDImage`, return `false` if it is not.
+     */
+    private function isResourceOrGDObject($image)
+    {
+        return (
+            (is_resource($image) && get_resource_type($image) === 'gd') ||
+            (is_object($image) && $image instanceof \GDImage)
+        );
+    }// isResourceOrGDObject
 
 
     /**
@@ -385,7 +401,7 @@ class Gd extends ImageAbstractClass
         $this->destination_image_width = $width;
 
         // clear
-        if (get_resource_type($this->source_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->source_image_object)) {
             if ($this->source_image_object != $this->destination_image_object) {
                 imagedestroy($this->source_image_object);
             }
@@ -496,7 +512,7 @@ class Gd extends ImageAbstractClass
         }
 
         // clear
-        if (get_resource_type($this->source_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->source_image_object)) {
             if ($this->source_image_object != $this->destination_image_object) {
                 imagedestroy($this->source_image_object);
             }
@@ -632,7 +648,7 @@ class Gd extends ImageAbstractClass
             return false;
         }
 
-        if ($this->destination_image_object == null || get_resource_type($this->destination_image_object) !== 'gd') {
+        if (!$this->isResourceOrGDObject($this->destination_image_object)) {
             $this->destination_image_object = imagecreatetruecolor($width, $height);
         }
 
@@ -659,8 +675,8 @@ class Gd extends ImageAbstractClass
             return false;
         }
 
-        if ($this->source_image_object == null || get_resource_type($this->source_image_object) !== 'gd') {
-            if ($this->destination_image_object != null && get_resource_type($this->destination_image_object) === 'gd') {
+        if (!$this->isResourceOrGDObject($this->source_image_object)) {
+            if ($this->isResourceOrGDObject($this->destination_image_object)) {
                 $this->source_image_object = $this->destination_image_object;
                 $this->destination_image_object = null;
 
@@ -725,7 +741,7 @@ class Gd extends ImageAbstractClass
             return false;
         }
 
-        if ($this->watermark_image_object != null && !is_bool($this->watermark_image_object) && get_resource_type($this->watermark_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->watermark_image_object)) {
             imagedestroy($this->watermark_image_object);
         }
 
@@ -802,7 +818,7 @@ class Gd extends ImageAbstractClass
 
             $show_result = imagegif($this->destination_image_object);
 
-            if (isset($temp_image_object) && $temp_image_object != null && get_resource_type($temp_image_object) === 'gd') {
+            if (isset($temp_image_object) && $this->isResourceOrGDObject($temp_image_object)) {
                 imagedestroy($temp_image_object);
                 unset($temp_image_object);
             }
@@ -824,7 +840,7 @@ class Gd extends ImageAbstractClass
 
             $show_result = imagejpeg($this->destination_image_object, null, $this->jpg_quality);
 
-            if (isset($temp_image_object) && $temp_image_object != null && get_resource_type($temp_image_object) === 'gd') {
+            if (isset($temp_image_object) && $this->isResourceOrGDObject($temp_image_object)) {
                 imagedestroy($temp_image_object);
                 unset($temp_image_object);
             }
@@ -1017,7 +1033,7 @@ class Gd extends ImageAbstractClass
                 return false;
         }
 
-        if ($this->watermark_image_object != null && !is_bool($this->watermark_image_object) && get_resource_type($this->watermark_image_object) === 'gd') {
+        if ($this->isResourceOrGDObject($this->watermark_image_object)) {
             imagedestroy($this->watermark_image_object);
         }
         if ($this->destination_image_object == null) {
