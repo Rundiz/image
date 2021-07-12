@@ -296,13 +296,13 @@ class Imagick extends ImageAbstractClass
                 if (is_object($this->Imagick)) {
                     $i = 1;
                     foreach ($this->Imagick as $Frame) {
-                        $Frame->cropImage($width, $height, $start_x, $start_y);
-                        $Frame->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
-                        $Frame->setImagePage(0, 0, 0, 0);
                         if ($fill != 'transparent') {
                             $Frame->setImageBackgroundColor($$fill);
                             $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                         }
+                        $Frame->cropImage($width, $height, $start_x, $start_y);
+                        $Frame->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
+                        $Frame->setImagePage(0, 0, 0, 0);
                         if ($i == 1) {
                             $this->ImagickFirstFrame = $Frame->getImage();
                         }
@@ -311,14 +311,14 @@ class Imagick extends ImageAbstractClass
                     unset($Frame, $i);
                 }
             } else {
-                $this->Imagick->cropImage($width, $height, $start_x, $start_y);
-                $this->Imagick->setImagePage(0, 0, 0, 0);
-                $this->Imagick->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
-                $this->ImagickFirstFrame = null;
                 if ($fill != 'transparent') {
                     $this->Imagick->setImageBackgroundColor($$fill);
                     $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                 }
+                $this->Imagick->cropImage($width, $height, $start_x, $start_y);
+                $this->Imagick->setImagePage(0, 0, 0, 0);
+                $this->Imagick->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
+                $this->ImagickFirstFrame = null;
             }
         } elseif ($this->source_image_type === IMAGETYPE_JPEG || $this->source_image_type === IMAGETYPE_PNG ) {
             // jpg OR png
