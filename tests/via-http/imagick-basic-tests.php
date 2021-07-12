@@ -80,7 +80,9 @@ function displayTestCrop(array $test_data_set)
         foreach ($test_data_set as $img_type_name => $item) {
             echo '<h3>'.$img_type_name.'</h3>'."\n";
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo 'Source image: <a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>'."\n";
+                list($srcImgWidth, $srcImgHeight) = getimagesize($item['source_image_path']);
+                echo 'Source image: <a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a> (' . $srcImgWidth . 'x' . $srcImgHeight . ')<br>'."\n";
+                unset($srcImgHeight, $srcImgWidth);
                 $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
                 $source_image_exp = explode('.', $item['source_image_path']);
                 $file_ext = '.';
