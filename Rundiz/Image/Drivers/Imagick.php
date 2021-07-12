@@ -305,7 +305,7 @@ class Imagick extends ImageAbstractClass
                         }
                         $Frame->cropImage($width, $height, $start_x, $start_y);
                         $Frame->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
-                        $Frame->setImagePage(0, 0, 0, 0);
+                        $Frame->setImagePage($width, $height, 0, 0);
                         if ($i == 1) {
                             $this->ImagickFirstFrame = $Frame->getImage();
                         }
@@ -317,6 +317,8 @@ class Imagick extends ImageAbstractClass
                 if ($fill != 'transparent') {
                     $this->Imagick->setImageBackgroundColor($$fill);
                     $this->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                } else {
+                    $this->Imagick->setImageBackgroundColor($transparent);
                 }
                 $this->Imagick->cropImage($width, $height, $start_x, $start_y);
                 $this->Imagick->setImagePage(0, 0, 0, 0);

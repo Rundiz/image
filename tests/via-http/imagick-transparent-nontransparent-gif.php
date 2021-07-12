@@ -188,6 +188,7 @@ function displayWmTests($imageSource, $driver = 'gd')
         <h1>Imagick test transparent and non transparent gif</h1>
         <h2>Transparent gif</h2>
         <?php displayTests($source_image_gif, 'imagick'); ?> 
+        <hr>
         <h2>Non-Transparent gif</h2>
         <?php displayTests('../source-images/city-amsterdam-non-transparent.gif', 'imagick'); ?> 
         <?php include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php'; ?> 
