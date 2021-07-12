@@ -282,6 +282,7 @@ class Imagick extends ImageAbstractClass
         // set color
         $black = new \ImagickPixel('black');
         $white = new \ImagickPixel('white');
+        $transparent = new \ImagickPixel('transparent');
         $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');
 
         if ($fill != 'transparent' && $fill != 'white' && $fill != 'black') {
@@ -299,6 +300,8 @@ class Imagick extends ImageAbstractClass
                         if ($fill != 'transparent') {
                             $Frame->setImageBackgroundColor($$fill);
                             $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                        } else {
+                            $Frame->setImageBackgroundColor($transparent);
                         }
                         $Frame->cropImage($width, $height, $start_x, $start_y);
                         $Frame->extentImage($width, $height, $this->calculateStartXOfCenter($width, $this->Imagick->getImageWidth()), $this->calculateStartXOfCenter($height, $this->Imagick->getImageHeight()));
@@ -344,7 +347,7 @@ class Imagick extends ImageAbstractClass
         $black->destroy();
         $transwhite->destroy();
         $white->destroy();
-        unset($black, $fill, $transwhite, $white);
+        unset($black, $fill, $transparent, $transwhite, $white);
         return true;
     }// crop
 
