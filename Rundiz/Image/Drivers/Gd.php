@@ -264,10 +264,10 @@ class Gd extends ImageAbstractClass
      */
     public function getImageSize()
     {
-        return array(
+        return [
             'height' => $this->source_image_height,
             'width' => $this->source_image_width,
-        );
+        ];
     }// getImageSize
 
 
@@ -422,7 +422,7 @@ class Gd extends ImageAbstractClass
         }
 
         // check degree
-        $allowed_flip = array('hor', 'vrt', 'horvrt');
+        $allowed_flip = ['hor', 'vrt', 'horvrt'];
         if (is_numeric($degree)) {
             $degree = intval($degree);
         } elseif (!is_numeric($degree) && !in_array($degree, $allowed_flip)) {
