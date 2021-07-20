@@ -35,7 +35,7 @@ class Gd extends ImageAbstractClass
      */
     private $watermark_image_object = null;
     /**
-     * @var string Watermark image type. See more at http://php.net/manual/en/function.getimagesize.php The numbers of these extensions are: 1=gif, 2=jpg, 3=png
+     * @var string Watermark image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp
      */
     private $watermark_image_type;
     /**
@@ -733,7 +733,7 @@ class Gd extends ImageAbstractClass
             return false;
         }
 
-        list($wm_width, $wm_height, $wm_type) = getimagesize($wm_img_path);
+        list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
 
         if ($wm_height == null || $wm_width == null || $wm_type == null) {
             $this->status = false;

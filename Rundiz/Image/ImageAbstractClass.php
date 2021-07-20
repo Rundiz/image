@@ -22,32 +22,32 @@ abstract class ImageAbstractClass implements ImageInterface
 
     /**
      * Allow to set resize larger than source image.
-     * @var boolean Set to true to allow, false to disallow.
+     * @var boolean Set to `true` to allow, `false` to disallow. Default is `false`.
      */
     public $allow_resize_larger = false;
     /**
      * JPEG quality.
-     * @var integer Quality from 0 (worst quality, smallest file) to 100 (best quality, biggest file).
+     * @var integer Quality from 0 (worst quality, smallest file) to 100 (best quality, biggest file). Default is 100.
      */
     public $jpg_quality = 100;
     /**
      * PNG quality.
-     * @var integer Compression level from 0 (no compression) to 9. 
+     * @var integer Compression level from 0 (no compression) to 9.  Default is 0.
      */
     public $png_quality = 0;
     /**
      * Master dimension.
-     * @var string Master dimension value is 'auto', 'width', or 'height'.
+     * @var string Master dimension value is 'auto', 'width', or 'height'. Default is 'auto'.
      */
     public $master_dim = 'auto';
     /**
      * Contain status of action methods.
-     * @var boolean Return false if there is something error.
+     * @var boolean Return `false` if there is something error.
      */
     public $status = false;
     /**
      * Contain status error message of action methods.
-     * @var string Return error message.
+     * @var string Return error message. Default is `null`.
      */
     public $status_msg = null;
 
@@ -65,11 +65,11 @@ abstract class ImageAbstractClass implements ImageInterface
      */
     protected $source_image_height;
     /**
-     * @var string Source image type. See more at http://php.net/manual/en/function.getimagesize.php The numbers of these extensions are: 1=gif, 2=jpg, 3=png
+     * @var string Source image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp
      */
     protected $source_image_type;
     /**
-     * @var string Source image mime type. See more at http://php.net/manual/en/function.getimagesize.php
+     * @var string Source image mime type. Example `image/jpeg`.
      */
     protected $source_image_mime;
     /**
@@ -122,7 +122,7 @@ abstract class ImageAbstractClass implements ImageInterface
     {
         if (is_file($source_image_path)) {
             $source_image_path = realpath($source_image_path);
-            $image_data = getimagesize($source_image_path);
+            $image_data = $this->getImageFileData($source_image_path);
 
             if (false !== $image_data && is_array($image_data) && !empty($image_data)) {
                 $this->source_image_path = $source_image_path;
@@ -277,6 +277,72 @@ abstract class ImageAbstractClass implements ImageInterface
 
 
     /**
+     * Get image file data such as width, height, mime type.
+     * 
+     * This will be use `getimagesize()` function if supported, use GD functions as backup.
+     * 
+     * @param string $imagePath Full path to image file.
+     * @return array|false Return array:<br>
+     *              index 0 Image width.<br>
+     *              index 1 Image height.<br>
+     *              index 2 Image type constant. See more at https://www.php.net/manual/en/image.constants.php <br>
+     *              `mime` key is mime type.<br> 
+     *              `ext` key is file extension with dot (.ext).<br>
+     *              Return `false` on failure.
+     */
+    protected function getImageFileData($imagePath)
+    {
+        if (is_file($imagePath)) {
+            $imagePath = realpath($imagePath);
+            if (stripos($imagePath, '.webp') !== false && version_compare(PHP_VERSION, '7.1.0', '<')) {
+                // if it is .webp and current PHP version is not supported
+                try {
+                    if (!$this->isAnimatedWebP($imagePath)) {
+                        // if not animated webp.
+                        $output = [];
+
+                        // use gd to get width, height.
+                        $GD = imagecreatefromwebp($imagePath);
+                        if (false !== $GD) {
+                            $output[0] = imagesx($GD);
+                            $output[1] = imagesy($GD);
+                            if (!defined('IMAGETYPE_WEBP')) {
+                                define('IMAGETYPE_WEBP', 18);
+                            }
+                            $output[2] = IMAGETYPE_WEBP;
+                            $output['mime'] = 'image/webp';
+                            $output['ext'] = '.webp';
+                            unset($GD);
+                            return $output;
+                        }
+                        unset($GD, $output);
+                    }
+                } catch (\Exception $ex) {
+                    // failed.
+                }
+            } else {
+                // if generic image.
+                $imgResult = getimagesize($imagePath);
+                if (
+                        is_array($imgResult) &&
+                        array_key_exists(0, $imgResult) &&
+                        array_key_exists(1, $imgResult) &&
+                        array_key_exists(2, $imgResult) &&
+                        array_key_exists('mime', $imgResult)
+                ) {
+                    // if image was supported and it really is an image, these keys must exists.
+                    $imgResult['ext'] = image_type_to_extension($imgResult[2]);
+                    return $imgResult;
+                }
+                unset($imgResult);
+            }
+        }
+
+        return false;
+    }// getImageFileData
+
+
+    /**
      * Get source image orientation.<br>
      * This method called by calculateImageSizeRatio().
      * 
@@ -295,6 +361,37 @@ abstract class ImageAbstractClass implements ImageInterface
             return 'P';
         }
     }// getSourceImageOrientation
+
+
+    /**
+     * Is WebP animated.
+     *
+     * @link https://stackoverflow.com/a/45206064/128761 Original source code.
+     * @link https://stackoverflow.com/a/162263/128761 Original source code.
+     * @param string $imagePath Full path to image.
+     * @return bool Return `true` if it is animated, `false` for otherwise.
+     * @throws \RuntimeException Throws exception if unable to open file.
+     */
+    protected function isAnimatedWebP($imagePath)
+    {
+        $handle = fopen($imagePath, 'r');
+        if (false === $handle) {
+            throw new \RuntimeException('Unable to open file ' . $src . '.');
+        }
+
+        while (!feof($handle)) {
+            $buffer = fgets($handle, 4096);
+            if (strpos($buffer, 'ANMF') !== false) {
+                // if found ANMF (animated)
+                unset($buffer, $handle);
+                return true;
+            }
+            unset($buffer);
+        }// endwhile;
+
+        unset($handle);
+        return false;
+    }// isAnimatedWebP
 
 
     /**
