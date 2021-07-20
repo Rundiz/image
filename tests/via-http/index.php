@@ -12,15 +12,25 @@
             <li>Please verify that your php.ini display the errors and report all error level including strict.</li>
             <li>Please make sure that <strong><?php echo realpath('../processed-images'); ?></strong> folder is already exists and has write permission.</li>
             <li>
-                Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at least size L and save it to <?php echo realpath('../source-images'); ?> folder with these name and extensions.<br>
+                Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281 and save it to <?php echo realpath('../source-images'); ?> folder with these name and extensions.<br>
                 (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                 <ul>
                     <li>city-amsterdam.gif</li>
                     <li>city-amsterdam.jpg</li>
                     <li>city-amsterdam.png</li>
+                </ul>
+                Copy one file from JPG and rename to .png.
+                <ul>
                     <li>city-amsterdam-jpg.png (This file should be jpg but rename file extension to png.)</li>
+                </ul>
+                Create TXT file and rename to .jpg.
+                <ul>
                     <li>city-amsterdam-text.jpg (This is text file with jpg extension.)</li>
+                </ul>
+                Use animation program to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
+                <ul>
                     <li>city-amsterdam-animated.gif (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
+                    <li>city-amsterdam-animated.webp (This is animation webp. You should create animation in this image. It is for test with <code>isAnimatedWebP()</code> method only.)</li>
                 </ul>
             </li>
         </ul>
