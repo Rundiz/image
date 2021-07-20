@@ -269,7 +269,10 @@ abstract class ImageAbstractClass implements ImageInterface
         }// endswitch;
 
         unset($find_h, $find_w, $source_image_height, $source_image_orientation, $source_image_width);
-        return array('height' => $new_height, 'width' => $new_width);
+        return [
+            'height' => $new_height, 
+            'width' => $new_width
+        ];
     }// calculateImageSizeRatio
 
 
