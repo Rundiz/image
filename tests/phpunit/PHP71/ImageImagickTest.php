@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Rundiz\Image\Tests\PHP72;
+namespace Rundiz\Image\Tests\PHP71;
 
 
-class ImageImagickTest extends \Rundiz\Image\Tests\PHP72\CommonTestAbstractClass
+class ImageImagickTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 {
 
 

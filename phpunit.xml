@@ -11,15 +11,13 @@
          verbose="true"
          beStrictAboutOutputDuringTests="true"
 >
-	<testsuites>
-		<testsuite name="tests/phpunit">
-			<directory suffix=".php" phpVersion="7.2" phpVersionOperator="&lt;">./tests/phpunit/PHPB72/</directory>
-			<file phpVersion="7.2" phpVersionOperator="&lt;">./tests/phpunit/PHPB72/CommonTestAbstractClass.php</file>
-
-			<directory suffix=".php" phpVersion="7.2" phpVersionOperator=">=">./tests/phpunit/PHP72/</directory>
-			<file phpVersion="7.2" phpVersionOperator=">=">./tests/phpunit/PHP72/CommonTestAbstractClass.php</file>
-		</testsuite>
-	</testsuites>
+    <!-- see requirement in tests/phpunit/phpunit.php file. -->
+    <testsuites>
+        <testsuite name="tests/phpunit">
+            <directory suffix=".php" phpVersion="7.1" phpVersionOperator=">=">./tests/phpunit/PHP71/</directory>
+            <file phpVersion="7.1" phpVersionOperator=">=">./tests/phpunit/PHP71/CommonTestAbstractClass.php</file>
+        </testsuite>
+    </testsuites>
     <php>
         <ini name="memory_limit" value="512M" />
     </php>
