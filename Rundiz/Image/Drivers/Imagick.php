@@ -731,11 +731,12 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
-            // png compression for imagick does not work!!!
+            // png compression
             $this->png_quality = intval($this->png_quality);
             if ($this->png_quality < 0 || $this->png_quality > 9) {
                 $this->png_quality = 0;
             }
+            $this->Imagick->setCompressionQuality(intval($this->png_quality . 5));
 
             $save_result = $this->Imagick->writeImage($real_file_name);
         } else {
@@ -950,11 +951,12 @@ class Imagick extends ImageAbstractClass
                 $this->Imagick = $this->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
             }
 
-            // png compression for imagick does not work!!!
+            // png compression
             $this->png_quality = intval($this->png_quality);
             if ($this->png_quality < 0 || $this->png_quality > 9) {
                 $this->png_quality = 0;
             }
+            $this->Imagick->setCompressionQuality(intval($this->png_quality . 5));
 
             $this->Imagick->setImageFormat('png');
             $show_result = $this->Imagick->getImageBlob();
