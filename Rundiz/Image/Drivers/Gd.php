@@ -260,18 +260,6 @@ class Gd extends ImageAbstractClass
 
 
     /**
-     * {@inheritDoc}
-     */
-    public function getImageSize()
-    {
-        return [
-            'height' => $this->source_image_height,
-            'width' => $this->source_image_width,
-        ];
-    }// getImageSize
-
-
-    /**
      * Check is previous operation contain error?
      * 
      * @return boolean Return true if there is some error, false if there is not.
