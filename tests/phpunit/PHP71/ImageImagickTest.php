@@ -4,6 +4,9 @@
 namespace Rundiz\Image\Tests\PHP71;
 
 
+/**
+ * @group imageprocessing
+ */
 class ImageImagickTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 {
 
