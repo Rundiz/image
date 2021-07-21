@@ -17,35 +17,33 @@ $watermarkImageFile = '../source-images/watermark.png';
         list($width, $height) = getimagesize($sourceImageFile);
 
 
-
         // watermark png ----------------------------------------------------------------------------
         list($wm_width, $wm_height) = getimagesize($watermarkImageFile);
-        $image_destination_object = imagecreatefrompng($watermarkImageFile);
+        $imgDestinationObject = imagecreatefrompng($watermarkImageFile);
         // -----------------------------------------------------------------------------------------------
 
 
-        $image_source_object = imagecreatefromgif($sourceImageFile);
+        $imgSourceObject = imagecreatefromgif($sourceImageFile);
         // for set source gif image transparency after imagecreatefromgif() function.----------
-        imagesavealpha($image_source_object, true);// added for transparency gif
+        imagesavealpha($imgSourceObject, true);// added for transparency gif
         // -----------------------------------------------------------------------------------------------
 
 
         // copy watermark for source gif image and png watermark -----------------------------
-        $cut_resource_object = imagecreatetruecolor($wm_width, $wm_width);
-        imagecopy($cut_resource_object, $image_source_object, 0, 0, 100, 200, $wm_width, $wm_height);
-        imagecopy($cut_resource_object, $image_destination_object, 0, 0, 0, 0, $wm_width, $wm_height);
-        imagecopymerge($image_source_object, $cut_resource_object, 100, 200, 0, 0, $wm_width, $wm_height, 100);
+        $watermarkCanvas = imagecreatetruecolor($wm_width, $wm_width);
+        imagecopy($watermarkCanvas, $imgSourceObject, 0, 0, 100, 200, $wm_width, $wm_height);
+        imagecopy($watermarkCanvas, $imgDestinationObject, 0, 0, 0, 0, $wm_width, $wm_height);
+        imagecopymerge($imgSourceObject, $watermarkCanvas, 100, 200, 0, 0, $wm_width, $wm_height, 100);
         // -----------------------------------------------------------------------------------------------
 
 
-        // original copy watermark (destination object) to image (source object) ---------------
-        //imagealphablending($image_source_object, true);// add this for transparent watermark thru image.
-        //imagecopy($image_source_object, $image_destination_object, 100, 200, 0, 0, $wm_width, $wm_height);
-        // -----------------------------------------------------------------------------------------------
+        $saveImageLink = '../processed-images/' . basename(__FILE__, '.php') . '.gif';
+        $saveResult = imagegif($imgSourceObject, $saveImageLink);
 
-
-        $saveImageLink = '../processed-images/' . basename(__FILE__, '.php') . '-source-gif-watermark-png.gif';
-        $saveResult = imagegif($image_source_object, $saveImageLink);
+        imagedestroy($imgDestinationObject);
+        imagedestroy($imgSourceObject);
+        unset($imgDestinationObject, $imgSourceObject, $watermarkCanvas);
+        unset($height, $width, $wm_height, $wm_width);
         ?>
         Image that applied watermark.
         <a href="<?=$saveImageLink; ?>"><img class="thumbnail" src="<?=$saveImageLink; ?>" alt=""></a> (position top left)<br>

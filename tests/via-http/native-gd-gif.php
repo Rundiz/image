@@ -184,7 +184,7 @@ $sourceImageFile = '../source-images/city-amsterdam.gif';
                         $imgDestinationObject = $tmpImgObject;
                         unset($tmpImgObject);
                         // save
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-jpg.png';
+                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-gif.png';
                         $saveResult = imagepng($imgDestinationObject, $saveImgLink, 0);
                         echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
                         echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
@@ -218,7 +218,7 @@ $sourceImageFile = '../source-images/city-amsterdam.gif';
                         $imgDestinationObject = $tmpImgObject;
                         unset($tmpImgObject);
                         // save
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-jpg.jpg';
+                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-gif.jpg';
                         $saveResult = imagejpeg($imgDestinationObject, $saveImgLink, 100);
                         echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
                         echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;

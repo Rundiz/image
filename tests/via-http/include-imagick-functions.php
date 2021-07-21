@@ -19,3 +19,32 @@ function calculateCounterClockwise($value)
     $output = intval($total_degree-$value);
     return $output;
 }// calculateCounterClockwise
+
+
+/**
+ * Check if image is animated gif.
+ * 
+ * @param string $image Full path to image.
+ * @return mixed Return number of frames. There is 1 frame if it is not animated gif, 2 or more if it is animated gif. Return `false` for otherwise.
+ */
+function isAnimatedGif($image)
+{
+    if (!is_file($image)) {
+        return false;
+    }
+
+    $Imagick = new \Imagick(realpath($image));
+    $Imagick = $Imagick->coalesceImages();
+    $i = 0;
+
+    if (is_object($Imagick)) {
+        foreach ($Imagick as $Frame) {
+            $i++;
+        }
+        unset($Frame);
+    }
+    $Imagick->clear();
+    unset($Imagick);
+
+    return $i;
+}// isAnimatedGif
