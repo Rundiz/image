@@ -281,6 +281,7 @@ abstract class ImageAbstractClass implements ImageInterface
      * 
      * This will be use `getimagesize()` function if supported, use GD functions as backup.
      * 
+     * @since 3.1.0
      * @param string $imagePath Full path to image file.
      * @return array|false Return array:<br>
      *              index 0 Image width.<br>
@@ -380,6 +381,7 @@ abstract class ImageAbstractClass implements ImageInterface
      *
      * @link https://stackoverflow.com/a/45206064/128761 Original source code.
      * @link https://stackoverflow.com/a/162263/128761 Original source code.
+     * @since 3.1.0
      * @param string $imagePath Full path to image.
      * @return bool Return `true` if it is animated, `false` for otherwise.
      * @throws \RuntimeException Throws exception if unable to open file.
