@@ -38,9 +38,9 @@
         <h2>Tests</h2>
         <h3>Native PHP GD functions test</h3>
         <ul>
-            <li><a href="native-gd-jpg-resize.php">resize jpg image</a></li>
-            <li><a href="native-gd-png-resize.php">resize png image</a></li>
-            <li><a href="native-gd-gif-resize.php">resize gif image</a></li>
+            <li><a href="native-gd-jpg.php">process jpg image</a></li>
+            <li><a href="native-gd-png.php">process png image</a></li>
+            <li><a href="native-gd-gif.php">process gif image</a></li>
             <li><a href="native-gd-gif-watermark-png.php">gif image with watermark png</a></li>
         </ul>
         <h3>Native PHP Imagick functions test</h3>
