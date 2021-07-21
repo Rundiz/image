@@ -50,11 +50,12 @@
         }
         ?> 
         <ul>
-            <li><a href="native-imagick-jpg-resize.php">resize jpg image</a></li>
-            <li><a href="native-imagick-png-resize.php">resize png image</a></li>
-            <li><a href="native-imagick-gif-resize.php">resize gif image</a></li>
+            <li><a href="native-imagick-jpg.php">process jpg image</a></li>
+            <li><a href="native-imagick-png.php">process png image</a></li>
+            <li><a href="native-imagick-gif.php">process gif image</a></li>
             <li><a href="native-imagick-gif-watermark-png.php">gif image with watermark png</a></li>
-            <li><a href="native-imagick-animate-gif.php">resize, crop, rotate animated gif</a> (warning, this is slower than process non animated gif.)</li>
+            <li><a href="native-imagick-animated-gif.php">process animated gif image</a> (warning, this is slower than process non animated gif.)</li>
+            <li><a href="native-imagick-png-compression-tests.php">png compression tests</a></li>
         </ul>
         <h3>Rundiz GD Image class test</h3>
         <ul>

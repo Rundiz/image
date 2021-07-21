@@ -139,7 +139,9 @@ $sourceImageFile = '../source-images/city-amsterdam.jpg';
                         list($width, $height) = getimagesize($sourceImageFile);
                         $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
                         $imgSourceObject = imagecreatefromjpeg($sourceImageFile);
+                        // resize
                         imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $size[0], $size[1], $width, $height);
+                        // save
                         $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-jpg.png';
                         $saveResult = imagepng($imgDestinationObject, $saveImgLink, 0);
                         echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
@@ -158,7 +160,9 @@ $sourceImageFile = '../source-images/city-amsterdam.jpg';
                         list($width, $height) = getimagesize($sourceImageFile);
                         $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
                         $imgSourceObject = imagecreatefromjpeg($sourceImageFile);
+                        // resize
                         imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $size[0], $size[1], $width, $height);
+                        // save
                         $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-jpg.gif';
                         $saveResult = imagegif($imgDestinationObject, $saveImgLink);
                         echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
