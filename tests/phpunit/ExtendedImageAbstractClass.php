@@ -49,9 +49,13 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     }// getImageFileData
 
 
+    /**
+     * {@inheritDoc}
+     */
     public function getImageSize()
     {
-    }
+        return parent::getImageSize();
+    }// getImageSize
 
 
     /**
