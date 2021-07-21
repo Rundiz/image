@@ -343,6 +343,18 @@ abstract class ImageAbstractClass implements ImageInterface
 
 
     /**
+     * {@inheritDoc}
+     */
+    public function getImageSize()
+    {
+        return [
+            'height' => $this->source_image_height,
+            'width' => $this->source_image_width,
+        ];
+    }// getImageSize
+
+
+    /**
      * Get source image orientation.<br>
      * This method called by calculateImageSizeRatio().
      * 
@@ -372,7 +384,7 @@ abstract class ImageAbstractClass implements ImageInterface
      * @return bool Return `true` if it is animated, `false` for otherwise.
      * @throws \RuntimeException Throws exception if unable to open file.
      */
-    protected function isAnimatedWebP($imagePath)
+    public function isAnimatedWebP($imagePath)
     {
         $handle = fopen($imagePath, 'r');
         if (false === $handle) {
