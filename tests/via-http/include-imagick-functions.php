@@ -34,17 +34,12 @@ function isAnimatedGif($image)
     }
 
     $Imagick = new \Imagick(realpath($image));
-    $Imagick = $Imagick->coalesceImages();
-    $i = 0;
-
-    if (is_object($Imagick)) {
-        foreach ($Imagick as $Frame) {
-            $i++;
-        }
-        unset($Frame);
-    }
+    $number = $Imagick->getNumberImages();
     $Imagick->clear();
     unset($Imagick);
 
-    return $i;
+    if (is_numeric($number)) {
+        return $number;
+    }
+    return false;
 }// isAnimatedGif

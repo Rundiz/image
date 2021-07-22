@@ -15,9 +15,9 @@
                 Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281 and save it to <?php echo realpath('../source-images'); ?> folder with these name and extensions.<br>
                 (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                 <ul>
-                    <li>city-amsterdam.gif</li>
+                    <li>city-amsterdam.gif (must contain transparent in the image)</li>
                     <li>city-amsterdam.jpg</li>
-                    <li>city-amsterdam.png</li>
+                    <li>city-amsterdam.png (must contain transparent in the image)</li>
                 </ul>
                 Copy one file from JPG and rename to .png.
                 <ul>
@@ -50,6 +50,7 @@
         }
         ?> 
         <ul>
+            <li><a href="native-imagick-info.php">Imagick info</a></li>
             <li><a href="native-imagick-jpg.php">process jpg image</a></li>
             <li><a href="native-imagick-png.php">process png image</a></li>
             <li><a href="native-imagick-gif.php">process gif image</a></li>
@@ -59,14 +60,14 @@
         </ul>
         <h3>Rundiz GD Image class test</h3>
         <ul>
-            <li><a href="gd-basic-tests.php">GD basic tests</a></li>
-            <li><a href="gd-resize-ratio.php">GD test resize by aspect ratio</a></li>
-            <li><a href="gd-rotate.php">GD test rotate</a></li>
-            <li><a href="gd-flip.php">GD test flip</a></li>
-            <li><a href="gd-multi-process.php">GD test multiple process</a></li>
-            <li><a href="gd-watermark-image.php">GD test watermark image</a></li>
-            <li><a href="gd-watermark-text.php">GD test watermark text</a></li>
-            <li><a href="gd-transparent-nontransparent-gif.php">GD test transparent &amp; non-transparent gif</a></li>
+            <li><a href="rdimage-gd-basic-tests.php">basic tests</a></li>
+            <li><a href="rdimage-gd-resize-ratio.php">resize by aspect ratio</a></li>
+            <li><a href="rdimage-gd-rotate.php">rotate</a></li>
+            <li><a href="rdimage-gd-flip.php">flip</a></li>
+            <li><a href="rdimage-gd-multi-process.php">multiple process</a></li>
+            <li><a href="rdimage-gd-watermark-image.php">watermark image</a> (can be slow, please wait)</li>
+            <li><a href="rdimage-gd-watermark-text.php">watermark text</a></li>
+            <li><a href="rdimage-gd-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Imagick Image class test</h3>
         <?php
@@ -75,15 +76,15 @@
         }
         ?> 
         <ul>
-            <li><a href="imagick-basic-tests.php">Imagick basic tests</a></li>
-            <li><a href="imagick-resize-ratio.php">Imagick test resize by aspect ratio</a></li>
-            <li><a href="imagick-rotate.php">Imagick test rotate</a></li>
-            <li><a href="imagick-flip.php">Imagick test flip</a></li>
-            <li><a href="imagick-multi-process.php">Imagick test multiple process</a></li>
-            <li><a href="imagick-watermark-image.php">Imagick test watermark image</a></li>
-            <li><a href="imagick-watermark-text.php">Imagick test watermark text</a></li>
-            <li><a href="imagick-animate-gif-watermark-text.php">Imagick test animate gif and watermark text</a></li>
-            <li><a href="imagick-transparent-nontransparent-gif.php">Imagick test transparent &amp; non-transparent gif</a></li>
+            <li><a href="imagick-basic-tests.php">basic tests</a></li>
+            <li><a href="imagick-resize-ratio.php">resize by aspect ratio</a></li>
+            <li><a href="imagick-rotate.php">rotate</a></li>
+            <li><a href="imagick-flip.php">flip</a></li>
+            <li><a href="imagick-multi-process.php">multiple process</a></li>
+            <li><a href="imagick-watermark-image.php">watermark image</a></li>
+            <li><a href="imagick-watermark-text.php">watermark text</a></li>
+            <li><a href="imagick-animate-gif-watermark-text.php">animate gif and watermark text</a></li>
+            <li><a href="imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <footer>
             <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>

@@ -7,6 +7,16 @@ require dirname(dirname(__DIR__)).'/Rundiz/Image/Drivers/Imagick.php';
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 
 
+$sourceNonTransparentFile = '../source-images/city-amsterdam-non-transparent.gif';
+// prepare non transparent gif. --------------------------------------------
+if (!is_file($sourceNonTransparentFile)) {
+    $Image = new Rundiz\Image\Drivers\Imagick($source_image_jpg);
+    $Image->save($sourceNonTransparentFile);
+    unset($Image);
+}
+// end prepare non transparent gif. ---------------------------------------
+
+
 $imageDriverText = 'imagick';
 
 
