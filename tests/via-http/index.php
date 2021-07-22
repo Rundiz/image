@@ -81,9 +81,9 @@
             <li><a href="rdimage-imagick-rotate.php">rotate</a></li>
             <li><a href="rdimage-imagick-flip.php">flip</a></li>
             <li><a href="rdimage-imagick-multi-process.php">multiple process</a></li>
-            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a></li>
+            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a> (can be very slow, please wait)</li>
             <li><a href="rdimage-imagick-watermark-text.php">watermark text</a></li>
-            <li><a href="rdimage-imagick-animate-gif-watermark-text.php">animate gif and watermark text</a></li>
+            <li><a href="rdimage-imagick-animated-gif-watermark-text.php">animated gif and watermark text</a></li>
             <li><a href="rdimage-imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <footer>
