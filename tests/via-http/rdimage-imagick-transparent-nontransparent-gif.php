@@ -33,100 +33,138 @@ function displayTests($imageSource, $driver = 'gd')
     } else {
         $Image = new \Rundiz\Image\Drivers\Imagick($imageSource);
     }
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->resize(600, 600);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-resize-600x600';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>';
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
-    echo '<br>Use show() method as ';
+    echo '</tr>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
-        $image_class_show_url = $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=resize&amp;width=600&amp;height=600';
-        echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
+        $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=resize&amp;width=600&amp;height=600';
+        echo '<td>';
+        echo '<img src="'.$image_class_show_url.'" alt="" class="thumbnail"><br><a href="'.$image_class_show_url.'">' . $ext . '</a>'."\n";
+        echo '</td>' . "\n";
     }
     unset($ext, $image_class_show_url);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 
     echo '<h3>Rotate</h3>' . PHP_EOL;
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->rotate(90);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-rotate-90';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>';
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
-    echo '<br>Use show() method as ';
+    echo '</tr>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
-        $image_class_show_url = $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=rotate&amp;degree=90';
-        echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
+        $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=rotate&amp;degree=90';
+        echo '<td><img src="'.$image_class_show_url.'" alt="" class="thumbnail"><br><a href="'.$image_class_show_url.'">' . $ext . '</a></td>'."\n";
     }
     unset($ext, $image_class_show_url);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 
     echo '<h3>Flip</h3>' . PHP_EOL;
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->rotate('hor');
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-rotate-hor';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>' . "\n";
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
-    echo '<br>Use show() method as ';
+    echo '</tr>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
-        $image_class_show_url = $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=rotate&amp;degree=hor';
-        echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
+        $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=rotate&amp;degree=hor';
+        echo '<td><img src="'.$image_class_show_url.'" alt="" class="thumbnail"><br><a href="'.$image_class_show_url.'">' . $ext . '</a></td>'."\n";
     }
     unset($ext, $image_class_show_url);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 
     echo '<h3>Crop</h3>' . PHP_EOL;
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->crop(300, 300);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-crop-300x300';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>';
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
-    echo '<br>Use show() method as ';
+    echo '</tr>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
-        $image_class_show_url = $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=crop&amp;width=300&amp;height=300';
-        echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
+        $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=crop&amp;width=300&amp;height=300';
+        echo '<td><img src="'.$image_class_show_url.'" alt="" class="thumbnail"><br><a href="'.$image_class_show_url.'">' . $ext . '</a></td>'."\n";
     }
     unset($ext, $image_class_show_url);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 
     displayWmTests($imageSource, $driver);
 }// displayTests
@@ -145,46 +183,61 @@ function displayWmTests($imageSource, $driver = 'gd')
     }
 
     echo '<h3>Watermark text</h3>' . PHP_EOL;
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $source_font, 10, 10, 20);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-wmtext';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>';
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
-    echo '<br>Use show() method as ';
+    echo '</tr>' . "\n";
+    echo '<tr>' . "\n";
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
-        $image_class_show_url = $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=watermarktext&amp;startx=10&amp;starty=10&amp;fontsize=20';
-        echo ' <a href="'.$image_class_show_url.'">' . $ext . '</a><img src="'.$image_class_show_url.'" alt="" class="thumbnail">'."\n";
+        $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=watermarktext&amp;startx=10&amp;starty=10&amp;fontsize=20';
+        echo '<td><img src="'.$image_class_show_url.'" alt="" class="thumbnail"><br><a href="'.$image_class_show_url.'">' . $ext . '</a></td>'."\n";
     }
     unset($ext, $image_class_show_url);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 
     echo '<h3>Watermark image</h3>' . PHP_EOL;
+    echo '<table><tbody>' . "\n";
+    echo '<tr>' . "\n";
     foreach ($saveAsExts as $ext) {
         $Image->watermarkImage('../source-images/watermark.png', 10, 10);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-wmimage';
         $save_result = $Image->save($file_name . '.' . $ext);
+        echo '<td>';
         if ($save_result === true) {
-            echo ' <a href="' . $file_name . '.' . $ext . '">' . $ext . '</a><img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail">'."\n";
+            echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><br><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
             $img_data = getimagesize($file_name . '.' . $ext);
             if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                 echo '(' . $img_data['mime'] . ')'."\n";
             }
         } else {
-            echo '<br>Error: '.$Image->status_msg."\n";
+            echo '<span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
         }
+        echo '</td>' . "\n";
         $Image->clear();
     }// endforeach;
     unset($ext);
+    echo '</tr>' . "\n";
+    echo '</tbody></table>' . "\n";
 }// displayWmTests
 ?>
 <!DOCTYPE html>
@@ -200,7 +253,11 @@ function displayWmTests($imageSource, $driver = 'gd')
         <?php displayTests($source_image_gif, 'imagick'); ?> 
         <hr>
         <h2>Non-Transparent gif</h2>
-        <?php displayTests('../source-images/city-amsterdam-non-transparent.gif', 'imagick'); ?> 
-        <?php include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php'; ?> 
+        <?php 
+        displayTests('../source-images/city-amsterdam-non-transparent.gif'); 
+        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php'; 
+        ?> 
     </body>
 </html>
+<?php
+// don't remove non transparent gif file to let show image php work.

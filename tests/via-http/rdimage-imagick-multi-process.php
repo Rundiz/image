@@ -1,7 +1,7 @@
 <?php
 require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageInterface.php';
 require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageAbstractClass.php';
-require dirname(dirname(__DIR__)).'/Rundiz/Image/Drivers/Gd.php';
+require dirname(dirname(__DIR__)).'/Rundiz/Image/Drivers/Imagick.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 
@@ -31,7 +31,7 @@ function displayStandardMultiProcess(array $test_data_set)
                 echo '<tr>' . "\n";
                 echo '<td></td>' . "\n";
                 foreach ($test_exts as $ext) {
-                    $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
+                    $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
                     $source_image_exp = explode('.', $item['source_image_path']);
                     unset($source_image_exp);
                     $file_name = $base_save_file_name.'-source' . pathinfo($item['source_image_path'], PATHINFO_EXTENSION) . '.' . $ext;
@@ -69,7 +69,7 @@ function displayStandardMultiProcess(array $test_data_set)
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>GD test multi process</h1>
+        <h1>Imagick test multi process</h1>
         <p>resize at <?php echo $resize_w.'x'.$resize_h; ?> &gt; rotate at <?php echo $rotate; ?>&deg; &gt; crop at <?php echo $crop_width.'x'.$crop_height; ?></p>
         <?php
         $test_data_set = [
@@ -90,7 +90,7 @@ function displayStandardMultiProcess(array $test_data_set)
         <h2>Custom multi process</h2>
         <?php
         echo '<a href="'.$source_image_jpg.'">source image</a><img src="'.$source_image_jpg.'" alt="" class="thumbnail"><br>'."\n";
-        $Image = new \Rundiz\Image\Drivers\Gd($source_image_jpg);
+        $Image = new \Rundiz\Image\Drivers\Imagick($source_image_jpg);
         $file_ext = 'jpg';
         $file_name = '../processed-images/' . basename(__FILE__, '.php') . '-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-center,middle-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
