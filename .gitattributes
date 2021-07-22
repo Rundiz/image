@@ -41,6 +41,7 @@
 # End line ending normalization. ----------------------
 # Export ignore folders, files.
 tests export-ignore
+.dev-notes export-ignore
 .gitattributes export-ignore
 phpunit.xml export-ignore
 tests/source-images/watermark.jpg !text !filter !merge !diff

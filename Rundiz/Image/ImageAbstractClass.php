@@ -22,17 +22,17 @@ abstract class ImageAbstractClass implements ImageInterface
 
     /**
      * Allow to set resize larger than source image.
-     * @var boolean Set to `true` to allow, `false` to disallow. Default is `false`.
+     * @var bool Set to `true` to allow, `false` to disallow. Default is `false`.
      */
     public $allow_resize_larger = false;
     /**
      * JPEG quality.
-     * @var integer Quality from 0 (worst quality, smallest file) to 100 (best quality, biggest file). Default is 100.
+     * @var int Quality from 0 (worst quality, smallest file) to 100 (best quality, biggest file). Default is 100.
      */
     public $jpg_quality = 100;
     /**
      * PNG quality.
-     * @var integer Compression level from 0 (no compression) to 9.  Default is 0.
+     * @var int Compression level from 0 (no compression) to 9.  Default is 0.
      */
     public $png_quality = 0;
     /**
@@ -42,7 +42,7 @@ abstract class ImageAbstractClass implements ImageInterface
     public $master_dim = 'auto';
     /**
      * Contain status of action methods.
-     * @var boolean Return `false` if there is something error.
+     * @var bool Return `false` if there is something error.
      */
     public $status = false;
     /**
@@ -57,11 +57,11 @@ abstract class ImageAbstractClass implements ImageInterface
      */
     protected $source_image_path;
     /**
-     * @var integer Source image width. 
+     * @var int Source image width. 
      */
     protected $source_image_width;
     /**
-     * @var integer Source image height.
+     * @var int Source image height.
      */
     protected $source_image_height;
     /**
@@ -82,20 +82,20 @@ abstract class ImageAbstractClass implements ImageInterface
     public $source_image_data;
 
     /**
-     * @var integer Last modified image width
+     * @var int Last modified image width
      */
     protected $last_modified_image_width;
     /**
-     * @var integer Last modified image height
+     * @var int Last modified image height
      */
     protected $last_modified_image_height;
 
     /**
-     * @var integer Destination image width.
+     * @var int Destination image width.
      */
     protected $destination_image_width;
     /**
-     * @var integer Destination image height.
+     * @var int Destination image height.
      */
     protected $destination_image_height;
 
@@ -104,7 +104,7 @@ abstract class ImageAbstractClass implements ImageInterface
      * Class constructor.
      * 
      * @param string $source_image_path Path to source image file.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     public function __construct($source_image_path)
     {
@@ -116,7 +116,7 @@ abstract class ImageAbstractClass implements ImageInterface
      * Build source image data
      * 
      * @param string $source_image_path Path to source image file.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     protected function buildSourceImageData($source_image_path)
     {
@@ -155,8 +155,8 @@ abstract class ImageAbstractClass implements ImageInterface
     /**
      * Calculate image size by aspect ratio.
      * 
-     * @param integer $width New width set to calculate.
-     * @param integer $height New height set to calculate.
+     * @param int $width New width set to calculate.
+     * @param int $height New height set to calculate.
      * @return array Return array with 'height' and 'width' in array key and the values are calculated sizes.
      */
     protected function calculateImageSizeRatio($width, $height)
@@ -412,7 +412,7 @@ abstract class ImageAbstractClass implements ImageInterface
      * Verify that is class setup properly.
      * If image source was not found then it will not setup properly.
      * 
-     * @return boolean Return true on success, return false on failed.
+     * @return bool Return true on success, return false on failed.
      */
     protected function isClassSetup()
     {
