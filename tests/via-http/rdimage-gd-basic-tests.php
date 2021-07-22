@@ -57,7 +57,7 @@ function displayTestResizes(array $test_data_set)
                             echo '(' . $img_data['mime'] . ')'."\n";
                         }
                     } else {
-                        echo 'Error: '.$Image->status_msg."\n";
+                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
                     }
                     echo '</td>'."\n";
                     unset($img_data, $save_result);
@@ -112,7 +112,7 @@ function displayTestCrop(array $test_data_set)
                         $Image->crop(900, 900, $crop_xy[0], $crop_xy[1], $crop_xy[2]);
                         $save_result = $Image->save($file_name.$file_ext);
                         if ($save_result != true) {
-                            echo ' &nbsp; &nbsp; Error: '.$Image->status_msg.'<br>'."\n";
+                            echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>'."\n";
                         }
                         unset($file_name, $save_result);
                         $Image->clear();

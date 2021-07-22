@@ -55,7 +55,7 @@ function displayTests($imageSource, $driver = 'gd')
     unset($ext);
     echo '</tr>' . "\n";
     echo '<tr>' . "\n";
-    echo '<td>Use show() method as</td>' . "\n";;
+    echo '<td>Use show() method as</td>' . "\n";
     foreach ($saveAsExts as $ext) {
         $image_class_show_url = 'rdimage-' . $imageDriverText . '-show-image.php?source_image_file='.$imageSource.'&amp;show_ext='.$ext.'&amp;act=resize&amp;width=600&amp;height=600';
         echo '<td>';
@@ -250,6 +250,7 @@ function displayWmTests($imageSource, $driver = 'gd')
         <h1>GD test transparent and non transparent gif</h1>
         <h2>Transparent gif</h2>
         <?php displayTests($source_image_gif); ?> 
+        <hr>
         <h2>Non-Transparent gif</h2>
         <?php 
         displayTests('../source-images/city-amsterdam-non-transparent.gif'); 
