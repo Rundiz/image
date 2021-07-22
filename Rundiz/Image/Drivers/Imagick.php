@@ -24,11 +24,11 @@ class Imagick extends ImageAbstractClass
 
 
     /**
-     * @var integer Imagick filter for use with resize image
+     * @var int Imagick filter for use with resize image
      */
     public $imagick_filter = \Imagick::FILTER_LANCZOS;
     /**
-     * @var boolean Set to true to allow to save processed image as animated gif (if source is animated gif). Set to false to save as non-animated gif (if source is animated gif). For non-animated gif source file this option has no effect.
+     * @var bool Set to true to allow to save processed image as animated gif (if source is animated gif). Set to false to save as non-animated gif (if source is animated gif). For non-animated gif source file this option has no effect.
      */
     public $save_animate_gif = true;
 
@@ -42,7 +42,7 @@ class Imagick extends ImageAbstractClass
     private $ImagickFirstFrame;
 
     /**
-     * @var integer Number of key frames of image. If the image is animated gif this will be total number of frames otherwise it is just 1 frame.
+     * @var int Number of key frames of image. If the image is animated gif this will be total number of frames otherwise it is just 1 frame.
      */
     protected $source_image_frames = 0;
 
@@ -55,11 +55,11 @@ class Imagick extends ImageAbstractClass
      */
     private $watermark_image_type;
     /**
-     * @var integer Watermark image width
+     * @var int Watermark image width
      */
     private $watermark_image_width;
     /**
-     * @var integer Watermark image height
+     * @var int Watermark image height
      */
     private $watermark_image_height;
 
@@ -96,7 +96,7 @@ class Imagick extends ImageAbstractClass
      * Build source image data (special for Image Magick).
      * 
      * @param string $source_image_path Path to source image.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     protected function buildSourceImageData($source_image_path)
     {
@@ -111,7 +111,7 @@ class Imagick extends ImageAbstractClass
         $Imagick = new \Imagick(realpath($source_image_path));
         $i = $Imagick->getNumberImages();
         $this->source_image_frames = $i;
-        $this->source_image_data = array_merge($this->source_image_data, array('frames' => $i));
+        $this->source_image_data = array_merge($this->source_image_data, ['frames' => $i]);
         $Imagick->clear();
         unset($i, $Imagick);
 
@@ -123,8 +123,8 @@ class Imagick extends ImageAbstractClass
      * Calculate counter clockwise degree.
      * In GD 90 degree is 270 in Imagick. This function help to make it working together very well.
      * 
-     * @param integer $value Degrees.
-     * @return integer Return opposite degrees.
+     * @param int $value Degrees.
+     * @return int Return opposite degrees.
      */
     private function calculateCounterClockwise($value)
     {
@@ -147,9 +147,9 @@ class Imagick extends ImageAbstractClass
     /**
      * Calculate startX position of center
      * 
-     * @param integer $obj_width Destination image object size.
-     * @param integer $canvas_width Canvas size.
-     * @return integer Calculated size.
+     * @param int $obj_width Destination image object size.
+     * @param int $canvas_width Canvas size.
+     * @return int Calculated size.
      */
     private function calculateStartXOfCenter($obj_width = '', $canvas_width = '') 
     {
@@ -203,7 +203,7 @@ class Imagick extends ImageAbstractClass
     /**
      * Convert alpha number (0 - 127) to rgba value (1.0 - 0).
      * 
-     * @param integer $number Alpha number (0 to 127).
+     * @param int $number Alpha number (0 to 127).
      * @return string Return rgba value (1.0 to 0).
      */
     private function convertAlpha127ToRgba($number)
@@ -357,7 +357,7 @@ class Imagick extends ImageAbstractClass
     /**
      * Check is previous operation contain error?
      * 
-     * @return boolean Return true if there is some error, false if there is not.
+     * @return bool Return true if there is some error, false if there is not.
      */
     private function isPreviousError()
     {
@@ -761,7 +761,7 @@ class Imagick extends ImageAbstractClass
      * Setup source image object.
      * After calling this the Imagick property will get new Image Magick object if it does not set before.
      * 
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function setupSourceImageObject()
     {
@@ -799,7 +799,7 @@ class Imagick extends ImageAbstractClass
      * After calling this the ImagickWatermark will get new Image Magick object if it does not set before.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function setupWatermarkImageObject($wm_img_path)
     {
@@ -987,7 +987,7 @@ class Imagick extends ImageAbstractClass
     /**
      * Verify PHP Imagick extension and Image Magick version.
      * 
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function verifyImagickVersion()
     {
@@ -998,45 +998,47 @@ class Imagick extends ImageAbstractClass
             return false;
         }
 
-        $imagick_extension_version = phpversion('imagick');
+        // verify basic requirements ( https://www.php.net/manual/en/imagick.requirements.php ).
+        $imagickVersion = phpversion('imagick');
+        if (version_compare($imagickVersion, '3.0', '<')) {
+            // if Imagick version is less than 3.
+            // it cannot use `\Imagick::getVersion()` method.
+            $this->status = false;
+            $this->status_msg = 'Require at least Imagick version 3.0';
+            unset($imagickVersion);
+            return false;
+        }
+        unset($imagickVersion);
 
-        if (version_compare($imagick_extension_version, '3.4.0', '>=')) {
-            // if PHP Imagick extension is equal or greater than 3.4
-            $image_magick_v = \Imagick::getVersion();
-            if (!is_array($image_magick_v) || (is_array($image_magick_v) && !array_key_exists('versionString', $image_magick_v))) {
-                // don't know Image Magick version.
+        $immVA = \Imagick::getVersion();// get Image Magick version array.
+        if (!is_array($immVA) || !array_key_exists('versionString', $immVA)) {
+            // don't know Image Magick version.
+            $this->status = false;
+            $this->status_msg = 'Unable to verify Image Magick version.';
+            unset($immVA);
+            return false;
+        } else {
+            // know Image Magick version.
+            // verify Image Magick version.
+            preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
+            unset($immVA);
+            if (!is_array($matches) || !array_key_exists(1, $matches)) {
+                // if not found version number.
                 $this->status = false;
                 $this->status_msg = 'Unable to verify Image Magick version.';
-                unset($image_magick_v);
+                unset($matches);
                 return false;
             } else {
-                // verify Image Magick version.
-                preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $image_magick_v['versionString'], $matches);
-                unset($image_magick_v);
-                if (!is_array($matches) || (is_array($matches) && !array_key_exists(1, $matches))) {
+                if (version_compare($matches[1], '6.2.4', '<')) {
+                    // if Image Magick version is lower than requirement in PHP page.
                     $this->status = false;
-                    $this->status_msg = 'Unable to verify Image Magick version.';
+                    $this->status_msg = 'Require at least Image Magick 6.2.4.';
                     unset($matches);
-                    return false;
-                } else {
-                    if (version_compare($matches[1], '6.5.3', '<')) {
-                        $this->status = false;
-                        $this->status_msg = sprintf('This PHP Imagick extension (%s) require Image Magick 6.5.3+. You have Image Magick %s.', $imagick_extension_version, $matches[1]);
-                        unset($matches);
-                        return false;
-                    }
-                }
-                unset($matches);
-
-                // verify PHP version
-                if (version_compare(phpversion(), '5.4', '<')) {
-                    $this->status = false;
-                    $this->status_msg = 'This PHP Imagick extension require PHP 5.4.0+.';
                     return false;
                 }
             }
-            // end verify for PHP Imagick extension v. 3.4+
-        }
+        }// endif; Image Magick version
+        // end verify basic requirements. -------------------------------------------------------------------
 
         unset($imagick_extension_version);
         if (!$this->isPreviousError()) {
@@ -1157,9 +1159,9 @@ class Imagick extends ImageAbstractClass
      * Process watermark image to the main image.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @param integer $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param integer $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @param int $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
+     * @param int $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
