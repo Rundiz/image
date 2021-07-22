@@ -17,18 +17,23 @@ function displayTestWatermarkText(array $test_data_set)
             $font_path = '../source-images/'.$wm_font;
             $wmext_save_file_name = $main_save_file_name.'-font-'.$wm_font;
             echo '<h4>watermark font '.$wm_font.'</h4>'."\n";
+            echo '<table><tbody>' . "\n";
             foreach ($items['watermark_positions'] as $wm_pos) {
                 $save_file_name = $wmext_save_file_name.'-position-'.$wm_pos[0].','.$wm_pos[1];
-                echo 'position '.$wm_pos[0].', '.$wm_pos[1].'<br>';
+                echo '<tr>' . "\n";
+                echo '<td>position '.$wm_pos[0].', '.$wm_pos[1].'</td>' . "\n";
                 foreach ($items['save_exts'] as $save_ext) {
                     $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $font_path, $wm_pos[0], $wm_pos[1], 15);
                     $Image->save($save_file_name.'.'.$save_ext);
                     $Image->clear();
-                    echo '<a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a><img src="'.$save_file_name.'.'.$save_ext.'" alt="" class="thumbnail"> ';
+                    echo '<td>';
+                    echo '<img src="'.$save_file_name.'.'.$save_ext.'" alt="" class="thumbnail"><br><a href="'.$save_file_name.'.'.$save_ext.'">save as '.$save_ext.'</a>';
+                    echo '</td>' . "\n";
                 }
-                echo '<br>'."\n";
+                echo '</tr>'."\n";
                 unset($save_file_name);
             }
+            echo '</tbody></table>'."\n";
             unset($font_path, $wmext_save_file_name, $wm_pos);
         }
         unset($Image, $main_save_file_name, $wm_font);

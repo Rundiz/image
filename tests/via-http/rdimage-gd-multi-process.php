@@ -11,7 +11,55 @@ $resize_h = 467;
 $crop_width = 460;
 $crop_height = 460;
 
-$base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'x'.$resize_h.'-rotate-'.$rotate.'-crop-'.$crop_width.'x'.$crop_height;
+$base_save_file_name = '../processed-images/' . basename(__FILE__, '.php') . '-resize-'.$resize_w.'x'.$resize_h.'-rotate-'.$rotate.'-crop-'.$crop_width.'x'.$crop_height;
+
+
+function displayStandardMultiProcess(array $test_data_set)
+{
+    global $base_save_file_name;
+    global $rotate, $resize_h, $resize_w, $crop_height, $crop_width;
+    $test_exts = ['gif', 'jpg', 'png'];
+
+    if (is_array($test_data_set)) {
+        foreach ($test_data_set as $img_type_name => $item) {
+            echo '<h2>'.$img_type_name.'</h2>'."\n";
+            if (is_array($item) && array_key_exists('source_image_path', $item)) {
+                echo '<table><tbody>' . "\n";
+                echo '<tr>' . "\n";
+                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a></td>'."\n";
+                echo '</tr>' . "\n";
+                echo '<tr>' . "\n";
+                echo '<td></td>' . "\n";
+                foreach ($test_exts as $ext) {
+                    $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
+                    $source_image_exp = explode('.', $item['source_image_path']);
+                    unset($source_image_exp);
+                    $file_name = $base_save_file_name.'-source' . pathinfo($item['source_image_path'], PATHINFO_EXTENSION) . '.' . $ext;
+                    $Image->resizeNoRatio($resize_w, $resize_h);
+                    $Image->rotate($rotate);
+                    $Image->crop($crop_width, $crop_height);
+                    $Image->save($file_name);
+                    $Image->clear();
+                    echo '<td>' . "\n";
+                    echo '<img src="'.$file_name.'" alt="" class="thumbnail"><br><a href="'.$file_name.'">'.$ext.'</a>';
+                    $img_data = getimagesize($file_name);
+                    if (is_array($img_data) && array_key_exists('mime', $img_data)) {
+                        echo ' (' . $img_data['mime'] . ')'."\n";
+                        echo ' ' . $img_data[0] . 'x' . $img_data[1];
+                    }
+                    unset($img_data);
+                    echo '</td>' . "\n";
+                }// endforeach; ext
+                unset($ext);
+                echo '</tr>' . "\n";
+                echo '</tbody></table>' . "\n";
+            }
+        }// endforeach;
+        unset($img_type_name, $item);
+    }// endif;
+
+    unset($test_exts);
+}// displayStandardMultiProcess
 ?>
 <!DOCTYPE html>
 <html>
@@ -21,38 +69,29 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>GD test multi process <small>resize <?php echo $resize_w.'x'.$resize_h; ?> &gt; rotate <?php echo $rotate; ?>&deg; &gt; crop <?php echo $crop_width.'x'.$crop_height; ?></small></h1>
-        <h2>JPG</h2>
+        <h1>GD test multi process</h1>
+        <p>resize at <?php echo $resize_w.'x'.$resize_h; ?> &gt; rotate at <?php echo $rotate; ?>&deg; &gt; crop at <?php echo $crop_width.'x'.$crop_height; ?></p>
+        <?php
+        $test_data_set = [
+            'JPG' => [
+                'source_image_path' => $source_image_jpg,
+            ],
+            'PNG' => [
+                'source_image_path' => $source_image_png,
+            ],
+            'GIF' => [
+                'source_image_path' => $source_image_gif,
+            ],
+        ];
+        displayStandardMultiProcess($test_data_set);
+        unset($test_data_set);
+        ?> 
+        <hr>
+        <h2>Custom multi process</h2>
         <?php
         echo '<a href="'.$source_image_jpg.'">source image</a><img src="'.$source_image_jpg.'" alt="" class="thumbnail"><br>'."\n";
-        echo 'Save as: '."\n";
         $Image = new \Rundiz\Image\Drivers\Gd($source_image_jpg);
         $file_ext = 'jpg';
-        $file_name = $base_save_file_name.'-sourcejpg.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'png';
-        $file_name = $base_save_file_name.'-sourcejpg.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'gif';
-        $file_name = $base_save_file_name.'-sourcejpg.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'jpg';
-        echo '<br>';
         $file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-center,middle-rotate-'.$rotate.'-sourcejpg.'.$file_ext;
         $Image->resizeNoRatio($resize_w, $resize_h);
         $Image->crop($crop_width, $crop_height, 'center', 'middle');
@@ -113,73 +152,9 @@ $base_save_file_name = '../processed-images/rundiz-gd-image-resize-'.$resize_w.'
         $Image->clear();
         echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark text)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
         unset($file_name, $Image);
-
-        // -------------------------------------------------------------------------------------------------------------------
         ?> 
-        <h2>PNG</h2>
+        <hr>
         <?php
-        echo '<a href="'.$source_image_png.'">source image</a><img src="'.$source_image_png.'" alt="" class="thumbnail"><br>'."\n";
-        echo 'Save as: '."\n";
-        $Image = new \Rundiz\Image\Drivers\Gd($source_image_png);
-        $file_ext = 'jpg';
-        $file_name = $base_save_file_name.'-sourcepng.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'png';
-        $file_name = $base_save_file_name.'-sourcepng.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'gif';
-        $file_name = $base_save_file_name.'-sourcepng.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        unset($file_name, $Image);
-
-        // -------------------------------------------------------------------------------------------------------------------
-        ?> 
-        <h2>GIF</h2>
-        <?php
-        echo '<a href="'.$source_image_gif.'">source image</a><img src="'.$source_image_gif.'" alt="" class="thumbnail"><br>'."\n";
-        echo 'Save as: '."\n";
-        $Image = new \Rundiz\Image\Drivers\Gd($source_image_gif);
-        $file_ext = 'jpg';
-        $file_name = $base_save_file_name.'-sourcegif.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'png';
-        $file_name = $base_save_file_name.'-sourcegif.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        $file_ext = 'gif';
-        $file_name = $base_save_file_name.'-sourcegif.'.$file_ext;
-        $Image->resizeNoRatio($resize_w, $resize_h);
-        $Image->rotate($rotate);
-        $Image->crop($crop_width, $crop_height);
-        $Image->save($file_name);
-        $Image->clear();
-        echo '<a href="'.$file_name.'">'.$file_ext.'</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
-        unset($file_name, $Image);
-
         // -------------------------------------------------------------------------------------------------------------------
         include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
         ?> 
