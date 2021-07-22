@@ -39,11 +39,11 @@ class Gd extends ImageAbstractClass
      */
     private $watermark_image_type;
     /**
-     * @var integer Watermark image width
+     * @var int Watermark image width
      */
     private $watermark_image_width;
     /**
-     * @var integer Watermark image height
+     * @var int Watermark image height
      */
     private $watermark_image_height;
 
@@ -69,9 +69,9 @@ class Gd extends ImageAbstractClass
     /**
      * Calculate startX position of center
      * 
-     * @param integer $obj_width Destination image object size.
-     * @param integer $canvas_width Canvas size.
-     * @return integer Calculated size.
+     * @param int $obj_width Destination image object size.
+     * @param int $canvas_width Canvas size.
+     * @return int Calculated size.
      */
     private function calculateStartXOfCenter($obj_width = '', $canvas_width = '') 
     {
@@ -262,7 +262,7 @@ class Gd extends ImageAbstractClass
     /**
      * Check is previous operation contain error?
      * 
-     * @return boolean Return true if there is some error, false if there is not.
+     * @return bool Return true if there is some error, false if there is not.
      */
     private function isPreviousError()
     {
@@ -278,7 +278,7 @@ class Gd extends ImageAbstractClass
      *
      * @since 3.0.2
      * @param mixed $image
-     * @return boolean Return `true` if it is resource or instance of `\GDImage`, return `false` if it is not.
+     * @return bool Return `true` if it is resource or instance of `\GDImage`, return `false` if it is not.
      */
     private function isResourceOrGDObject($image)
     {
@@ -622,9 +622,9 @@ class Gd extends ImageAbstractClass
     /**
      * Setup destination image object that must have size in width and height for use with resize, crop.
      * 
-     * @param integer $width Destination image object width.
-     * @param integer $height Destination image object height.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @param int $width Destination image object width.
+     * @param int $height Destination image object height.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function setupDestinationImageObjectWithSize($width, $height)
     {
@@ -651,7 +651,7 @@ class Gd extends ImageAbstractClass
      * Setup source image object.
      * After calling this the source_image_object will get new image resource by chaining from previous destination or from image file.
      * 
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function setupSourceImageObject()
     {
@@ -711,7 +711,7 @@ class Gd extends ImageAbstractClass
      * Setup watermark image object.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function setupWatermarkImageObject($wm_img_path)
     {
@@ -981,9 +981,9 @@ class Gd extends ImageAbstractClass
      * Process watermark image to the main image.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @param integer $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param integer $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
-     * @return boolean Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @param int $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
+     * @param int $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
@@ -1065,6 +1065,7 @@ class Gd extends ImageAbstractClass
             $this->status_msg = 'Unable to load font file.';
             return false;
         }
+        $wm_txt_font_path = realpath($wm_txt_font_path);
 
         // find text width and height
         // @link copy from here http://stackoverflow.com/questions/11696920/calculating-text-width-with-php-gd
