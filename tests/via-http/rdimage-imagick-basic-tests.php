@@ -1,7 +1,5 @@
 <?php
-require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageInterface.php';
-require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageAbstractClass.php';
-require dirname(dirname(__DIR__)).'/Rundiz/Image/Drivers/Imagick.php';
+require_once 'include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 require __DIR__.DIRECTORY_SEPARATOR.'include-imagick-functions.php';

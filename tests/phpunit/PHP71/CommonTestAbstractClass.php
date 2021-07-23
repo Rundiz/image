@@ -105,7 +105,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
 
 
     /**
-     * @requires PHP 5.3
+     * @requires PHP 5.4
      */
     public function testRequireFilesExistsAndFolderWritable()
     {

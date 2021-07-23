@@ -12,7 +12,8 @@
             <li>Please verify that your php.ini display the errors and report all error level including strict.</li>
             <li>Please make sure that <strong><?php echo realpath('../processed-images'); ?></strong> folder is already exists and has write permission.</li>
             <li>
-                Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281 and save it to <?php echo realpath('../source-images'); ?> folder with these name and extensions.<br>
+                Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281 
+                and save it to <strong><?php echo realpath('../source-images'); ?></strong> folder with these name and extensions.<br>
                 (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                 <ul>
                     <li>city-amsterdam.gif (must contain transparent in the image)</li>
@@ -30,8 +31,13 @@
                 Use animation program to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
                 <ul>
                     <li>city-amsterdam-animated.gif (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
-                    <li>city-amsterdam-animated.webp (This is animation webp. You should create animation in this image. It is for test with <code>isAnimatedWebP()</code> method only.)</li>
+                    <li>city-amsterdam-animated.webp (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>
                 </ul>
+            </li>
+            <li>
+                Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
+                or from <a href="https://developers.google.com/speed/webp/gallery2" target="google-webp">this page</a> where it is lossless file
+                and save it to <strong><?php echo realpath('../source-images') . DIRECTORY_SEPARATOR; ?>transparent-lossless.webp</strong>.
             </li>
         </ul>
         <p><a href="clear-all-processed-images.php">Clear all processed images</a></p>
@@ -65,7 +71,7 @@
             <li><a href="rdimage-gd-rotate.php">rotate</a></li>
             <li><a href="rdimage-gd-flip.php">flip</a></li>
             <li><a href="rdimage-gd-multi-process.php">multiple process</a></li>
-            <li><a href="rdimage-gd-watermark-image.php">watermark image</a> (can be very slow, please wait)</li>
+            <li><a href="rdimage-gd-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
             <li><a href="rdimage-gd-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-gd-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
@@ -81,7 +87,7 @@
             <li><a href="rdimage-imagick-rotate.php">rotate</a></li>
             <li><a href="rdimage-imagick-flip.php">flip</a></li>
             <li><a href="rdimage-imagick-multi-process.php">multiple process</a></li>
-            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a> (can be very slow, please wait)</li>
+            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
             <li><a href="rdimage-imagick-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-imagick-animated-gif-watermark-text.php">animated gif and watermark text</a></li>
             <li><a href="rdimage-imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>

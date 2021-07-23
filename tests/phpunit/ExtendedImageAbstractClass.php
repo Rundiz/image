@@ -70,15 +70,6 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     /**
      * {@inheritDoc}
      */
-    public function isAnimatedWebP($imagePath)
-    {
-        return parent::isAnimatedWebP($imagePath);
-    }// isAnimatedWebP
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function isClassSetup()
     {
         return parent::isClassSetup();
