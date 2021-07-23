@@ -20,6 +20,9 @@ abstract class ImageAbstractClass implements ImageInterface
 {
 
 
+    use Traits\WebPTrait;
+
+
     /**
      * Allow to set resize larger than source image.
      * @var bool Set to `true` to allow, `false` to disallow. Default is `false`.
@@ -298,7 +301,8 @@ abstract class ImageAbstractClass implements ImageInterface
             if (stripos($imagePath, '.webp') !== false && version_compare(PHP_VERSION, '7.1.0', '<')) {
                 // if it is .webp and current PHP version is not supported
                 try {
-                    if (!$this->isAnimatedWebP($imagePath)) {
+                    $webpInfo = $this->webPInfo($imagePath);
+                    if (is_array($webpInfo) && isset($webpInfo['Animation']) && $webpInfo['Animation'] === false) {
                         // if not animated webp.
                         $output = [];
 
@@ -318,6 +322,7 @@ abstract class ImageAbstractClass implements ImageInterface
                         }
                         unset($GD, $output);
                     }
+                    unset($webpInfo);
                 } catch (\Exception $ex) {
                     // failed.
                 }
@@ -374,38 +379,6 @@ abstract class ImageAbstractClass implements ImageInterface
             return 'P';
         }
     }// getSourceImageOrientation
-
-
-    /**
-     * Is WebP animated.
-     *
-     * @link https://stackoverflow.com/a/45206064/128761 Original source code.
-     * @link https://stackoverflow.com/a/162263/128761 Original source code.
-     * @since 3.1.0
-     * @param string $imagePath Full path to image.
-     * @return bool Return `true` if it is animated, `false` for otherwise.
-     * @throws \RuntimeException Throws exception if unable to open file.
-     */
-    public function isAnimatedWebP($imagePath)
-    {
-        $handle = fopen($imagePath, 'r');
-        if (false === $handle) {
-            throw new \RuntimeException('Unable to open file ' . $src . '.');
-        }
-
-        while (!feof($handle)) {
-            $buffer = fgets($handle, 4096);
-            if (strpos($buffer, 'ANMF') !== false) {
-                // if found ANMF (animated)
-                unset($buffer, $handle);
-                return true;
-            }
-            unset($buffer);
-        }// endwhile;
-
-        unset($handle);
-        return false;
-    }// isAnimatedWebP
 
 
     /**

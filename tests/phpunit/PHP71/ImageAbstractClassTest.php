@@ -177,15 +177,6 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
     }// testGetSourceImageOrientation
 
 
-    public function testIsAnimatedWebP()
-    {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.webp');
-        $this->assertFalse($ImgAc->isAnimatedWebP(static::$source_images_dir . 'city-amsterdam.webp'));
-        $this->assertTrue($ImgAc->isAnimatedWebP(static::$source_images_dir . 'city-amsterdam-animated.webp'));
-        unset($ImgAc);
-    }// testIsAnimatedWebP
-
-
     public function testIsClassSetup()
     {
         $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');

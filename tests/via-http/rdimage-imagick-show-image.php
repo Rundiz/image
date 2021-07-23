@@ -1,7 +1,5 @@
 <?php
-require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageInterface.php';
-require dirname(dirname(__DIR__)).'/Rundiz/Image/ImageAbstractClass.php';
-require dirname(dirname(__DIR__)).'/Rundiz/Image/Drivers/Imagick.php';
+require_once 'include-rundiz-image.php';
 
 
 $source_image_file = (isset($_GET['source_image_file']) ? $_GET['source_image_file'] : null);
