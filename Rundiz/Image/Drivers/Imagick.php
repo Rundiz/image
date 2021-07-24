@@ -120,48 +120,6 @@ class Imagick extends ImageAbstractClass
 
 
     /**
-     * Calculate counter clockwise degree.
-     * In GD 90 degree is 270 in Imagick. This function help to make it working together very well.
-     * 
-     * @param int $value Degrees.
-     * @return int Return opposite degrees.
-     */
-    private function calculateCounterClockwise($value)
-    {
-        if ($value == 0 || $value == 180) {
-            return $value;
-        } elseif ($value == 360) {
-            return 0;
-        }
-
-        if ($value < 0 || $value > 360) {
-            $value = 90;
-        }
-
-        $total_degree = 360;
-        $output = intval($total_degree - $value);
-        return $output;
-    }// calculateCounterClockwise
-
-
-    /**
-     * Calculate startX position of center
-     * 
-     * @param int $obj_width Destination image object size.
-     * @param int $canvas_width Canvas size.
-     * @return int Calculated size.
-     */
-    private function calculateStartXOfCenter($obj_width = '', $canvas_width = '') 
-    {
-        if (!is_numeric($obj_width) || !is_numeric($canvas_width)) {
-            return 0;
-        }
-
-        return intval(round(($canvas_width/2)-($obj_width/2)));
-    }// calculateStartXOfCenter
-
-
-    /**
      * {@inheritDoc}
      */
     public function clear()
@@ -198,30 +156,6 @@ class Imagick extends ImageAbstractClass
         parent::buildSourceImageData($this->source_image_path);
         $this->buildSourceImageData($this->source_image_path);
     }// clear
-
-
-    /**
-     * Convert alpha number (0 - 127) to rgba value (1.0 - 0).
-     * 
-     * @param int $number Alpha number (0 to 127).
-     * @return string Return rgba value (1.0 to 0).
-     */
-    private function convertAlpha127ToRgba($number)
-    {
-        $alpha_min = 0; // 100%
-        $alpha_max = 127; // 0%
-
-        if ($number < $alpha_min) {
-            $number = 0;
-        } elseif ($number > $alpha_max) {
-            $number = 127;
-        }
-
-        $find_percent = ($alpha_max - $number) / ($alpha_max / 100);
-
-        unset($alpha_max, $alpha_min);
-        return number_format(($find_percent / 100), 2);
-    }// convertAlpha127ToRgba
 
 
     /**
@@ -973,7 +907,7 @@ class Imagick extends ImageAbstractClass
             $this->status = true;
             $this->status_msg = null;
             // Because in PHP GD it is automatically show the image content by calling show() method without echo command.
-            // But in PHP Imagick it must echo content that got from getImageBlob() of Imagick class, then we have to echo it here to make this image class work in the same way.
+            // But in PHP Imagick must echo content that have got from getImageBlob() of Imagick class, then we have to echo it here to make this image class work in the same way.
             echo $show_result;
             return true;
         } else {
@@ -1227,8 +1161,16 @@ class Imagick extends ImageAbstractClass
     /**
      * {@inheritDoc}
      */
-    public function watermarkText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x = 0, $wm_txt_start_y = 0, $wm_txt_font_size = 10, $wm_txt_font_color = 'transwhitetext', $wm_txt_font_alpha = 60)
-    {
+    public function watermarkText(
+        $wm_txt_text, 
+        $wm_txt_font_path, 
+        $wm_txt_start_x = 0, 
+        $wm_txt_start_y = 0, 
+        $wm_txt_font_size = 10, 
+        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_alpha = 60,
+        array $options = []
+    ) {
         if (false === $this->isClassSetup()) {
             return false;
         }
@@ -1251,9 +1193,9 @@ class Imagick extends ImageAbstractClass
         $wm_txt_font_path = realpath($wm_txt_font_path);
 
         // find text width and height
-        // +10 will be -5 padding on watermark text area.
         $ImagickDraw = new \ImagickDraw();
         $ImagickDraw->setFont($wm_txt_font_path);
+        // note: Imagick font size in php 5.4 is smaller about 10.
         $ImagickDraw->setFontSize($wm_txt_font_size);
         $ImagickDraw->setGravity(\Imagick::GRAVITY_NORTHWEST);
         // set new resolution for font due to it is smaller than GD if it was not set.
@@ -1264,6 +1206,16 @@ class Imagick extends ImageAbstractClass
             $wm_txt_width = $type_space['textWidth'];
         }
         unset($type_space);
+        // find baseline depend on font size. the baseline help each image driver display result less different.
+        // base on font size 10, baseline is +0
+        // size 20, bottom space is +3 (see watermark text comparison test for matrix rulers measurement.)
+        // size 30, bottom space is +6
+        // size 40, bottom space is +9
+        // each 10 size, bottom space is 3. so, each 1 size, bottom space is .3 (different is 3/10)
+        $baseline = abs($this->calculateVariableSpace($wm_txt_font_size, 10, 0, .3));
+        // minus bottom padding but different from GD by (bottom padding / 3).
+        // this seems to be not possible to make it exactly match to GD. this is closest position.
+        $baseline = ($baseline - ($this->wmTextBottomPadding / 3));
 
         // if start x or y is number, convert to integer value
         if (is_numeric($wm_txt_start_x)) {
@@ -1287,13 +1239,13 @@ class Imagick extends ImageAbstractClass
                         break;
                     case 'right':
                         $image_width = $this->Imagick->getImageWidth();
-                        $wm_txt_start_x = intval($image_width - $wm_txt_width) - 5;// minus 5 because Imagick is different from GD.
+                        $wm_txt_start_x = intval(($image_width - $wm_txt_width) - 10);// add blank space to right.
 
                         unset($image_width);
                         break;
                     case 'left':
                     default:
-                        $wm_txt_start_x = 10;// Imagick is different from GD, so increase it.
+                        $wm_txt_start_x = 10;// add blank space to left.
                         break;
                 }
             }
@@ -1310,16 +1262,12 @@ class Imagick extends ImageAbstractClass
                         break;
                     case 'bottom':
                         $image_height = $this->Imagick->getImageHeight();
-                        if ($image_height - ($wm_txt_height + 5) > '0') {
-                            $wm_txt_start_y = intval($image_height - ($wm_txt_height + 5));
-                        } else {
-                            $wm_txt_start_y = intval($image_height - $wm_txt_height);
-                        }
+                        $wm_txt_start_y = intval($image_height - (($wm_txt_height + 10) - $baseline));// add blank space to bottom.
                         unset($image_height);
                         break;
                     case 'top':
                     default:
-                        $wm_txt_start_y = 10;// Imagick is different from GD, so increase it.
+                        $wm_txt_start_y = 10;// add blank space to top.
                         break;
                 }
             }
@@ -1329,12 +1277,39 @@ class Imagick extends ImageAbstractClass
         // set color
         $black = new \ImagickPixel('black');
         $white = new \ImagickPixel('white');
+        $red = new \ImagickPixel('rgb(255, 0, 0)');
+        $green = new \ImagickPixel('rgb(0, 255, 0)');
+        $blue = new \ImagickPixel('rgb(0, 0, 255)');
+        $yellow = new \ImagickPixel('rgb(255, 255, 0)');
+        $cyan = new \ImagickPixel('rgb(0, 255, 255)');
+        $magenta = new \ImagickPixel('rgb(255, 0, 255)');
+        $colorDebugBg = new \ImagickPixel('blue');
         $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');// set color transparent white
         $transwhitetext = new \ImagickPixel('rgba(255, 255, 255, '.$this->convertAlpha127ToRgba($wm_txt_font_alpha).')');
         if (!isset($$wm_txt_font_color)) {
             $wm_txt_font_color = 'transwhitetext';
         }
+        $fillWmBg = $transwhite;
+        if (isset($options['fillBackground']) && $options['fillBackground'] === true) {
+            if (isset($options['backgroundColor'])) {
+                $colorName = $options['backgroundColor'];
+                if (strtolower($colorName) === 'colordebugbg' || strtolower($colorName) === 'debug') {
+                    $colorName = 'colorDebugBg';
+                }
+                if (isset($$colorName)) {
+                    $fillWmBg = $$colorName;
+                }
+                unset($colorName);
+            }
+        }
 
+        // fill background color
+        $ImagickDraw->setFillColor($fillWmBg);
+        if (isset($options['backgroundColor']) && strtolower($options['backgroundColor']) === 'debug') {
+            $ImagickDraw->setFillOpacity(0.3);
+        }
+        $ImagickDraw->rectangle($wm_txt_start_x, $wm_txt_start_y, ($wm_txt_start_x + $wm_txt_width), ($wm_txt_start_y + $wm_txt_height));
+        $this->Imagick->drawImage($ImagickDraw);
         // fill font color
         $ImagickDraw->setFillColor($$wm_txt_font_color);
 
@@ -1345,7 +1320,7 @@ class Imagick extends ImageAbstractClass
             if (is_object($this->Imagick)) {
                 $i = 1;
                 foreach ($this->Imagick as $Frame) {
-                    $Frame->annotateImage($ImagickDraw, $wm_txt_start_x, $wm_txt_start_y, 0, $wm_txt_text);
+                    $Frame->annotateImage($ImagickDraw, $wm_txt_start_x, ($wm_txt_start_y + $baseline), 0, $wm_txt_text);
                     $Frame->setImagePage(0, 0, 0, 0);
                     if ($i == 1) {
                         $this->ImagickFirstFrame = $Frame->getImage();
@@ -1355,7 +1330,7 @@ class Imagick extends ImageAbstractClass
                 unset($Frame, $i);
             }
         } else {
-            $this->Imagick->annotateImage($ImagickDraw, $wm_txt_start_x, $wm_txt_start_y, 0, $wm_txt_text);
+            $this->Imagick->annotateImage($ImagickDraw, $wm_txt_start_x, ($wm_txt_start_y + $baseline), 0, $wm_txt_text);
             if ($this->source_image_type === IMAGETYPE_GIF) {
                 // if source image is gif, set image page to prevent sizing error.
                 $this->Imagick->setImagePage(0, 0, 0, 0);
@@ -1369,7 +1344,7 @@ class Imagick extends ImageAbstractClass
         $transwhite->destroy();
         $transwhitetext->destroy();
         $white->destroy();
-        unset($black, $ImagickDraw, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width);
+        unset($baseline, $black, $blue, $colorDebugBg, $cyan, $fillWmBg, $green, $magenta, $ImagickDraw, $red, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width, $yellow);
 
         $this->destination_image_height = $this->Imagick->getImageHeight();
         $this->destination_image_width = $this->Imagick->getImageWidth();
