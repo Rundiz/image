@@ -4,13 +4,13 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71;
+namespace Rundiz\Image\Tests\PHP71\TraitsTest;
 
 
 /**
  * @group processing
  */
-class TraitsWebPTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class WebPTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 {
 
 

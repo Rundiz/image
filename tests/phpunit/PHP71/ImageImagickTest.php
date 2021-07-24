@@ -13,7 +13,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 
     public function testRequireFilesExistsAndFolderWritable()
     {
-        return parent::testRequireFilesExistsAndFolderWritable();
+        return parent::requireFilesExistsAndFolderWritable();
     }// testRequireFilesExistsAndFolderWritable
 
 
@@ -24,7 +24,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
     {
         if (extension_loaded('imagick') === true) {
             $Image = new \Rundiz\Image\Drivers\Imagick(self::$source_images_dir.self::$source_images_set[0]);
-            $this->assertTrue($Image->status === true && $Image->status_msg == null, sprintf('The required Imagick version, Image Magick version, PHP version are not met. "%s"', $Image->status_msg));
+            $this->assertTrue($Image->status === true && $Image->status_msg == null, sprintf('The required Imagick version, Image Magick version are not met. "%s"', $Image->status_msg));
             unset($Image);
         } else {
             $this->markTestIncomplete('You did not have Imagick extension for PHP installed. This test is incomplete or you can just skip it.');

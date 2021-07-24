@@ -49,7 +49,7 @@
             <li><a href="native-gd-gif.php">process gif image</a></li>
             <li><a href="native-gd-gif-watermark-png.php">gif image with watermark png</a></li>
         </ul>
-        <h3>Native PHP Imagick functions test</h3>
+        <h3>Native PHP Imagick class test</h3>
         <?php
         if (!extension_loaded('imagick')) {
             echo '<p class="alert">You don\'t have Imagick extension for PHP installed on this server, please skip these test.</p>';
@@ -64,7 +64,7 @@
             <li><a href="native-imagick-animated-gif.php">process animated gif image</a> (this is slower than process non animated gif.)</li>
             <li><a href="native-imagick-png-compression-tests.php">png compression tests</a></li>
         </ul>
-        <h3>Rundiz GD Image class test</h3>
+        <h3>Rundiz Image GD class test</h3>
         <ul>
             <li><a href="rdimage-gd-basic-tests.php">basic tests</a></li>
             <li><a href="rdimage-gd-resize-ratio.php">resize by aspect ratio</a></li>
@@ -75,7 +75,7 @@
             <li><a href="rdimage-gd-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-gd-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
-        <h3>Rundiz Imagick Image class test</h3>
+        <h3>Rundiz Image Imagick class test</h3>
         <?php
         if (!extension_loaded('imagick')) {
             echo '<p class="alert">You don\'t have Imagick extension for PHP installed on this server, please skip these test.</p>';
@@ -91,6 +91,11 @@
             <li><a href="rdimage-imagick-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-imagick-animated-gif-watermark-text.php">animated gif and watermark text</a></li>
             <li><a href="rdimage-imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
+        </ul>
+        <h3>Rundiz Image GD &amp; Imagick comparison</h3>
+        <p>Some feature comparison</p>
+        <ul>
+            <li><a href="rdimage-gd-imagick-watermark-text.php">watermark text</a></li>
         </ul>
         <footer>
             <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>

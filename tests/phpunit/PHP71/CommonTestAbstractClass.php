@@ -107,7 +107,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     /**
      * @requires PHP 5.4
      */
-    public function testRequireFilesExistsAndFolderWritable()
+    protected function requireFilesExistsAndFolderWritable()
     {
         if (is_array(self::$source_images_set)) {
             foreach (self::$source_images_set as $source_image) {
@@ -125,7 +125,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
             }
         }
         $this->assertTrue(is_dir(self::$processed_images_dir) && is_writable(self::$processed_images_dir), 'The "processed-images" folder is not exists or is not writable.');
-    }// testRequireFilesExistsAndFolderWritable
+    }// requireFilesExistsAndFolderWritable
 
 
 }
