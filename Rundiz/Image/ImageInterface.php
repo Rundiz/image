@@ -115,11 +115,23 @@ interface ImageInterface
      * @param int|string $wm_txt_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
      * @param int|string $wm_txt_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
      * @param int $wm_txt_font_size Font size
-     * @param string $wm_txt_font_color Font color. ('black', 'white', 'transwhitetext')
+     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'transwhitetext')
      * @param int $wm_txt_font_alpha Text transparency value. (0-127)
+     * @param array $options The watermark text options. (Since v.3.1.0)<br>
+     *              `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
+     *              `backgroundColor` (string) The background color to fill for text bounding box. Available values are 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'debug'.<br>
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
-    public function watermarkText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x = 0, $wm_txt_start_y = 0, $wm_txt_font_size = 10, $wm_txt_font_color = 'transwhitetext', $wm_txt_font_alpha = 60);
+    public function watermarkText(
+        $wm_txt_text, 
+        $wm_txt_font_path, 
+        $wm_txt_start_x = 0, 
+        $wm_txt_start_y = 0, 
+        $wm_txt_font_size = 10, 
+        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_alpha = 60,
+        array $options = []
+    );
 
 
 }

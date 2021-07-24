@@ -20,6 +20,9 @@ abstract class ImageAbstractClass implements ImageInterface
 {
 
 
+    use Traits\CalculationTrait;
+
+
     use Traits\WebPTrait;
 
 
@@ -53,6 +56,12 @@ abstract class ImageAbstractClass implements ImageInterface
      * @var string Return error message. Default is `null`.
      */
     public $status_msg = null;
+    /**
+     * Add bottom padding to watermark text to let characters that long to the bottom can be displayed. Example p, g, ฤ, ฎ, etc.<br>
+     * This bottom padding should be different for each font size.
+     * @var int Set the number of pixels to add to watermark text at the bottom. Default is 5, previous version was 5.
+     */
+    public $wmTextBottomPadding = 5;
 
     // Most of the properties below are unable to set or access directly from outside this class. --------------------
     /**
@@ -153,130 +162,6 @@ abstract class ImageAbstractClass implements ImageInterface
             return false;
         }
     }// buildSourceImageData
-
-
-    /**
-     * Calculate image size by aspect ratio.
-     * 
-     * @param int $width New width set to calculate.
-     * @param int $height New height set to calculate.
-     * @return array Return array with 'height' and 'width' in array key and the values are calculated sizes.
-     */
-    protected function calculateImageSizeRatio($width, $height)
-    {
-        // convert width, height to integer
-        $width = intval($width);
-        $height = intval($height);
-
-        if ($height <= 0) {
-            $height = 100;
-        }
-        if ($width <= 0) {
-            $width = 100;
-        }
-
-        // get and set source (or last modified) image width and height
-        $source_image_width = $this->source_image_width;
-        if ($this->last_modified_image_width != null) {
-            $source_image_width = $this->last_modified_image_width;
-        }
-        $source_image_height = $this->source_image_height;
-        if ($this->last_modified_image_height != null) {
-            $source_image_height = $this->last_modified_image_height;
-        }
-
-        $source_image_orientation = $this->getSourceImageOrientation();
-        // find height and width by aspect ratio.
-        $find_h = round(($source_image_height/$source_image_width)*$width);
-        $find_w = round(($source_image_width/$source_image_height)*$height);
-
-        $this->verifyMasterDimension();
-
-        switch ($this->master_dim) {
-            case 'width':
-                $new_width = $width;
-                $new_height = $find_h;
-
-                // if not allow resize larger.
-                if ($this->allow_resize_larger == false) {
-                    // if new width larger than source image width
-                    if ($width > $source_image_width) {
-                        $new_width = $source_image_width;
-                        $new_height = $source_image_height;
-                    }
-                }
-                break;
-            case 'height':
-                $new_width = $find_w;
-                $new_height = $height;
-
-                // if not allow resize larger.
-                if ($this->allow_resize_larger == false) {
-                    // if new height is larger than source image height
-                    if ($height > $source_image_height) {
-                        $new_width = $source_image_width;
-                        $new_height = $source_image_height;
-                    }
-                }
-                break;
-            case 'auto':
-            default:
-                // master dimension auto.
-                switch ($source_image_orientation) {
-                    case 'P':
-                        // image orientation portrait
-                        $new_width = $find_w;
-                        $new_height = $height;
-
-                        // if not allow resize larger
-                        if ($this->allow_resize_larger == false) {
-                            // determine new image size must not larger than source image size.
-                            if ($height > $source_image_height && $width <= $source_image_width) {
-                                // if new height larger than source image height and width smaller or equal to source image width
-                                $new_width = $width;
-                                $new_height = $find_h;
-                            } else {
-                                if ($height > $source_image_height) {
-                                    $new_width = $source_image_width;
-                                    $new_height = $source_image_height;
-                                }
-                            }
-                        }
-                        break;
-                    case 'L':
-                    // image orientation landscape
-                    case 'S':
-                    // image orientation square
-                    default:
-                        // image orientation landscape and square
-                        $new_width = $width;
-                        $new_height = $find_h;
-
-                        // if not allow resize larger
-                        if ($this->allow_resize_larger == false) {
-                            // determine new image size must not larger than source image size.
-                            if ($width > $source_image_width && $height <= $source_image_height) {
-                                // if new width larger than source image width and height smaller or equal to source image height
-                                $new_width = $find_w;
-                                $new_height = $height;
-                            } else {
-                                if ($width > $source_image_width) {
-                                    $new_width = $source_image_width;
-                                    $new_height = $source_image_height;
-                                }
-                            }
-                        }
-                        break;
-                }
-                break;
-        }// endswitch;
-
-        unset($find_h, $find_w, $source_image_height, $source_image_orientation, $source_image_width);
-        return [
-            'height' => $new_height, 
-            'width' => $new_width
-        ];
-    }// calculateImageSizeRatio
 
 
     /**

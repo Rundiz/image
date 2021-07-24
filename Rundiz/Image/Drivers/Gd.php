@@ -64,23 +64,6 @@ class Gd extends ImageAbstractClass
     {
         $this->clear();
     }// __destruct
-	
-	
-    /**
-     * Calculate startX position of center
-     * 
-     * @param int $obj_width Destination image object size.
-     * @param int $canvas_width Canvas size.
-     * @return int Calculated size.
-     */
-    private function calculateStartXOfCenter($obj_width = '', $canvas_width = '') 
-    {
-        if (!is_numeric($obj_width) || !is_numeric($canvas_width)) {
-            return 0;
-        }
-
-        return intval(round(($canvas_width/2)-($obj_width/2)));
-    }// calculateStartXOfCenter
 
 
     /**
@@ -1005,11 +988,11 @@ class Gd extends ImageAbstractClass
                 if ($this->source_image_type === IMAGETYPE_GIF) {
                     // source image is gif (which maybe transparent) and watermark image is png. so, this cannot just use imagecopy() function.
                     // see more at http://stackoverflow.com/questions/4437557/using-gd-in-php-how-can-i-make-a-transparent-png-watermark-on-png-and-gif-files
-                    $cut_resource_object = imagecreatetruecolor($this->watermark_image_width, $this->watermark_image_height);
-                    imagecopy($cut_resource_object, $this->source_image_object, 0, 0, $wm_img_start_x, $wm_img_start_y, $this->watermark_image_width, $this->watermark_image_height);
-                    imagecopy($cut_resource_object, $this->watermark_image_object, 0, 0, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
-                    imagecopymerge($this->source_image_object, $cut_resource_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height, 100);
-                    imagedestroy($cut_resource_object);
+                    $tempCanvas = imagecreatetruecolor($this->watermark_image_width, $this->watermark_image_height);
+                    imagecopy($tempCanvas, $this->source_image_object, 0, 0, $wm_img_start_x, $wm_img_start_y, $this->watermark_image_width, $this->watermark_image_height);
+                    imagecopy($tempCanvas, $this->watermark_image_object, 0, 0, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
+                    imagecopymerge($this->source_image_object, $tempCanvas, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height, 100);
+                    imagedestroy($tempCanvas);
                 } else {
                     imagealphablending($this->source_image_object, true);// add this for transparent watermark thru image.
                     imagecopy($this->source_image_object, $this->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
@@ -1044,8 +1027,16 @@ class Gd extends ImageAbstractClass
     /**
      * {@inheritDoc}
      */
-    public function watermarkText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x = 0, $wm_txt_start_y = 0, $wm_txt_font_size = 10, $wm_txt_font_color = 'transwhitetext', $wm_txt_font_alpha = 60)
-    {
+    public function watermarkText(
+        $wm_txt_text, 
+        $wm_txt_font_path, 
+        $wm_txt_start_x = 0, 
+        $wm_txt_start_y = 0, 
+        $wm_txt_font_size = 10, 
+        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_alpha = 60,
+        array $options = []
+    ) {
         if (false === $this->isClassSetup()) {
             return false;
         }
@@ -1068,11 +1059,10 @@ class Gd extends ImageAbstractClass
         $wm_txt_font_path = realpath($wm_txt_font_path);
 
         // find text width and height
-        // @link copy from here http://stackoverflow.com/questions/11696920/calculating-text-width-with-php-gd
-        // +10 will be -5 padding on watermark text area
+        // @link http://stackoverflow.com/questions/11696920/calculating-text-width-with-php-gd Original source code.
         $type_space = imagettfbbox($wm_txt_font_size, 0, $wm_txt_font_path, $wm_txt_text);
-        $wm_txt_height = abs($type_space[5] - $type_space[1]) + 10;
-        $wm_txt_width = abs($type_space[4] - $type_space[0]) + 10;
+        $wm_txt_height = abs($type_space[5] - $type_space[1]);
+        $wm_txt_width = abs($type_space[4] - $type_space[0]) + 5;// +5 for add bounding box space to the right. so, it don't get cut before character end and for the same space as Imagick.
         unset($type_space);
 
         // if start x or y is number, convert to integer value
@@ -1097,13 +1087,13 @@ class Gd extends ImageAbstractClass
                         break;
                     case 'right':
                         $image_width = imagesx($this->source_image_object);
-                        $wm_txt_start_x = intval($image_width - $wm_txt_width);
+                        $wm_txt_start_x = intval(($image_width - $wm_txt_width) - 10);// add blank space to right.
 
                         unset($image_width);
                         break;
                     case 'left':
                     default:
-                        $wm_txt_start_x = 5;
+                        $wm_txt_start_x = 10;// add blank space to left.
                         break;
                 }
             }
@@ -1120,16 +1110,12 @@ class Gd extends ImageAbstractClass
                         break;
                     case 'bottom':
                         $image_height = imagesy($this->source_image_object);
-                        if ($image_height - ($wm_txt_height + 5) > '0') {
-                            $wm_txt_start_y = intval($image_height - ($wm_txt_height + 5));
-                        } else {
-                            $wm_txt_start_y = intval($image_height - $wm_txt_height);
-                        }
+                        $wm_txt_start_y = intval($image_height - ($wm_txt_height + 10));// add blank space to bottom.
                         unset($image_height);
                         break;
                     case 'top':
                     default:
-                        $wm_txt_start_y = 5;
+                        $wm_txt_start_y = 10;// add blank space to top.
                         break;
                 }
             }
@@ -1150,26 +1136,65 @@ class Gd extends ImageAbstractClass
         // set color
         $black = imagecolorallocate($wm_txt_object, 0, 0, 0);
         $white = imagecolorallocate($wm_txt_object, 255, 255, 255);
+        $red = imagecolorallocate($wm_txt_object, 255, 0, 0);
+        $green = imagecolorallocate($wm_txt_object, 0, 255, 0);
+        $blue = imagecolorallocate($wm_txt_object, 0, 0, 255);
+        $yellow = imagecolorallocate($wm_txt_object, 255, 255, 0);
+        $cyan = imagecolorallocate($wm_txt_object, 0, 255, 255);
+        $magenta = imagecolorallocate($wm_txt_object, 255, 0, 255);
+        $colorDebugBg = imagecolorallocatealpha($wm_txt_object, 0, 0, 255, 85);
         $transwhite = imagecolorallocatealpha($wm_txt_object, 255, 255, 255, 127);// set color transparent white
         $transwhitetext = imagecolorallocatealpha($wm_txt_object, 255, 255, 255, $wm_txt_font_alpha);
         if (!isset($$wm_txt_font_color)) {
             $wm_txt_font_color = 'transwhitetext';
         }
-
-        // set text
-        imagefill($wm_txt_object, 0, 0, $transwhite);
-        // y coords below must -5 to allow something like p, g show full size
-        imagettftext($wm_txt_object, $wm_txt_font_size, 0, 5, $wm_txt_height-5, $$wm_txt_font_color, $wm_txt_font_path, $wm_txt_text);
+        $fillWmBg = $transwhite;
+        if (isset($options['fillBackground']) && $options['fillBackground'] === true) {
+            if (isset($options['backgroundColor'])) {
+                $colorName = $options['backgroundColor'];
+                if (strtolower($colorName) === 'colordebugbg' || strtolower($colorName) === 'debug') {
+                    $colorName = 'colorDebugBg';
+                }
+                if (isset($$colorName)) {
+                    $fillWmBg = $$colorName;
+                }
+                unset($colorName);
+            }
+        }
+        // fill background color
+        imagefill($wm_txt_object, 0, 0, $fillWmBg);
+        // write text
+        // y coords below must -`emTextBottomPadding` to allow something like p, g show full size
+        imagettftext(
+            $wm_txt_object, 
+            $wm_txt_font_size, 
+            0, 
+            0, 
+            ($wm_txt_height - $this->wmTextBottomPadding), 
+            $$wm_txt_font_color, 
+            $wm_txt_font_path, 
+            $wm_txt_text
+        );
 
         // copy text to image
         switch ($this->source_image_type) {
             case IMAGETYPE_GIF:
                 // gif
-                $cut_resource_object = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
-                imagecopy($cut_resource_object, $this->source_image_object, 0, 0, $wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height);
-                imagecopy($cut_resource_object, $wm_txt_object, 0, 0, 0, 0, $wm_txt_width, $wm_txt_height);
-                imagecopymerge($this->source_image_object, $cut_resource_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height, 100);
-                imagedestroy($cut_resource_object);
+                // create temp canvas.
+                $tempCanvas = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
+                // set temp canvas to be transparent.
+                imagesavealpha($tempCanvas, true);
+                $TCColorForTransparent = imagecolorallocatealpha($tempCanvas, 255, 0, 255, 127);// look like pink or magenta.
+                imagefill($tempCanvas, 0, 0, $TCColorForTransparent);
+                imagecolortransparent($tempCanvas, $TCColorForTransparent);
+                // copy part of source image to temp canvas where the size is same as watermark canvas.
+                imagecopy($tempCanvas, $this->source_image_object, 0, 0, $wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height);
+                // copy the whole watermark canvas to temp canvas.
+                imagecopy($tempCanvas, $wm_txt_object, 0, 0, 0, 0, $wm_txt_width, $wm_txt_height);
+                // copy merge temp canvas to image object.
+                imagecopymerge($this->source_image_object, $tempCanvas, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height, 100);
+                // destroy temp canvas.
+                imagedestroy($tempCanvas);
                 break;
             case IMAGETYPE_PNG:
                 // png
@@ -1183,7 +1208,7 @@ class Gd extends ImageAbstractClass
         // end watermark text -----------------------------------------------------------------------------------------------
 
         imagedestroy($wm_txt_object);
-        unset($black, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width);
+        unset($black, $blue, $colorDebugBg, $cyan, $fillWmBg, $green, $magenta, $red, $transwhite, $transwhitetext, $white, $wm_txt_height, $wm_txt_width, $yellow);
 
         if ($this->destination_image_object == null) {
             $this->destination_image_object = $this->source_image_object;
