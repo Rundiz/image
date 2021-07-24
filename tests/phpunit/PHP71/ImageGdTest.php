@@ -36,7 +36,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 
     public function testRequireFilesExistsAndFolderWritable()
     {
-        return parent::testRequireFilesExistsAndFolderWritable();
+        return parent::requireFilesExistsAndFolderWritable();
     }// testRequireFilesExistsAndFolderWritable
 
 

@@ -23,16 +23,52 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     /**
      * {@inheritDoc}
      */
+    public function calculateCounterClockwise($value)
+    {
+        return parent::calculateCounterClockwise($value);
+    }// calculateCounterClockwise
+
+
+    /**
+     * {@inheritDoc}
+     */
     public function calculateImageSizeRatio($width, $height)
     {
         return parent::calculateImageSizeRatio($width, $height);
     }// calculateImageSizeRatio
 
 
+    /**
+     * {@inheritDoc}
+     */
+    public function calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach)
+    {
+        return parent::calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach);
+    }// calculateVariableSpace
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public function calculateStartXOfCenter($objWidth, $canvasWidth)
+    {
+        return parent::calculateStartXOfCenter($objWidth, $canvasWidth);
+    }// calculateStartXOfCenter
+
+
     //put your code here
     public function clear()
     {
     }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    public function convertAlpha127ToRgba($number)
+    {
+        return parent::convertAlpha127ToRgba($number);
+    }// convertAlpha127ToRgba
 
 
     public function crop($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent')
@@ -106,8 +142,16 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     }
 
 
-    public function watermarkText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x = 0, $wm_txt_start_y = 0, $wm_txt_font_size = 10, $wm_txt_font_color = 'transwhitetext', $wm_txt_font_alpha = 60)
-    {
+    public function watermarkText(
+        $wm_txt_text, 
+        $wm_txt_font_path, 
+        $wm_txt_start_x = 0, 
+        $wm_txt_start_y = 0, 
+        $wm_txt_font_size = 10, 
+        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_alpha = 60,
+        array $options = []
+    ) {
     }
 
 
