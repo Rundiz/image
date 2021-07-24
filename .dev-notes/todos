@@ -1,3 +1,2 @@
 Fix:
 * GD watermark transparent png on source image transparent gif contain black bg.
-* GD watermark text on source image transparent gif contain black bg.
