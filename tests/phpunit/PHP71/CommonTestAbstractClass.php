@@ -10,7 +10,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     protected static $source_images_dir;
     protected static $source_images_set = array('city-amsterdam.gif', 'city-amsterdam.jpg', 'city-amsterdam.png', 'city-amsterdam-animated.gif');
     protected static $source_watermark_images_set = array('watermark.gif', 'watermark.jpg', 'watermark.png');
-    protected static $source_watermark_fonts_set = array('cschatthai.ttf');
+    protected static $source_watermark_fonts_set = array('font.ttf');
     protected static $watermark_text = 'Rundiz watermark สั้น ญู ให้ ทดสอบสระ.';
     protected static $processed_images_dir;
     protected static $processed_extensions = array('gif', 'jpg', 'png');

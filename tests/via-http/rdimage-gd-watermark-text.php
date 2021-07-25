@@ -3,7 +3,7 @@ require_once 'include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 
-$source_font = '../source-images/cschatthai.ttf';
+$source_font = '../source-images/font.ttf';
 
 function displayTestWatermarkText(array $test_data_set)
 {
@@ -21,6 +21,7 @@ function displayTestWatermarkText(array $test_data_set)
                 echo '<tr>' . "\n";
                 echo '<td>position '.$wm_pos[0].', '.$wm_pos[1].'</td>' . "\n";
                 foreach ($items['save_exts'] as $save_ext) {
+                    $Image->wmTextBottomPadding = 7;
                     $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $font_path, $wm_pos[0], $wm_pos[1], 15);
                     $Image->save($save_file_name.'.'.$save_ext);
                     $Image->clear();
@@ -50,7 +51,7 @@ function displayTestWatermarkText(array $test_data_set)
         <h2>Watermark text</h2>
         <?php
         $save_exts = ['jpg', 'png', 'gif'];
-        $watermark_fonts = ['cschatthai.ttf'];
+        $watermark_fonts = ['font.ttf'];
         $watermark_positions = [
             [100, 300],
             ['left', 'top'],

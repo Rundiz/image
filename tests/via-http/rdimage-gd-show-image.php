@@ -67,7 +67,7 @@ $Image = new \Rundiz\Image\Drivers\Gd($source_image_file);
 
 switch ($act) {
     case 'watermarktext':
-        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/cschatthai.ttf', $start_x, $start_y, $fontsize);
+        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/font.ttf', $start_x, $start_y, $fontsize);
         break;
     case 'crop':
         $Image->crop($width, $height);

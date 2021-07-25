@@ -269,33 +269,6 @@ class Imagick extends AbstractImage
     /**
      * {@inheritDoc}
      */
-    public function resize($width, $height)
-    {
-        if (false === $this->isClassSetup()) {
-            return false;
-        }
-
-        $sizes = $this->calculateImageSizeRatio($width, $height);
-
-        if (
-            !is_array($sizes) || 
-            (
-                is_array($sizes) && 
-                (!array_key_exists('height', $sizes) || !array_key_exists('width', $sizes))
-            )
-        ) {
-            $this->status = false;
-            $this->status_msg = 'Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio instead.';
-            return false;
-        }
-
-        return $this->resizeNoRatio($sizes['width'], $sizes['height']);
-    }// resize
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function resizeNoRatio($width, $height)
     {
         if (false === $this->isClassSetup()) {
