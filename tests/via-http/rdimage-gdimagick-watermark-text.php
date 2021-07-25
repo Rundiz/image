@@ -9,7 +9,7 @@ $font = '../source-images/cschatthai.ttf';
 $fontSize = 20;
 
 
-function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd')
+function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtColor = 'white', $fillBg = true)
 {
     global $font, $fontSize;
     global $sourceImageSquare;
@@ -28,10 +28,10 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd')
         $positionx, 
         $positiony, 
         $fontSize, 
-        'white',
+        $txtColor,
         60,
         [
-            'fillBackground' => true,
+            'fillBackground' => $fillBg,
             'backgroundColor' => 'debug',
         ]
     );
@@ -67,9 +67,9 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd')
         <table>
             <thead>
                 <tr>
-                    <th>Position</th>
-                    <th>GD</th>
-                    <th>Imagick</th>
+                    <th style="width: 10%;">Position</th>
+                    <th style="width: 45%;">GD</th>
+                    <th style="width: 45%;">Imagick</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,6 +103,15 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd')
                 unset($positionSet);
                 unset($positions);
                 ?> 
+                <tr>
+                    <td>0, 0 (gd only, no background)</td>
+                    <td>
+                        <?php
+                        displayWatermarkTextImage(0, 0, 'Gd', 'black', false);
+                        ?> 
+                    </td>
+                    <td></td>
+                </tr>
             </tbody>
         </table>
         <?php
