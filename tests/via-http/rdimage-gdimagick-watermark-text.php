@@ -5,7 +5,7 @@ require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 $sourceImageSquare = '../source-images/sample-square.jpg';
 $chineseText = '他们';
 $watermarkText = 'Hello สั้น ญ ญู ฎฐ โอ ไอ อำ อ้า bye!';
-$font = '../source-images/cschatthai.ttf';
+$font = '../source-images/font.ttf';
 $fontSize = 20;
 
 

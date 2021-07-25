@@ -12,33 +12,65 @@
             <li>Please verify that your php.ini display the errors and report all error level including strict.</li>
             <li>Please make sure that <strong><?php echo realpath('../processed-images'); ?></strong> folder is already exists and has write permission.</li>
             <li>
-                Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281 
-                and save it to <strong><?php echo realpath('../source-images'); ?></strong> folder with these name and extensions.<br>
-                (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
+                Download and create the photo as named below into <strong><?php echo realpath('../source-images'); ?></strong> folder.
                 <ul>
-                    <li>city-amsterdam.gif (must contain transparent in the image)</li>
-                    <li>city-amsterdam.jpg</li>
-                    <li>city-amsterdam.png (must contain transparent in the image)</li>
-                </ul>
-                Copy one file from JPG and rename to .png.
-                <ul>
-                    <li>city-amsterdam-jpg.png (This file should be jpg but rename file extension to png.)</li>
-                </ul>
-                Create TXT file and rename to .jpg.
-                <ul>
-                    <li>city-amsterdam-text.jpg (This is text file with jpg extension.)</li>
-                </ul>
-                Use animation program to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
-                <ul>
-                    <li>city-amsterdam-animated.gif (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
-                    <li>city-amsterdam-animated.webp (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>
+                    <li>
+                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281.<br>
+                        (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
+                        <ul>
+                            <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
+                            <li><strong>city-amsterdam-non-transparent.gif</strong> (must not contain transparent in the image)</li>
+                            <li><strong>city-amsterdam.jpg</strong></li>
+                            <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
+                            <li><strong>city-amsterdam.webp</strong> (non animated webp.)</li>
+                        </ul>
+                        Copy one file from JPG and rename to .png.
+                        <ul>
+                            <li><strong>city-amsterdam-jpg.png</strong> (This file should be jpg but rename file extension to png.)</li>
+                        </ul>
+                        Create TXT file and rename to .jpg.
+                        <ul>
+                            <li><strong>city-amsterdam-text.jpg</strong> (This is text file with jpg extension.)</li>
+                        </ul>
+                        Use animation program to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
+                        <ul>
+                            <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
+                            <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
+                        or from <a href="https://developers.google.com/speed/webp/gallery2" target="google-webp">this page</a> where it is lossless file
+                        <ul>
+                            <li>Save as <strong>transparent-lossless.webp</strong>.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        Download font from <a href="https://fonts.google.com/specimen/Bai+Jamjuree?subset=thai" target="googlefont">this link</a>.
+                        <ul>
+                            <li>
+                                Extract <strong>BaiJamjuree-Light.ttf</strong> and rename it to <strong>font.ttf</strong>.
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        Create white empty image where it is portrait size (tall) and save as <strong>sample-portrait.jpg</strong>
+                    </li>
+                    <li>
+                        Create watermark image files.
+                        <ul>
+                            <li><strong>watermark.gif</strong> transparent background, write some text.</li>
+                            <li><strong>watermark.jpg</strong> filled background with color, write some text.</li>
+                            <li><strong>watermark.png</strong> transparent background, write some text.</li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
-            <li>
-                Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
-                or from <a href="https://developers.google.com/speed/webp/gallery2" target="google-webp">this page</a> where it is lossless file
-                and save it to <strong><?php echo realpath('../source-images') . DIRECTORY_SEPARATOR; ?>transparent-lossless.webp</strong>.
-            </li>
+            
+            
+            
+                    
+                    
         </ul>
         <p><a href="clear-all-processed-images.php">Clear all processed images</a></p>
         <h2>Tests</h2>
@@ -98,8 +130,5 @@
             <li><a href="rdimage-gdimagick-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-gdimagick-watermark-image.php">watermark image</a></li>
         </ul>
-        <footer>
-            <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>
-        </footer>
     </body>
 </html>

@@ -172,7 +172,7 @@ function displayWmTests($imageSource, $driver = 'gd')
     global $imageDriverText;
     $saveAsExts = array('gif', 'jpg', 'png');
     $transparency = (stripos($imageSource, 'non-transparent') !== false ? 'nontransparentgif' : 'transparentgif');
-    $source_font = '../source-images/cschatthai.ttf';
+    $source_font = '../source-images/font.ttf';
     if ($driver === 'gd') {
         $Image = new \Rundiz\Image\Drivers\Gd($imageSource);
     } else {
@@ -184,6 +184,7 @@ function displayWmTests($imageSource, $driver = 'gd')
     echo '<tr>' . "\n";
     echo '<td></td>' . "\n";
     foreach ($saveAsExts as $ext) {
+        $Image->wmTextBottomPadding = 10;
         $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', $source_font, 10, 10, 20);
         $file_name = '../processed-images/rundiz-' . $imageDriverText . '-' . $transparency . '-wmtext';
         $save_result = $Image->save($file_name . '.' . $ext);
