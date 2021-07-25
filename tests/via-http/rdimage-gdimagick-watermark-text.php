@@ -15,7 +15,7 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
     global $sourceImageSquare;
     global $watermarkText;
 
-    $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '.jpg';
+    $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '-txtc' . $txtColor . '-fillc' . $fillBg . '.jpg';
     if (strtolower($driver) === 'imagick') {
         $Image = new \Rundiz\Image\Drivers\Imagick($sourceImageSquare);
     } else {
