@@ -23,9 +23,6 @@ abstract class ImageAbstractClass implements ImageInterface
     use Traits\CalculationTrait;
 
 
-    use Traits\WebPTrait;
-
-
     /**
      * Allow to set resize larger than source image.
      * @var bool Set to `true` to allow, `false` to disallow. Default is `false`.
@@ -183,10 +180,15 @@ abstract class ImageAbstractClass implements ImageInterface
     {
         if (is_file($imagePath)) {
             $imagePath = realpath($imagePath);
-            if (stripos($imagePath, '.webp') !== false && version_compare(PHP_VERSION, '7.1.0', '<')) {
-                // if it is .webp and current PHP version is not supported
+            if (
+                stripos($imagePath, '.webp') !== false && 
+                version_compare(PHP_VERSION, '7.1.0', '<') &&
+                function_exists('imagecreatefromwebp')
+            ) {
+                // if it is .webp and current PHP version is not supported and webp feature for GD is enabled.
                 try {
-                    $webpInfo = $this->webPInfo($imagePath);
+                    $WebP = new Extensions\WebP();
+                    $webpInfo = $WebP->webPInfo($imagePath);
                     if (is_array($webpInfo) && isset($webpInfo['Animation']) && $webpInfo['Animation'] === false) {
                         // if not animated webp.
                         $output = [];
@@ -207,7 +209,7 @@ abstract class ImageAbstractClass implements ImageInterface
                         }
                         unset($GD, $output);
                     }
-                    unset($webpInfo);
+                    unset($WebP, $webpInfo);
                 } catch (\Exception $ex) {
                     // failed.
                 }

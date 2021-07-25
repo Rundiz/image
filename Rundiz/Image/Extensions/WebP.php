@@ -4,15 +4,15 @@
  */
 
 
-namespace Rundiz\Image\Traits;
+namespace Rundiz\Image\Extensions;
 
 
 /**
- * WebP file type trait.
+ * WebP file information class.
  * 
  * @since 3.1.0
  */
-trait WebPTrait
+class WebP
 {
 
 
