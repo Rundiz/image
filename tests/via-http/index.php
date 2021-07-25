@@ -96,6 +96,7 @@
         <p>Some feature comparison</p>
         <ul>
             <li><a href="rdimage-gdimagick-watermark-text.php">watermark text</a></li>
+            <li><a href="rdimage-gdimagick-watermark-image.php">watermark image</a></li>
         </ul>
         <footer>
             <small>Photo by <a href="https://pixabay.com/photo-1150319/" target="photostock">YankoPeyankov</a> at pixabay.com</small>

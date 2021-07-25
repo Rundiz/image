@@ -7,7 +7,7 @@
 namespace Rundiz\Image\Tests;
 
 
-class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
+class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
 {
 
 
@@ -56,7 +56,15 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     }// calculateStartXOfCenter
 
 
-    //put your code here
+    /**
+     * {@inheritDoc}
+     */
+    public function calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, array $options = [])
+    {
+        return parent::calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, $options);
+    }// calculateWatermarkImageStartXY
+
+
     public function clear()
     {
     }
@@ -130,6 +138,28 @@ class ExtendedImageAbstractClass extends \Rundiz\Image\ImageAbstractClass
     public function save($file_name)
     {
     }
+
+
+    /**
+     * Force set source image height for testing.
+     * 
+     * @param int $height
+     */
+    public function setSourceImageHeight($height)
+    {
+        $this->source_image_height = $height;
+    }// setSourceImageHeight
+
+
+    /**
+     * Force set source image width for testing.
+     * 
+     * @param int $width
+     */
+    public function setSourceImageWidth($width)
+    {
+        $this->source_image_width = $width;
+    }// setSourceImageWidth
 
 
     public function show($file_ext = '')

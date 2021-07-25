@@ -100,8 +100,8 @@ interface ImageInterface
      * Set the watermark image.
      * 
      * @param string $wm_img_path Full path of watermark image file
-     * @param int|string $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param int|string $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @param int|string $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
+     * @param int|string $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0);
@@ -112,8 +112,8 @@ interface ImageInterface
      * 
      * @param string $wm_txt_text Watermark text
      * @param string $wm_txt_font_path 'True Type Font' path
-     * @param int|string $wm_txt_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param int|string $wm_txt_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @param int|string $wm_txt_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
+     * @param int|string $wm_txt_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param int $wm_txt_font_size Font size
      * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'transwhitetext')
      * @param int $wm_txt_font_alpha Text transparency value. (0-127)

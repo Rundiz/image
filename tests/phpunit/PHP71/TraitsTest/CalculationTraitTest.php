@@ -16,7 +16,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
 
     public function testCalculateCounterClockwise()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertSame(270, $ImgAc->calculateCounterClockwise(-1));// less than 0, set to 90 and calculate
         $this->assertSame(270, $ImgAc->calculateCounterClockwise(361));// more than 360, set to 90 and calculate
         $this->assertSame(0, $ImgAc->calculateCounterClockwise(0));
@@ -38,7 +38,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
 
     public function testCalculateVariableSpace()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertSame(-3, $ImgAc->calculateVariableSpace(20, 10, 0, .3));
         $this->assertSame(-6, $ImgAc->calculateVariableSpace(30, 10, 0, .3));
         $this->assertSame(-7, $ImgAc->calculateVariableSpace(30, 10, 3, .5));
@@ -49,7 +49,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
     public function testCalculateImageSizeRatio()
     {
         // use landscape image.
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $result = $ImgAc->calculateImageSizeRatio(200, 200);
         $this->assertEquals($result['width'], 200);
         $this->assertEquals($result['height'], 133);
@@ -81,7 +81,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
         unset($ImgAc, $result);
 
         // use new portrait image.
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'sample-portrait.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-portrait.jpg');
         $result = $ImgAc->calculateImageSizeRatio(200, 200);
         $this->assertEquals($result['width'], 100);
         $this->assertEquals($result['height'], 200);
@@ -100,7 +100,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
         unset($ImgAc, $result);
 
         // use new square image.
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'sample-square.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-square.jpg');
         $result = $ImgAc->calculateImageSizeRatio(200, 200);
         $this->assertEquals($result['width'], 200);
         $this->assertEquals($result['height'], 200);
@@ -125,7 +125,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
     
     public function testCalculateStartXOfCenter()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertSame(150, $ImgAc->calculateStartXOfCenter(200, 500));
         $this->assertSame(150, $ImgAc->calculateStartXOfCenter(200.10, 500.50));
         $this->assertSame(151, $ImgAc->calculateStartXOfCenter(202.91, 503.91));
@@ -134,9 +134,29 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
     }// testCalculateStartXOfCenter
 
 
+    public function testCalculateWatermarkImageStartXY()
+    {
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+        $this->assertSame([10, 10], $ImgAc->calculateWatermarkImageStartXY('left', 'top', 800, 600, 200, 100));
+        $ImgAc->setSourceImageWidth(800);
+        $ImgAc->setSourceImageHeight(600);
+        $this->assertSame([10, 490], $ImgAc->calculateWatermarkImageStartXY('left', 'bottom', 800, 600, 200, 100));// (600-100)-10 that is padding = 490
+        $ImgAc->setSourceImageWidth(800);
+        $ImgAc->setSourceImageHeight(600);
+        $this->assertSame([590, 490], $ImgAc->calculateWatermarkImageStartXY('right', 'bottom', 800, 600, 200, 100));
+        $ImgAc->setSourceImageWidth(800);
+        $ImgAc->setSourceImageHeight(600);
+        $this->assertSame([590, 10], $ImgAc->calculateWatermarkImageStartXY('right', 'top', 800, 600, 200, 100));
+        $ImgAc->setSourceImageWidth(800);
+        $ImgAc->setSourceImageHeight(600);
+        $this->assertSame([300, 250], $ImgAc->calculateWatermarkImageStartXY('center', 'middle', 800, 600, 200, 100));
+        unset($ImgAc);
+    }// testCalculateWatermarkImageStartXY
+
+
     public function testConvertAlpha127ToRgba()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertSame('1.00', $ImgAc->convertAlpha127ToRgba(-1));// less than 0, set to 0 and calculate
         $this->assertSame('1.00', $ImgAc->convertAlpha127ToRgba(0));
         $this->assertSame('0.69', $ImgAc->convertAlpha127ToRgba(40));

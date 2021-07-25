@@ -2,39 +2,23 @@
 require_once 'include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
-$sourceImageSquare = '../source-images/sample-square.jpg';
-$chineseText = '他们';
-$watermarkText = 'Hello สั้น ญ ญู ฎฐ โอ ไอ อำ อ้า bye!';
-$font = '../source-images/cschatthai.ttf';
-$fontSize = 20;
+$sourceImage = '../source-images/sample-square.jpg';
+$watermarkImage = '../source-images/watermark.jpg';
 
 
-function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtColor = 'white', $fillBg = true)
+function displayWatermarkImage($positionx, $positiony, $driver = 'Gd', $saveExt = 'gif')
 {
     global $font, $fontSize;
-    global $sourceImageSquare;
-    global $watermarkText;
+    global $sourceImage;
+    global $watermarkImage;
 
-    $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '-txtc' . $txtColor . '-fillc' . $fillBg . '.jpg';
+    $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '.' . $saveExt;
     if (strtolower($driver) === 'imagick') {
-        $Image = new \Rundiz\Image\Drivers\Imagick($sourceImageSquare);
+        $Image = new \Rundiz\Image\Drivers\Imagick($sourceImage);
     } else {
-        $Image = new \Rundiz\Image\Drivers\Gd($sourceImageSquare);
+        $Image = new \Rundiz\Image\Drivers\Gd($sourceImage);
     }
-    $Image->wmTextBottomPadding = 10;
-    $Image->watermarkText(
-        $watermarkText, 
-        $font, 
-        $positionx, 
-        $positiony, 
-        $fontSize, 
-        $txtColor,
-        60,
-        [
-            'fillBackground' => $fillBg,
-            'backgroundColor' => 'debug',
-        ]
-    );
+    $Image->watermarkImage($watermarkImage, $positionx, $positiony);
     $Image->save($saveImage);
     $Image->clear();
     unset($Image);
@@ -48,7 +32,7 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
     list($width, $height) = getimagesize($saveImage);
     echo 'Image resolution: ' . $width . 'x' . $height . '<br>' . PHP_EOL;
     unset($height, $width);
-}// displayWatermarkTextImage
+}// displayWatermarkImage
 ?>
 <!DOCTYPE html>
 <html>
@@ -58,11 +42,10 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>Watermark text comparison</h1>
-        <p>Source image: <a href="<?=$sourceImageSquare; ?>"><img class="thumbnail" src="<?=$sourceImageSquare; ?>" alt=""></a></p>
+        <h1>Watermark image comparison</h1>
+        <p>Source image: <a href="<?=$sourceImage; ?>"><img class="thumbnail" src="<?=$sourceImage; ?>" alt=""></a></p>
         <p>
-            Watermark text: <em><?=$watermarkText; ?></em><br>
-            Font size: <?=$fontSize; ?> 
+            Watermark image: <a href="<?=$watermarkImage; ?>"><img class="thumbnail" src="<?=$watermarkImage; ?>" alt=""></a>
         </p>
         <table>
             <thead>
@@ -89,12 +72,12 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
                     </td>
                     <td>
                         <?php
-                        displayWatermarkTextImage($positionSet[0], $positionSet[1]);
+                        displayWatermarkImage($positionSet[0], $positionSet[1]);
                         ?> 
                     </td>
                     <td>
                         <?php
-                        displayWatermarkTextImage($positionSet[0], $positionSet[1], 'Imagick');
+                        displayWatermarkImage($positionSet[0], $positionSet[1], 'Imagick');
                         ?> 
                     </td>
                 </tr>
@@ -104,10 +87,19 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
                 unset($positions);
                 ?> 
                 <tr>
-                    <td>0, 0 (gd only, no background)</td>
+                    <td>0, 0 save as gif</td>
                     <td>
                         <?php
-                        displayWatermarkTextImage(0, 0, 'Gd', 'black', false);
+                        displayWatermarkImage(0, 0, 'Gd', 'gif');
+                        ?> 
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>0, 0 save as png</td>
+                    <td>
+                        <?php
+                        displayWatermarkImage(0, 0, 'Gd', 'png');
                         ?> 
                     </td>
                     <td></td>

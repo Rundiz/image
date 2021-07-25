@@ -12,14 +12,14 @@
 
 namespace Rundiz\Image\Drivers;
 
-use Rundiz\Image\ImageAbstractClass;
+use Rundiz\Image\AbstractImage;
 
 /**
  * ImageMagick driver for image manipulation.
  *
  * @since 3.0
  */
-class Imagick extends ImageAbstractClass
+class Imagick extends AbstractImage
 {
 
 
@@ -50,18 +50,6 @@ class Imagick extends ImageAbstractClass
      * @var \Imagick Imagick for watermark image.
      */
     public $ImagickWatermark;
-    /**
-     * @var string Watermark image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp
-     */
-    private $watermark_image_type;
-    /**
-     * @var int Watermark image width
-     */
-    private $watermark_image_width;
-    /**
-     * @var int Watermark image height
-     */
-    private $watermark_image_height;
 
 
     /**
@@ -141,18 +129,8 @@ class Imagick extends ImageAbstractClass
         $this->ImagickWatermark = null;
 
         $this->source_image_frames = 0;
-        $this->watermark_image_height = null;
-        $this->watermark_image_type = null;
-        $this->watermark_image_width = null;
 
-        $this->status = false;
-        $this->status_msg = null;
-
-        $this->destination_image_height = null;
-        $this->destination_image_width = null;
-        $this->last_modified_image_height = null;
-        $this->last_modified_image_width = null;
-
+        parent::clear();
         parent::buildSourceImageData($this->source_image_path);
         $this->buildSourceImageData($this->source_image_path);
     }// clear
@@ -286,20 +264,6 @@ class Imagick extends ImageAbstractClass
         unset($black, $fill, $transparent, $transwhite, $white);
         return true;
     }// crop
-
-
-    /**
-     * Check is previous operation contain error?
-     * 
-     * @return bool Return true if there is some error, false if there is not.
-     */
-    private function isPreviousError()
-    {
-        if ($this->status == false && $this->status_msg != null) {
-            return true;
-        }
-        return false;
-    }// isPreviousError
 
 
     /**
@@ -556,29 +520,10 @@ class Imagick extends ImageAbstractClass
             return false;
         }
 
-        // set the real path to save file name in case that it was set as relative path.
-        $file_name_exp = explode('/', str_ireplace('\\', '/', $file_name));
-        $file_name_only = $file_name_exp[count($file_name_exp)-1];
-        unset($file_name_exp[count($file_name_exp)-1]);
-        $save_folder = implode(DIRECTORY_SEPARATOR, $file_name_exp);
-        $real_file_name = realpath($save_folder) . DIRECTORY_SEPARATOR . $file_name_only;
-        unset($file_name_exp, $file_name_only);
-
-        if (strpos($file_name, '.') !== false) {
-            $file_name_exp = explode('.', $file_name);
-            if (is_array($file_name_exp) && isset($file_name_exp[count($file_name_exp)-1])) {
-                $file_ext = $file_name_exp[count($file_name_exp)-1];
-            } else {
-                $file_ext = str_replace('.', '', $this->source_image_ext);
-            }
-        } else {
-            $file_ext = str_replace('.', '', $this->source_image_ext);
-        }
-        unset($file_name_exp);
-        $file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
-        $file_ext = ltrim($file_ext, '.');
-
-        $check_file_ext = strtolower($file_ext);
+        $FS = new \Rundiz\Image\FileSystem();
+        $file_name = $FS->getFileRealpath($file_name);
+        $check_file_ext = strtolower($FS->getFileExtension($file_name));
+        unset($FS);
 
         // setup source object in case that it was not set.
         if ($this->Imagick == null) {
@@ -603,7 +548,7 @@ class Imagick extends ImageAbstractClass
 
             if ($this->source_image_type === IMAGETYPE_GIF && $this->save_animate_gif === true) {
                 // source file is gif and allow to save animated
-                $save_result = $this->Imagick->writeImages($real_file_name, true);
+                $save_result = $this->Imagick->writeImages($file_name, true);
             } else {
                 if ($this->source_image_frames > 1 && is_object($this->ImagickFirstFrame)) {
                     // if source image is animated gif and save to non-animated gif, get the first frame.
@@ -617,7 +562,7 @@ class Imagick extends ImageAbstractClass
                     $this->Imagick->setImagePage(0, 0, 0, 0);
                 }
 
-                $save_result = $this->Imagick->writeImage($real_file_name);
+                $save_result = $this->Imagick->writeImage($file_name);
             }
         } elseif ($check_file_ext == 'jpg') {
             if ($this->source_image_type === IMAGETYPE_GIF) {
@@ -648,7 +593,7 @@ class Imagick extends ImageAbstractClass
             }
 
             $this->Imagick->setImageCompressionQuality($this->jpg_quality);
-            $save_result = $this->Imagick->writeImage($real_file_name);
+            $save_result = $this->Imagick->writeImage($file_name);
         } elseif ($check_file_ext == 'png') {
             if ($this->source_image_type === IMAGETYPE_GIF) {
                 // source file is gif
@@ -672,7 +617,7 @@ class Imagick extends ImageAbstractClass
             }
             $this->Imagick->setCompressionQuality(intval($this->png_quality . 5));
 
-            $save_result = $this->Imagick->writeImage($real_file_name);
+            $save_result = $this->Imagick->writeImage($file_name);
         } else {
             $this->status = false;
             $this->status_msg = sprintf('Unable to save this kind of image. (%s)', $check_file_ext);
@@ -1017,72 +962,23 @@ class Imagick extends ImageAbstractClass
             $wm_img_start_y = intval($wm_img_start_y);
         }
 
+        // setup watermark object for use later.
+        $this->setupWatermarkImageObject($wm_img_path);
+
         // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
         if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
-            $this->setupWatermarkImageObject($wm_img_path);
-
             if ($this->isPreviousError()) {
                 return false;
             }
 
-            if (!is_numeric($wm_img_start_x)) {
-                switch (strtolower($wm_img_start_x)) {
-                    case 'center':
-                        $image_width = $this->Imagick->getImageWidth();
-                        $watermark_width = $this->ImagickWatermark->getImageWidth();
-
-                        $wm_img_start_x = $this->calculateStartXOfCenter($watermark_width, $image_width);
-
-                        unset($image_width, $watermark_width);
-                        break;
-                    case 'right':
-                        $source_image_width = $this->source_image_width;
-                        if ($this->last_modified_image_width != null) {
-                            $source_image_width = $this->last_modified_image_width;
-                        }
-
-                        if ($source_image_width > ($this->watermark_image_width + 5)) {
-                            $wm_img_start_x = intval($source_image_width - ($this->watermark_image_width + 5));
-                        } else {
-                            $wm_img_start_x = intval($source_image_width - $this->watermark_image_width);
-                        }
-                        unset($source_image_width);
-                        break;
-                    case 'left':
-                    default:
-                        $wm_img_start_x = 5;
-                        break;
-                }
-            }
-
-            if (!is_numeric($wm_img_start_y)) {
-                switch (strtolower($wm_img_start_y)) {
-                    case 'middle':
-                        $image_height = $this->Imagick->getImageHeight();
-                        $watermark_height = $this->ImagickWatermark->getImageHeight();
-
-                        $wm_img_start_y = $this->calculateStartXOfCenter($watermark_height, $image_height);
-
-                        unset($image_height, $watermark_height);
-                        break;
-                    case 'bottom':
-                        $source_image_height = $this->source_image_height;
-                        if ($this->last_modified_image_height != null) {
-                            $source_image_height = $this->last_modified_image_height;
-                        }
-
-                        if ($source_image_height - ($this->watermark_image_height + 5) > '0') {
-                            $wm_img_start_y = intval($source_image_height - ($this->watermark_image_height + 5));
-                        } else {
-                            $wm_img_start_y = intval($source_image_height - $this->watermark_image_height);
-                        }
-                        break;
-                    case 'top':
-                    default:
-                        $wm_img_start_y = 5;
-                        break;
-                }
-            }
+            list($wm_img_start_x, $wm_img_start_y) = $this->calculateWatermarkImageStartXY(
+                $wm_img_start_x,
+                $wm_img_start_y,
+                $this->Imagick->getImageWidth(),
+                $this->Imagick->getImageHeight(),
+                $this->watermark_image_width,
+                $this->watermark_image_height
+            );
         }
 
         return $this->watermarkImageProcess($wm_img_path, $wm_img_start_x, $wm_img_start_y);
@@ -1093,24 +989,22 @@ class Imagick extends ImageAbstractClass
      * Process watermark image to the main image.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @param int $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param int $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
+     * @param int $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
-        $this->setupWatermarkImageObject($wm_img_path);
-
         if ($this->isPreviousError()) {
             return false;
         }
 
         switch ($this->watermark_image_type) {
-            case '1':
+            case IMAGETYPE_GIF:
                 // gif
-            case '2':
+            case IMAGETYPE_JPEG:
                 // jpg
-            case '3':
+            case IMAGETYPE_PNG:
                 // png
                 if ($this->source_image_frames > 1) {
                     // if source image is animated gif
