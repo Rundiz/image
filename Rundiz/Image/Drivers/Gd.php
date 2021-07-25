@@ -10,14 +10,14 @@
 
 namespace Rundiz\Image\Drivers;
 
-use Rundiz\Image\ImageAbstractClass;
+use Rundiz\Image\AbstractImage;
 
 /**
  * GD driver for image manipulation.
  *
  * @since 3.0
  */
-class Gd extends ImageAbstractClass
+class Gd extends AbstractImage
 {
 
 
@@ -34,18 +34,6 @@ class Gd extends ImageAbstractClass
      * @var mixed Image resource identifier for watermark image.
      */
     private $watermark_image_object = null;
-    /**
-     * @var string Watermark image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp
-     */
-    private $watermark_image_type;
-    /**
-     * @var int Watermark image width
-     */
-    private $watermark_image_width;
-    /**
-     * @var int Watermark image height
-     */
-    private $watermark_image_height;
 
 
     /**
@@ -64,6 +52,42 @@ class Gd extends ImageAbstractClass
     {
         $this->clear();
     }// __destruct
+
+
+    /**
+     * Apply watermark (text or image) object to GIF image object.
+     * 
+     * The `source_image_object` property must contain GIF image object.
+     * 
+     * @param resource|object $wmObject The watermark object, can be image or text.
+     * @param int $wmWidth Watermark width
+     * @param int $wmHeight Watermark height
+     * @param int $wmStartX Watermark start X position.
+     * @param int $wmStartY Watermark start Y position.
+     */
+    private function applyWatermarkToGifImage($wmObject, $wmWidth, $wmHeight, $wmStartX, $wmStartY)
+    {
+        // create temp canvas.
+        $tempCanvas = imagecreatetruecolor($wmWidth, $wmHeight);
+
+        // set temp canvas to be transparent. ---------
+        imagesavealpha($tempCanvas, true);
+        $TCColorForTransparent = imagecolorallocatealpha($tempCanvas, 255, 0, 255, 127);// look like pink or magenta.
+        imagefill($tempCanvas, 0, 0, $TCColorForTransparent);
+        imagecolortransparent($tempCanvas, $TCColorForTransparent);
+        unset($TCColorForTransparent);
+        // end set temp canvas transparent. -----------
+
+        // copy part of source image to temp canvas where the size is same as watermark canvas.
+        imagecopy($tempCanvas, $this->source_image_object, 0, 0, $wmStartX, $wmStartY, $wmWidth, $wmHeight);
+        // copy the whole watermark canvas to temp canvas.
+        imagecopy($tempCanvas, $wmObject, 0, 0, 0, 0, $wmWidth, $wmHeight);
+        // copy merge temp canvas to image object.
+        imagecopymerge($this->source_image_object, $tempCanvas, $wmStartX, $wmStartY, 0, 0, $wmWidth, $wmHeight, 100);
+        // destroy temp canvas.
+        imagedestroy($tempCanvas);
+        unset($tempCanvas);
+    }// applyWatermarkToGifImage
 
 
     /**
@@ -87,17 +111,7 @@ class Gd extends ImageAbstractClass
         $this->source_image_object = null;
         $this->watermark_image_object = null;
 
-        $this->watermark_image_height = null;
-        $this->watermark_image_type = null;
-        $this->watermark_image_width = null;
-
-        $this->status = false;
-        $this->status_msg = null;
-        $this->destination_image_height = null;
-        $this->destination_image_width = null;
-        $this->last_modified_image_height = null;
-        $this->last_modified_image_width = null;
-
+        parent::clear();
         $this->buildSourceImageData($this->source_image_path);
     }// clear
 
@@ -240,20 +254,6 @@ class Gd extends ImageAbstractClass
         unset($black, $fill, $transwhite, $white);
         return true;
     }// crop
-
-
-    /**
-     * Check is previous operation contain error?
-     * 
-     * @return bool Return true if there is some error, false if there is not.
-     */
-    private function isPreviousError()
-    {
-        if ($this->status == false && $this->status_msg != null) {
-            return true;
-        }
-        return false;
-    }// isPreviousError
 
 
     /**
@@ -507,21 +507,10 @@ class Gd extends ImageAbstractClass
             return false;
         }
 
-        if (strpos($file_name, '.') !== false) {
-            $file_name_exp = explode('.', $file_name);
-            if (is_array($file_name_exp) && isset($file_name_exp[count($file_name_exp)-1])) {
-                $file_ext = $file_name_exp[count($file_name_exp)-1];
-            } else {
-                $file_ext = str_replace('.', '', $this->source_image_ext);
-            }
-        } else {
-            $file_ext = str_replace('.', '', $this->source_image_ext);
-        }
-        unset($file_name_exp);
-        $file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
-        $file_ext = ltrim($file_ext, '.');
-
-        $check_file_ext = strtolower($file_ext);
+        $FS = new \Rundiz\Image\FileSystem();
+        $file_name = $FS->getFileRealpath($file_name);
+        $check_file_ext = strtolower($FS->getFileExtension($file_name));
+        unset($FS);
 
         // in case that it was called new Gd object and then save without any modification.
         if ($this->destination_image_object == null && $this->source_image_object == null) {
@@ -717,15 +706,15 @@ class Gd extends ImageAbstractClass
         }
 
         switch ($wm_type) {
-            case '1':
+            case IMAGETYPE_GIF:
                 $this->watermark_image_object = imagecreatefromgif($wm_img_path);
                 // add alpha to support transparency gif
                 imagesavealpha($this->watermark_image_object, true);
                 break;
-            case '2':
+            case IMAGETYPE_JPEG:
                 $this->watermark_image_object = imagecreatefromjpeg($wm_img_path);
                 break;
-            case '3':
+            case IMAGETYPE_PNG:
                 $this->watermark_image_object = imagecreatefrompng($wm_img_path);
                 // add alpha, alpha blending to support transparency png
                 imagealphablending($this->watermark_image_object, false);
@@ -888,72 +877,23 @@ class Gd extends ImageAbstractClass
             $wm_img_start_y = intval($wm_img_start_y);
         }
 
+        // setup watermark object for use later.
+        $this->setupWatermarkImageObject($wm_img_path);
+
         // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
         if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
-            $this->setupWatermarkImageObject($wm_img_path);
-
             if ($this->isPreviousError()) {
                 return false;
             }
 
-            if (!is_numeric($wm_img_start_x)) {
-                switch (strtolower($wm_img_start_x)) {
-                    case 'center':
-                        $image_width = imagesx($this->source_image_object);
-                        $watermark_width = imagesx($this->watermark_image_object);
-
-                        $wm_img_start_x = $this->calculateStartXOfCenter($watermark_width, $image_width);
-
-                        unset($image_width, $watermark_width);
-                        break;
-                    case 'right':
-                        $source_image_width = $this->source_image_width;
-                        if ($this->last_modified_image_width != null) {
-                            $source_image_width = $this->last_modified_image_width;
-                        }
-
-                        if ($source_image_width > ($this->watermark_image_width + 5)) {
-                            $wm_img_start_x = intval($source_image_width - ($this->watermark_image_width + 5));
-                        } else {
-                            $wm_img_start_x = intval($source_image_width - $this->watermark_image_width);
-                        }
-                        unset($source_image_width);
-                        break;
-                    case 'left':
-                    default:
-                        $wm_img_start_x = 5;
-                        break;
-                }
-            }
-
-            if (!is_numeric($wm_img_start_y)) {
-                switch (strtolower($wm_img_start_y)) {
-                    case 'middle':
-                        $image_height = imagesy($this->source_image_object);
-                        $watermark_height = imagesy($this->watermark_image_object);
-
-                        $wm_img_start_y = $this->calculateStartXOfCenter($watermark_height, $image_height);
-
-                        unset($image_height, $watermark_height);
-                        break;
-                    case 'bottom':
-                        $source_image_height = $this->source_image_height;
-                        if ($this->last_modified_image_height != null) {
-                            $source_image_height = $this->last_modified_image_height;
-                        }
-
-                        if ($source_image_height - ($this->watermark_image_height + 5) > '0') {
-                            $wm_img_start_y = intval($source_image_height - ($this->watermark_image_height + 5));
-                        } else {
-                            $wm_img_start_y = intval($source_image_height - $this->watermark_image_height);
-                        }
-                        break;
-                    case 'top':
-                    default:
-                        $wm_img_start_y = 5;
-                        break;
-                }
-            }
+            list($wm_img_start_x, $wm_img_start_y) = $this->calculateWatermarkImageStartXY(
+                $wm_img_start_x,
+                $wm_img_start_y,
+                imagesx($this->source_image_object),
+                imagesy($this->source_image_object),
+                $this->watermark_image_width,
+                $this->watermark_image_height
+            );
         }
 
         return $this->watermarkImageProcess($wm_img_path, $wm_img_start_x, $wm_img_start_y);
@@ -964,35 +904,34 @@ class Gd extends ImageAbstractClass
      * Process watermark image to the main image.
      * 
      * @param string $wm_img_path Path to watermark image.
-     * @param int $wm_img_start_x Position to begin in x axis. The valus is integer or 'left', 'center', 'right'.
-     * @param int $wm_img_start_y Position to begin in x axis. The valus is integer or 'top', 'middle', 'bottom'.
+     * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
+     * @param int $wm_img_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
-        $this->setupWatermarkImageObject($wm_img_path);
-
         if ($this->isPreviousError()) {
             return false;
         }
 
         switch ($this->watermark_image_type) {
-            case '1':
+            case IMAGETYPE_GIF:
                 // gif
-            case '2':
+            case IMAGETYPE_JPEG:
                 // jpg
                 imagecopy($this->source_image_object, $this->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
                 break;
-            case '3':
+            case IMAGETYPE_PNG:
                 // png
                 if ($this->source_image_type === IMAGETYPE_GIF) {
-                    // source image is gif (which maybe transparent) and watermark image is png. so, this cannot just use imagecopy() function.
+                    // if source image is gif (which maybe transparent) and watermark image is png. so, this cannot just use imagecopy() function.
                     // see more at http://stackoverflow.com/questions/4437557/using-gd-in-php-how-can-i-make-a-transparent-png-watermark-on-png-and-gif-files
-                    $tempCanvas = imagecreatetruecolor($this->watermark_image_width, $this->watermark_image_height);
-                    imagecopy($tempCanvas, $this->source_image_object, 0, 0, $wm_img_start_x, $wm_img_start_y, $this->watermark_image_width, $this->watermark_image_height);
-                    imagecopy($tempCanvas, $this->watermark_image_object, 0, 0, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
-                    imagecopymerge($this->source_image_object, $tempCanvas, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height, 100);
-                    imagedestroy($tempCanvas);
+                    $this->applyWatermarkToGifImage(
+                        $this->watermark_image_object,
+                        $this->watermark_image_width, 
+                        $this->watermark_image_height, 
+                        $wm_img_start_x, $wm_img_start_y
+                    );
                 } else {
                     imagealphablending($this->source_image_object, true);// add this for transparent watermark thru image.
                     imagecopy($this->source_image_object, $this->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->watermark_image_width, $this->watermark_image_height);
@@ -1180,21 +1119,13 @@ class Gd extends ImageAbstractClass
         switch ($this->source_image_type) {
             case IMAGETYPE_GIF:
                 // gif
-                // create temp canvas.
-                $tempCanvas = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
-                // set temp canvas to be transparent.
-                imagesavealpha($tempCanvas, true);
-                $TCColorForTransparent = imagecolorallocatealpha($tempCanvas, 255, 0, 255, 127);// look like pink or magenta.
-                imagefill($tempCanvas, 0, 0, $TCColorForTransparent);
-                imagecolortransparent($tempCanvas, $TCColorForTransparent);
-                // copy part of source image to temp canvas where the size is same as watermark canvas.
-                imagecopy($tempCanvas, $this->source_image_object, 0, 0, $wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height);
-                // copy the whole watermark canvas to temp canvas.
-                imagecopy($tempCanvas, $wm_txt_object, 0, 0, 0, 0, $wm_txt_width, $wm_txt_height);
-                // copy merge temp canvas to image object.
-                imagecopymerge($this->source_image_object, $tempCanvas, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height, 100);
-                // destroy temp canvas.
-                imagedestroy($tempCanvas);
+                $this->applyWatermarkToGifImage(
+                    $wm_txt_object, 
+                    $wm_txt_width, 
+                    $wm_txt_height, 
+                    $wm_txt_start_x, 
+                    $wm_txt_start_y
+                );
                 break;
             case IMAGETYPE_PNG:
                 // png
