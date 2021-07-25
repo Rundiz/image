@@ -233,6 +233,81 @@ trait CalculationTrait
 
 
     /**
+     * Calculate watermark start X and Y from specified text position (left, right, bottom, top, middle, center).
+     * 
+     * @param string $wmStartX Position to begin in x axis. The value is 'left', 'center', 'right'.
+     * @param string $wmStartY Position to begin in y axis. The value is 'top', 'middle', 'bottom'.
+     * @param int $imgWidth Latest image width. Get the dimension from latest modified image only.
+     * @param int $imgHeight Latest image height. Get the dimension from latest modified image only.
+     * @param int $wmWidth Latest watermark image width. Get the dimension from latest modified image only.
+     * @param int $wmHeight Latest watermark image height. Get the dimension from latest modified image only.
+     * @param array $options Associative array.<br>
+     *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center.<br>
+     * @return array Return array with width as index 0, height as index 1.
+     * @throws \InvalidArgumentException Throw exception if invalid argument type was specified.
+     */
+    protected function calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, array $options = [])
+    {
+        if (!is_numeric($imgHeight) || !is_numeric($imgWidth)) {
+            throw new \InvalidArgumentException('The $imgWidth and $imgHeight must be number.');
+        }
+        if (!is_numeric($wmHeight) || !is_numeric($wmWidth)) {
+            throw new \InvalidArgumentException('The $wmWidth and $wmHeight must be number.');
+        }
+
+        if (!array_key_exists('padding', $options) || !is_numeric($options['padding'])) {
+            $options['padding'] = 10;
+        }
+
+        if (is_string($wmStartX)) {
+            switch (strtolower($wmStartX)) {
+                case 'center':
+                    // in previous v. $imgWidth, $wmWidth was set by imagesx() for GD and getImageWidth() for Imagick.
+                    $wmStartX = $this->calculateStartXOfCenter($wmWidth, $imgWidth);
+                    break;
+                case 'right':
+                    // use width from source image.
+                    $imgWidth = $this->source_image_width;
+                    if ($this->last_modified_image_width != null) {
+                        // if found last modified img width, use this one instead.
+                        $imgWidth = $this->last_modified_image_width;
+                    }
+                    $wmStartX = intval($imgWidth - ($wmWidth + $options['padding']));
+                    break;
+                case 'left':
+                default:
+                    $wmStartX = $options['padding'];
+                    break;
+            }
+        }// endif; $wmStartX
+
+        if (is_string($wmStartY)) {
+            switch (strtolower($wmStartY)) {
+                case 'middle':
+                    // in previous v. $imgHeight, $wmHeight was set by imagesy() for GD and getImageHeight() for Imagick.
+                    $wmStartY = $this->calculateStartXOfCenter($wmHeight, $imgHeight);
+                    break;
+                case 'bottom':
+                    // use height from source image.
+                    $imgHeight = $this->source_image_height;
+                    if ($this->last_modified_image_height != null) {
+                        // if found last modified img height, use this one instead.
+                        $imgHeight = $this->last_modified_image_height;
+                    }
+                    $wmStartY = intval($imgHeight - ($wmHeight + $options['padding']));
+                    break;
+                case 'top':
+                default:
+                    $wmStartY = $options['padding'];
+                    break;
+            }
+        }// endif; $wmStartY
+
+        return [$wmStartX, $wmStartY];
+    }// calculateWatermarkImageStartXY
+
+
+    /**
      * Convert alpha number (0 - 127) to rgba value (1.00 - 0.00).
      * 
      * @param int $number Alpha number (0 to 127). 127 is completely transparent.

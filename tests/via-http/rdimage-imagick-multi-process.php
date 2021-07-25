@@ -141,6 +141,16 @@ function displayStandardMultiProcess(array $test_data_set)
         $Image->save($file_name);
         $Image->clear();
         echo '<a href="'.$file_name.'">'.$file_ext.' (rotate &gt; resize &gt; crop &gt; watermark image)</a><img src="'.$file_name.'" alt="" class="thumbnail"><br> ';
+        $file_name = '../processed-images/' . basename(__FILE__, '.php') . '-wmimg-right,bottom-resize1000x1000-wmimg-right,bottom-resize450x450-wmimg-right,bottom-sourcejpg.'.$file_ext;
+        $Image->watermarkImage('../source-images/watermark.png', 'right', 'bottom');
+        $Image->resize(1000, 1000);
+        $Image->watermarkImage('../source-images/watermark.png', 'right', 'bottom');
+        $Image->resize(450, 450);
+        $Image->watermarkImage('../source-images/watermark.png', 'right', 'bottom');
+        $Image->save($file_name);
+        $Image->clear();
+        echo '<a href="'.$file_name.'">'.$file_ext.' (watermark image &gt; resize &gt; watermark image &gt; resize &gt; watermark image)</a><img src="'.$file_name.'" alt="" class="thumbnail"> ';
+        echo ' This image, you must see watermark at bottom right in 3 different sizes.<br>';
         $file_name = '../processed-images/' . basename(__FILE__, '.php') . '-rotate-'.$rotate.'-resize-'.$resize_w.'x'.$resize_h.'-crop-'.$crop_width.'x'.$crop_height.'-watermarktext-right,bottom-sourcejpg.'.$file_ext;
         $Image->rotate($rotate);
         $Image->resizeNoRatio($resize_w, $resize_h);

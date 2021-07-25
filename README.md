@@ -1,6 +1,24 @@
 # Image manipulation
 
-Image manipulation use GD or Imagick as drivers. It support watermark image or text, resize, crop, rotate (flip - see API doc), transparency gif or png and also support animation gif (Imagick only).
+Image manipulation use GD or Imagick as drivers. 
+
+## Features:
+### File extensions supported
+
+* GIF
+* JPG (JPEG)
+* PNG
+
+### Functional
+
+* Crop
+* Flip (Require PHP 5.5+ for GD driver.)
+* Resize (aspect ratio and not)
+* Rotate
+* Watermark image (including alpha transparency.)
+* Watermark text (including alpha transparency.)
+* Supported transparent GIF, PNG.
+* Supported animated GIF (Imagick only).
 
 [![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
 [![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
@@ -8,12 +26,14 @@ Image manipulation use GD or Imagick as drivers. It support watermark image or t
 
 ## Example
 ### Gd driver
+
 ```php
 $Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
 $Image->resize(900, 600);
 $Image->save('/path/to/new-file-name.jpg');
 ```
 ### Imagick driver
+
 ```php
 $Image = new \Rundiz\Image\Drivers\Imagick('/path/to/source-image.jpg');
 $Image->resize(900, 600);

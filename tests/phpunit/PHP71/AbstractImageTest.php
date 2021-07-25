@@ -10,7 +10,7 @@ namespace Rundiz\Image\Tests\PHP71;
 /**
  * @group processing
  */
-class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
 {
 
 
@@ -18,7 +18,7 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
     {
         $this->requireFilesExistsAndFolderWritable();
         foreach (static::$source_images_set as $source_image) {
-            $ImgAC = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . $source_image);
+            $ImgAC = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . $source_image);
             $this->assertTrue($ImgAC->status);
             unset($ImgAC);
         }// endforeach;
@@ -27,7 +27,7 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
 
     public function testGetImageFileData()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertTrue(is_array($ImgAc->getImageFileData(static::$source_images_dir . 'city-amsterdam.jpg')));
         $this->assertTrue(is_array($ImgAc->getImageFileData(static::$source_images_dir . 'city-amsterdam.gif')));
         $this->assertTrue(is_array($ImgAc->getImageFileData(static::$source_images_dir . 'city-amsterdam.png')));
@@ -56,7 +56,7 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
 
     public function testGetImageSize()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertTrue(
             empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(
                 array(
@@ -75,7 +75,7 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
                 $ImgAc->getImageSize()
             ))
         );
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'sample-portrait.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-portrait.jpg');
         $this->assertTrue(
             empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(
                 array(
@@ -91,11 +91,11 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
 
     public function testGetSourceImageOrientation()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertSame('L', $ImgAc->getSourceImageOrientation());
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'sample-portrait.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-portrait.jpg');
         $this->assertSame('P', $ImgAc->getSourceImageOrientation());
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'sample-square.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-square.jpg');
         $this->assertSame('S', $ImgAc->getSourceImageOrientation());
         unset($ImgAc);
     }// testGetSourceImageOrientation
@@ -103,9 +103,9 @@ class ImageAbstractClassTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstrac
 
     public function testIsClassSetup()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertTrue($ImgAc->isClassSetup());
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedImageAbstractClass(static::$source_images_dir . 'file-not-exists' . date('YmdHis') . '.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'file-not-exists' . date('YmdHis') . '.jpg');
         $this->assertFalse($ImgAc->isClassSetup());
         unset($ImgAc);
     }// testIsClassSetup
