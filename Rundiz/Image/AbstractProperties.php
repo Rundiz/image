@@ -8,13 +8,26 @@ namespace Rundiz\Image;
 
 
 /**
- * Abstract driver class.
+ * Abstract properties class.
  * 
  * For use properties between classes without implement interface.
  * 
  * @since 3.1.0
+ * @property-read int $destination_image_height
+ * @property-read int $destination_image_width
+ * @property-read string $source_image_ext
+ * @property-read int $source_image_height
+ * @property-read string $source_image_mime
+ * @property-read string $source_image_path
+ * @property-read string $source_image_type
+ * @property-read int $source_image_width
+ * @property-read int $last_modified_image_height
+ * @property-read int $last_modified_image_width
+ * @property-read int $watermark_image_height
+ * @property-read int $watermark_image_width
+ * @property-read string $watermark_image_type
  */
-abstract class AbstractDriver
+abstract class AbstractProperties
 {
 
 
@@ -54,6 +67,11 @@ abstract class AbstractDriver
      * @var int Set the number of pixels to add to watermark text at the bottom. Default is 5, previous version was 5.
      */
     public $wmTextBottomPadding = 5;
+    /**
+     * Watermark text bounding box vertical (Y) padding.
+     * @var int Set the number of watermark text bounding box padding. Default is 0.
+     */
+    public $wmTextBoundingBoxYPadding = 0;
 
     // Most of the properties below are unable to set or access directly from outside this class. --------------------
     /**

@@ -17,11 +17,14 @@ use Rundiz\Image\ImageInterface;
  * @since 3.0
  * Renamed from ImageAbstractClass since 3.1.0
  */
-abstract class AbstractImage extends AbstractDriver implements ImageInterface
+abstract class AbstractImage extends AbstractProperties implements ImageInterface
 {
 
 
     use Traits\CalculationTrait;
+
+
+    use Traits\ImageTrait;
 
 
     /**
@@ -34,6 +37,40 @@ abstract class AbstractImage extends AbstractDriver implements ImageInterface
     {
         return $this->buildSourceImageData($source_image_path);
     }// __construct
+
+
+    /**
+     * Class de-constructor.
+     */
+    public function __destruct()
+    {
+        $this->clear();
+    }// __destruct
+
+
+    /**
+     * Magic get
+     * @param string $name
+     */
+    public function __get($name)
+    {
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
+    }// __get
+
+
+    /**
+     * Magic set
+     * @param string $name
+     * @param mixed $value
+     */
+    public function __set($name, $value)
+    {
+        if (property_exists($this, $name)) {
+            $this->{$name} = $value;
+        }
+    }// __set
 
 
     /**
@@ -96,80 +133,6 @@ abstract class AbstractImage extends AbstractDriver implements ImageInterface
         $this->last_modified_image_height = null;
         $this->last_modified_image_width = null;
     }// clear
-
-
-    /**
-     * Get image file data such as width, height, mime type.
-     * 
-     * This will be use `getimagesize()` function if supported, use GD functions as backup.
-     * 
-     * @since 3.1.0
-     * @param string $imagePath Full path to image file.
-     * @return array|false Return array:<br>
-     *              index 0 Image width.<br>
-     *              index 1 Image height.<br>
-     *              index 2 Image type constant. See more at https://www.php.net/manual/en/image.constants.php <br>
-     *              `mime` key is mime type.<br> 
-     *              `ext` key is file extension with dot (.ext).<br>
-     *              Return `false` on failure.
-     */
-    protected function getImageFileData($imagePath)
-    {
-        if (is_file($imagePath)) {
-            $imagePath = realpath($imagePath);
-            if (
-                stripos($imagePath, '.webp') !== false && 
-                version_compare(PHP_VERSION, '7.1.0', '<') &&
-                function_exists('imagecreatefromwebp')
-            ) {
-                // if it is .webp and current PHP version is not supported and webp feature for GD is enabled.
-                try {
-                    $WebP = new Extensions\WebP();
-                    $webpInfo = $WebP->webPInfo($imagePath);
-                    if (is_array($webpInfo) && isset($webpInfo['Animation']) && $webpInfo['Animation'] === false) {
-                        // if not animated webp.
-                        $output = [];
-
-                        // use gd to get width, height.
-                        $GD = imagecreatefromwebp($imagePath);
-                        if (false !== $GD) {
-                            $output[0] = imagesx($GD);
-                            $output[1] = imagesy($GD);
-                            if (!defined('IMAGETYPE_WEBP')) {
-                                define('IMAGETYPE_WEBP', 18);
-                            }
-                            $output[2] = IMAGETYPE_WEBP;
-                            $output['mime'] = 'image/webp';
-                            $output['ext'] = '.webp';
-                            unset($GD);
-                            return $output;
-                        }
-                        unset($GD, $output);
-                    }
-                    unset($WebP, $webpInfo);
-                } catch (\Exception $ex) {
-                    // failed.
-                }
-            } else {
-                // if generic image.
-                $imgResult = getimagesize($imagePath);
-                if (
-                        is_array($imgResult) &&
-                        array_key_exists(0, $imgResult) &&
-                        array_key_exists(1, $imgResult) &&
-                        array_key_exists(2, $imgResult) &&
-                        array_key_exists('mime', $imgResult)
-                ) {
-                    // if image was supported and it really is an image, these keys must exists.
-                    $imgResult['ext'] = image_type_to_extension($imgResult[2]);
-                    return $imgResult;
-                }
-                unset($imgResult);
-            }
-        }
-
-        return false;
-    }// getImageFileData
 
 
     /**

@@ -21,8 +21,10 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
     } else {
         $Image = new \Rundiz\Image\Drivers\Gd($sourceImageSquare);
     }
-    $Image->wmTextBottomPadding = 10;
-    $Image->watermarkText(
+    $Image->wmTextBottomPadding = 7;
+    $Image->wmTextBoundingBoxYPadding = 2;
+    $Image->imagickWatermarkTextBaseline = 1;
+    $result = $Image->watermarkText(
         $watermarkText, 
         $font, 
         $positionx, 
@@ -35,9 +37,15 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
             'backgroundColor' => 'debug',
         ]
     );
-    $Image->save($saveImage);
+    if (false === $result) {
+        echo '<span style="color: red;">' . $Image->status_msg . '</span><br>' . PHP_EOL;
+    }
+    $result = $Image->save($saveImage);
+    if (false === $result) {
+        echo '<span style="color: red;">' . $Image->status_msg . '</span><br>' . PHP_EOL;
+    }
     $Image->clear();
-    unset($Image);
+    unset($Image, $result);
 
     echo '<a href="' . $saveImage . '"><img class="img-responsive" src="' . $saveImage . '?v=' . date('YmdHis') . '" alt=""></a><br>' . PHP_EOL;
     $Finfo = new finfo();
@@ -104,13 +112,17 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
                 unset($positions);
                 ?> 
                 <tr>
-                    <td>0, 0 (gd only, no background)</td>
+                    <td>0, 0 (no background)</td>
                     <td>
                         <?php
                         displayWatermarkTextImage(0, 0, 'Gd', 'black', false);
                         ?> 
                     </td>
-                    <td></td>
+                    <td>
+                        <?php
+                        displayWatermarkTextImage(0, 0, 'Imagick', 'black', false);
+                        ?> 
+                    </td>
                 </tr>
             </tbody>
         </table>
