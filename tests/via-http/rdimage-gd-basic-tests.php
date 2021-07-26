@@ -37,10 +37,15 @@ function displayTestResizes(array $test_data_set)
             if (is_array($item) && array_key_exists('source_image_path', $item)) {
                 echo '<table><tbody>';
                 echo '<tr>'."\n";
-                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a></td>'."\n";
+                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>' . "\n";
+                $imgdata = getimagesize($item['source_image_path']);
+                echo $imgdata[0] . 'x' . $imgdata[1] . ' ';
+                echo '(' . $imgdata['mime'] . ')';
+                unset($imgdata);
+                echo '</td>'."\n";
                 echo '</tr>'."\n";
                 $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
-                $file_name = '../processed-images/rundiz-gd-image-resize-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x600';
+                $file_name = '../processed-images/rundiz-gd-image-resize-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x400';
                 echo '<tr>'."\n";
                 echo '<td>Save as</td>'."\n";
                 foreach ($test_exts as $ext) {
@@ -51,6 +56,9 @@ function displayTestResizes(array $test_data_set)
                     if ($save_result === true) {
                         echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
                         $img_data = getimagesize($file_name . '.' . $ext);
+                        if (is_array($img_data) && isset($img_data[0]) && isset($img_data[1])) {
+                            echo $img_data[0] . 'x' . $img_data[1] . ' ';
+                        }
                         if (is_array($img_data) && array_key_exists('mime', $img_data)) {
                             echo '(' . $img_data['mime'] . ')'."\n";
                         }
