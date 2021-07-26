@@ -37,6 +37,7 @@
                             <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
                             <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>
                         </ul>
+                        Please note that Imagick does not support animated PNG (APNG).
                     </li>
                     <li>
                         Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
