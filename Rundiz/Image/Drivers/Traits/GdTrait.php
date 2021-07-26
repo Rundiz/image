@@ -19,7 +19,7 @@ trait GdTrait
     /**
      * Check if image variable is resource of GD or is object of `\GDImage` (PHP 8.0) or not.
      *
-     * @since 3.0.2
+     * @since 3.0.2 Moved from `\Rundiz\Image\Drivers\Gd`
      * @param mixed $image
      * @return bool Return `true` if it is resource or instance of `\GDImage`, return `false` if it is not.
      */

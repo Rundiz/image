@@ -114,4 +114,6 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         return true;
     }// execute
+
+
 }
