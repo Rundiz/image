@@ -44,14 +44,3 @@ tests export-ignore
 .dev-notes export-ignore
 .gitattributes export-ignore
 phpunit.xml export-ignore
-tests/source-images/watermark.jpg !text !filter !merge !diff
-tests/source-images/city-amsterdam.png !text !filter !merge !diff
-tests/source-images/city-amsterdam-jpg.png !text !filter !merge !diff
-tests/source-images/city-amsterdam-jpg.gif !text !filter !merge !diff
-tests/source-images/city-amsterdam-animated.gif !text !filter !merge !diff
-tests/source-images/city-amsterdam-animated.jpg !text !filter !merge !diff
-tests/source-images/city-amsterdam-non-transparent.gif !text !filter !merge !diff
-tests/source-images/city-amsterdam.gif !text !filter !merge !diff
-tests/source-images/city-amsterdam.jpg !text !filter !merge !diff
-tests/source-images/sample-portrait.jpg !text !filter !merge !diff
-tests/source-images/sample-square.jpg !text !filter !merge !diff
