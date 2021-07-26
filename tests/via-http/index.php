@@ -46,10 +46,11 @@
                         </ul>
                     </li>
                     <li>
-                        Download font from <a href="https://fonts.google.com/specimen/Bai+Jamjuree?subset=thai" target="googlefont">this link</a>.
+                        Download font from <a href="https://fonts.google.com/specimen/Bai+Jamjuree?subset=thai" target="googlefont">this link</a> 
+                        or <a href="https://thaifonts.net/fonts/chulanarak-regular" target="thaifont">this link</a> or any font that is supported Thai language.
                         <ul>
                             <li>
-                                Extract <strong>BaiJamjuree-Light.ttf</strong> and rename it to <strong>font.ttf</strong>.
+                                Extract <strong>any font name.ttf</strong> and rename it to <strong>font.ttf</strong>.
                             </li>
                         </ul>
                     </li>
