@@ -101,12 +101,13 @@
         <h3>Rundiz Image GD class test</h3>
         <ul>
             <li><a href="rdimage-gd-basic-tests.php">basic tests</a></li>
+            <li><a href="rdimage-gd-crop.php">crop</a></li>
+            <li><a href="rdimage-gd-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-gd-resize-ratio.php">resize by aspect ratio</a></li>
-            <li><a href="rdimage-gd-rotate.php">rotate</a></li>
-            <li><a href="rdimage-gd-flip.php">flip</a></li>
-            <li><a href="rdimage-gd-multi-process.php">multiple process</a></li>
+            <li><a href="rdimage-gd-rotate.php">rotate &amp; flip</a></li>
             <li><a href="rdimage-gd-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
             <li><a href="rdimage-gd-watermark-text.php">watermark text</a></li>
+            <li><a href="rdimage-gd-multi-process.php">multiple process</a></li>
             <li><a href="rdimage-gd-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Image Imagick class test</h3>
@@ -117,13 +118,14 @@
         ?> 
         <ul>
             <li><a href="rdimage-imagick-basic-tests.php">basic tests</a></li>
+            <li><a href="rdimage-imagick-crop.php">crop</a></li>
+            <li><a href="rdimage-imagick-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-imagick-resize-ratio.php">resize by aspect ratio</a></li>
-            <li><a href="rdimage-imagick-rotate.php">rotate</a></li>
-            <li><a href="rdimage-imagick-flip.php">flip</a></li>
-            <li><a href="rdimage-imagick-multi-process.php">multiple process</a></li>
+            <li><a href="rdimage-imagick-rotate.php">rotate &amp; flip</a></li>
             <li><a href="rdimage-imagick-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
             <li><a href="rdimage-imagick-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-imagick-animated-gif-watermark-text.php">animated gif and watermark text</a></li>
+            <li><a href="rdimage-imagick-multi-process.php">multiple process</a></li>
             <li><a href="rdimage-imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Image GD &amp; Imagick comparison</h3>

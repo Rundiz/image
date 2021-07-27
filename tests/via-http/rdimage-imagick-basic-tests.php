@@ -2,207 +2,99 @@
 require_once 'include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
-require __DIR__.DIRECTORY_SEPARATOR.'include-imagick-functions.php';
 
 
 function displayTestsConstructor(array $test_data_set)
 {
     echo '<h2>Constructor image data.</h2>'."\n";
-    if (is_array($test_data_set)) {
-        foreach ($test_data_set as $img_type_name => $item) {
-            echo '<h3>'.$img_type_name.'</h3>'."\n";
-            if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo 'Source image: ';
-                if (is_file($item['source_image_path'])) {
-                    echo '<a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>'."\n";
-                }
-                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-                echo '<pre class="mini-data-box">'.print_r($Image, true).'</pre>'."\n";
-                unset($Image);
+    foreach ($test_data_set as $img_type_name => $item) {
+        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            echo 'Source image: ';
+            if (is_file($item['source_image_path'])) {
+                echo '<a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>'."\n";
             }
-            echo "\n\n";
-        }// endforeach;
-    }
+            $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
+            echo '<pre class="mini-data-box">'.print_r($Image, true).'</pre>'."\n";
+            unset($Image);
+        }
+        echo "\n\n";
+    }// endforeach;
     echo "\n\n";
 }// displayTestsConstructor
 
 
-function displayTestResizes(array $test_data_set)
+function displayTestSaveCrossExts(array $test_data_set)
 {
-    $test_exts = ['gif', 'jpg', 'png'];
-    echo '<h2>Resize the images</h2>'."\n";
-    echo '<p>The images below are not resized by aspect ratio, to see resize by aspect ratio please visit <a href="rdimage-imagick-resize-ratio.php">resize by aspect ratio</a> page.</p>' . "\n";
-    if (is_array($test_data_set)) {
-        foreach ($test_data_set as $img_type_name => $item) {
-            echo '<h3>'.$img_type_name.'</h3>'."\n";
-            if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo '<table><tbody>';
-                echo '<tr>'."\n";
-                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>' . "\n";
-                $imgdata = getimagesize($item['source_image_path']);
-                echo $imgdata[0] . 'x' . $imgdata[1] . ' ';
-                echo '(' . $imgdata['mime'] . ')';
-                unset($imgdata);
-                echo '</td>'."\n";
-                echo '</tr>'."\n";
-                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-                $file_name = '../processed-images/rundiz-imagick-image-resize-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x400';
-                echo '<tr>'."\n";
-                echo '<td>Save as</td>'."\n";
-                foreach ($test_exts as $ext) {
-                    $Image->resizeNoRatio(900, 400);
-                    $save_result = $Image->save($file_name . '.' . $ext);
-                    $Image->clear();
-                    echo '<td>'."\n";
-                    if ($save_result === true) {
-                        echo '<img src="'.$file_name.'.'.$ext.'" alt="" class="thumbnail"><a href="' . $file_name . '.' . $ext . '">' . $ext . '</a>'."\n";
-                        $img_data = getimagesize($file_name . '.' . $ext);
-                        if (is_array($img_data) && isset($img_data[0]) && isset($img_data[1])) {
-                            echo $img_data[0] . 'x' . $img_data[1] . ' ';
-                        }
-                        if (is_array($img_data) && array_key_exists('mime', $img_data)) {
-                            echo '(' . $img_data['mime'] . ')'."\n";
-                        }
-                    } else {
-                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
-                    }
-                    echo '</td>'."\n";
-                    unset($img_data, $save_result);
-                }
-                echo '</tr>'."\n";
-                unset($ext, $file_name, $Image);
-                
-                echo '<tr>' . "\n";
-                echo '<td>Use show() method as</td>' . "\n";
-                foreach ($test_exts as $ext) {
-                    $image_class_show_url = 'rdimage-imagick-show-image.php?source_image_file='.$item['source_image_path'].'&amp;show_ext='.$ext.'&amp;act=resizenoratio&amp;width=900&amp;height=400';
-                    echo '<td><img src="'.$image_class_show_url.'" alt="" class="thumbnail"><a href="'.$image_class_show_url.'">' . $ext . '</a></td>' . "\n";
-                }
-                echo '</tr>' . "\n";
-                unset($ext);
-
-                echo '</tbody></table>' . "\n";
+    $saveExts = ['gif', 'jpg', 'png'];
+    echo '<h2>Save across different extensions.</h2>' . "\n";
+    foreach ($test_data_set as $img_type_name => $item) {
+        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            echo '<table><tbody>' . "\n";
+            echo '<tr>' . "\n";
+            echo '<td style="width: 200px;">Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
+            $srcImageSize = getimagesize($item['source_image_path']);
+            if (is_array($srcImageSize)) {
+                echo $srcImageSize[0] . 'x' . $srcImageSize[1] . ' ';
+                echo 'Mime type: ' . $srcImageSize['mime'];
             }
-            echo "\n\n";
-        }// endforeach;
-    }
-    echo "\n\n";
-}// displayTestResizes
+            echo '</td>'."\n";
+            $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
+            echo '</tr>' . "\n";
 
-
-function displayTestCrop(array $test_data_set)
-{
-    $test_crop = [[0, 0, 'transparent'], [90, 90, 'black'], ['center', 'middle', 'white']];
-    echo '<h2>Crop the images</h2>'."\n";
-    if (is_array($test_data_set)) {
-        foreach ($test_data_set as $img_type_name => $item) {
-            echo '<h3>'.$img_type_name.'</h3>'."\n";
-            if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo '<table><tbody>';
-                echo '<tr>' . "\n";
-                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a></td>'."\n";
-                echo '</tr>' . "\n";
-                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-                $source_image_exp = explode('.', $item['source_image_path']);
-                $file_ext = '.';
-                if (is_array($source_image_exp)) {
-                    $file_ext .= $source_image_exp[count($source_image_exp)-1];
+            echo '<tr>' . "\n";
+            echo '<td>Save as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $file_name = '../processed-images/' . basename(__FILE__, '.php') . '_src'.str_replace(' ', '-', strtolower($img_type_name)) .
+                    '_target' . trim($eachExt) . '.' . $eachExt;
+                $saveResult = $Image->save($file_name);
+                $Image->clear();
+                echo '<td>';
+                echo '<a href="' . $file_name . '"><img class="thumbnail" src="' . $file_name . '" alt=""></a><br>';
+                echo 'Extension: ' . $eachExt;
+                if ($saveResult != true) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>'."\n";
+                } else {
+                    $Finfo = new finfo();
+                    echo '; Mime type: ' . $Finfo->file($file_name, FILEINFO_MIME_TYPE);
+                    unset($Finfo);
                 }
-                unset($source_image_exp);
-                echo '<tr>' . "\n";
-                echo '<td></td>' . "\n";
-                foreach ($test_crop as $crop_xy) {
-                    if (isset($crop_xy[0]) && isset($crop_xy[1]) && isset($crop_xy[2])) {
-                        $file_name = '../processed-images/rundiz-imagick-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-900x900-start'.$crop_xy[0].','.$crop_xy[1].'-fill-'.$crop_xy[2];
-                        echo '<td>' . "\n";
-                        echo '<img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>Cropping at <a href="'.$file_name.$file_ext.'">'.$crop_xy[0].', '.$crop_xy[1].'</a> fill '.$crop_xy[2]."\n";
-                        $Image->crop(900, 900, $crop_xy[0], $crop_xy[1], $crop_xy[2]);
-                        $save_result = $Image->save($file_name.$file_ext);
-                        if ($save_result != true) {
-                            echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>'."\n";
-                        }
-                        unset($file_name, $save_result);
-                        $Image->clear();
-                        echo '</td>' . "\n";
-                    }
-                }// endforeach;
-                $Image->crop(2000, 2000, 'center', 'middle', 'white');
-                $file_name = '../processed-images/rundiz-imagick-image-crop-'.str_replace(' ', '-', strtolower($img_type_name)).'-2000x2000-startcenter,middle-fill-white';
-                echo '<td>' . "\n";
-                echo '<img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>Cropping at <a href="'.$file_name.$file_ext.'">center, middle</a> (2000x2000) fill white'."\n";
                 echo '</td>' . "\n";
-                $Image->save($file_name.$file_ext);
-                $Image->clear();
-                echo '</tr>' . "\n";
-                unset($crop_xy, $file_ext, $Image);
+                unset($file_name, $saveResult);
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '</tr>' . "\n";
+            unset($Image);
 
-                echo '</tbody></table>' . "\n";
-            }
-            echo "\n\n";
-        }// endforeach;
-    }
+            echo '<tr>' . "\n";
+            echo '<td>Use <code>show()</code> method as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $linkTo = 'rdimage-imagick-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
+                    '&amp;show_ext=' . $eachExt .
+                    '&amp;act=resize' .
+                    '&amp;width=' . (is_array($srcImageSize) ? $srcImageSize[0] : 1920) .
+                    '&amp;height=' . (is_array($srcImageSize) ? $srcImageSize[1] : 1080);
+                echo '<td>';
+                echo '<a href="' . $linkTo . '"><img class="thumbnail" src="' . $linkTo . '" alt=""></a><br>';
+                echo 'Extension: ' . $eachExt;
+                unset($linkTo);
+                echo '</td>' . "\n";
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '</tr>' . "\n";
+
+            echo '</tbody></table>' . "\n";
+            
+            unset($srcImageSize);
+        }// endif;
+        echo "\n\n";
+    }// endforeach;
+    unset($img_type_name, $item);
+
+    unset($saveExts);
     echo "\n\n";
-}// displayTestCrop
-
-
-function displayTestRotate(array $test_data_set)
-{
-    $test_rotate = [90, 180, 270, 'hor', 'vrt', 'horvrt'];
-    echo '<h2>Rotate/flip images</h2>'."\n";
-    if (is_array($test_data_set)) {
-        foreach ($test_data_set as $img_type_name => $item) {
-            echo '<h3>'.$img_type_name.'</h3>'."\n";
-            if (is_array($item) && array_key_exists('source_image_path', $item)) {
-                echo '<table><tbody>' . "\n";
-                echo '<tr>' . "\n";
-                echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a></td>'."\n";
-                echo '</tr>' . "\n";
-                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-                $source_image_exp = explode('.', $item['source_image_path']);
-                $file_ext = '.';
-                if (is_array($source_image_exp)) {
-                    $file_ext .= $source_image_exp[count($source_image_exp)-1];
-                }
-                unset($source_image_exp);
-                echo '<tr>' . "\n";
-                echo '<td></td>' . "\n";
-                $i = 1;
-                $countRotate = 1;
-                foreach ($test_rotate as $rotate) {
-                    $file_name = '../processed-images/rundiz-imagick-image-rotate-'.str_replace(' ', '-', strtolower($img_type_name)).'-rotate'.$rotate;
-                    echo '<td>' . "\n";
-                    echo '<img src="'.$file_name.$file_ext.'" alt="" class="thumbnail"><br>Rotate at <a href="'.$file_name.$file_ext.'">'.$rotate.'</a>'."\n";
-                    $Image->rotate($rotate);
-                    $save_result = $Image->save($file_name.$file_ext);
-                    if ($save_result != true) {
-                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span><br>'."\n";
-                    }
-                    echo '</td>' . "\n";
-                    unset($file_name, $save_result);
-                    $Image->clear();
-
-                    $countRotate++;
-                    $i++;
-                    if ($i > 3) {
-                        $i = 1;
-                        if ($countRotate <= count($test_rotate)) {
-                            echo '</tr>' . "\n";
-                            echo '<tr>' . "\n";
-                            echo '<td></td>' . "\n";
-                        }
-                    }
-                }// endforeach;
-                $Image->clear();
-                echo '</tr>' . "\n";
-                unset($file_ext, $Image, $rotate);
-
-                echo '</tbody></table>' . "\n";
-            }
-            echo "\n\n";
-        }// endforeach;
-    }
-    echo "\n\n";
-}// displayTestRotate
+}// displayTestSaveCrossExts
 ?>
 <!DOCTYPE html>
 <html>
@@ -214,55 +106,41 @@ function displayTestRotate(array $test_data_set)
     <body>
         <h1>Imagick basic tests</h1>
         <?php 
-        $test_data_set = [
-            'JPG' => [
-                'source_image_path' => $source_image_jpg,
-            ],
-            'PNG' => [
-                'source_image_path' => $source_image_png,
-            ],
-            'GIF' => [
-                'source_image_path' => $source_image_gif,
-            ],
-            'Wrong image extension' => [
-                'source_image_path' => $source_image_fake,
-            ],
-            'Fake image' => [
-                'source_image_path' => $source_image_fake2,
-            ],
-            'Not exists image' => [
-                'source_image_path' => $source_image_404,
-            ],
-        ];
+        // add more extensions.
+        $test_data_set2 = array_slice($test_data_set, 0, 3, true) +
+            [
+                'Wrong image extension' => [
+                    'source_image_path' => $source_image_fake,
+                ],
+                'Fake image' => [
+                    'source_image_path' => $source_image_fake2,
+                ],
+                'Not exists image' => [
+                    'source_image_path' => $source_image_404,
+                ],
+            ] +
+        array_slice($test_data_set, 3, NULL, true);
 
-        displayTestsConstructor($test_data_set);
+        displayTestsConstructor($test_data_set2);
+        unset($test_data_set2);
         ?><hr>
         <?php
-        $test_data_set = [
-            'JPG' => [
-                'source_image_path' => $source_image_jpg,
-            ],
-            'PNG' => [
-                'source_image_path' => $source_image_png,
-            ],
-            'GIF' => [
-                'source_image_path' => $source_image_gif,
-            ],
-            'GIF Animation' => [
-                'source_image_path' => $source_image_animated_gif,
-            ],
-            'Wrong image extension' => [
-                'source_image_path' => $source_image_fake,
-            ],
-        ];
-        displayTestResizes($test_data_set);
-        ?><hr>
-        <?php
-        displayTestCrop($test_data_set);
-        ?><hr>
-        <?php
-        displayTestRotate($test_data_set);
-        ?><hr>
+        // add wong extension image.
+        $test_data_set = array_slice($test_data_set, 0, 3, true) +
+            [
+                'Wrong image extension' => [
+                    'source_image_path' => $source_image_fake,
+                ],
+                'GIF Animation' => [
+                    'source_image_path' => $source_image_animated_gif,
+                ],
+            ] +
+        array_slice($test_data_set, 3, NULL, true);
+        // display test
+        displayTestSaveCrossExts($test_data_set);
+        unset($test_data_set);
+        ?>
+        <hr>
         <?php
         include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
         ?>

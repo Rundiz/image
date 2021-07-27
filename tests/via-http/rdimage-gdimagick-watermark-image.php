@@ -14,6 +14,10 @@ function displayWatermarkImage($positionx, $positiony, $driver = 'Gd', $saveExt 
 
     $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '.' . $saveExt;
     if (strtolower($driver) === 'imagick') {
+        if (!extension_loaded('imagick')) {
+            echo 'You don\'t have Imagick extension for PHP installed on this server.<br>';
+            return ;
+        }
         $Image = new \Rundiz\Image\Drivers\Imagick($sourceImage);
     } else {
         $Image = new \Rundiz\Image\Drivers\Gd($sourceImage);

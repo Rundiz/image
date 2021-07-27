@@ -3,105 +3,102 @@ require_once 'include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 
+
 function displayTestResizeRatio(array $test_data_set)
 {
-    foreach ($test_data_set as $main_ext => $items) {
-        echo '<h2><a href="'.$items['source_image_path'].'">'.$main_ext.'</a></h2>'."\n";
-        echo '<table><tbody>' . "\n";
-        echo '<tr><td>Source image</td>';
-        echo '<td>';
-        echo '<a href="'.$items['source_image_path'].'"><img src="'.$items['source_image_path'].'" alt="" class="thumbnail"></a><br>';
-        list($swidth, $sheight) = getimagesize($items['source_image_path']);
-        echo $swidth . 'x' . $sheight;
-        unset($sheight, $swidth);
-        echo '</td></tr>' . "\n";
-        $Image = new \Rundiz\Image\Drivers\Gd($items['source_image_path']);
-        $master_dim = 'auto';
-        echo '<tr>' . "\n";
-        echo '<td colspan="5"><h3>Not allow resize larger, master dimension '.$master_dim.'</h3></td>'."\n";
-        echo '</tr>' . "\n";
-        $base_save_file_name = '../processed-images/rundiz-gd-image-resizeratio-testpage';
-        $base_save_file_name2 = $base_save_file_name . '-nolarger-masterdim-'.$master_dim;
-        $Image->master_dim = $master_dim;
-        echo '<tr>' . "\n";
-        echo '<td>Saved as</td>' . "\n";
-        foreach ($items['resize_sizes'] as $sizes) {
-            $base_save_file_name3 = $base_save_file_name2 . '-resize-'.$sizes[0].'x'.$sizes[1].'.'.$items['save_as'];
-            $Image->resize($sizes[0], $sizes[1]);
-            $Image->save($base_save_file_name3);
-            $Image->clear();
-            echo '<td>' . "\n";
-            echo '<img src="'.$base_save_file_name3.'" alt="" class="thumbnail"><br>';
-            list($saved_w, $saved_h) = getimagesize($base_save_file_name3);
-            if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
-                echo $sizes[0].'x'.$sizes[1].' =&gt; ';
+    $resizeDims = [
+        [300, 300],
+        [900, 400],
+        [400, 700],
+        [2100, 1500],
+    ];
+    $settings = [
+        [
+            'allow_resize_larger' => [false, 'Not allowed resize larger'],
+            'master_dim' => ['auto', 'Master dimension auto'], 
+        ],
+        [
+            'allow_resize_larger' => [true, 'Allowed resize larger'],
+            'master_dim' => ['auto', 'Master dimension auto'], 
+        ],
+        [
+            'allow_resize_larger' => [false, 'Not allowed resize larger'],
+            'master_dim' => ['height', 'Master dimension height'], 
+        ],
+    ];
+    echo '<h1>Resize by aspect ratio (GD)</h1>'."\n";
+    foreach ($test_data_set as $img_type_name => $item) {
+        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            echo '<table><tbody>' . "\n";
+            echo '<tr>' . "\n";
+            echo '<td style="width: 200px;">Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
+            $imgData = getimagesize($item['source_image_path']);
+            if (is_array($imgData)) {
+                echo $imgData[0] . 'x' . $imgData[1] . ' ';
+                echo 'Mime type: ' . $imgData['mime'];
             }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a>';
-            echo '</td>' . "\n";
-            unset($base_save_file_name3, $saved_h, $saved_w);
-        }
-        echo '</tr>' . "\n";
-        unset($base_save_file_name, $base_save_file_name2, $sizes);
-        // allow resize larger
-        $Image->allow_resize_larger = true;
-        echo '<tr>' . "\n";
-        echo '<td colspan="5"><h3>Allow resize larger, master dimension '.$master_dim.'</h3></td>'."\n";
-        echo '</tr>' . "\n";
-        $base_save_file_name = '../processed-images/rundiz-gd-image-resizeratio-testpage';
-        $base_save_file_name2 = $base_save_file_name . '-allowlarger-masterdim-'.$master_dim;
-        $Image->master_dim = $master_dim;
-        echo '<tr>' . "\n";
-        echo '<td>Saved as</td>' . "\n";
-        foreach ($items['resize_sizes'] as $sizes) {
-            $base_save_file_name3 = $base_save_file_name2 . '-resize-'.$sizes[0].'x'.$sizes[1].'.'.$items['save_as'];
-            $Image->resize($sizes[0], $sizes[1]);
-            $Image->save($base_save_file_name3);
-            $Image->clear();
-            echo '<td>' . "\n";
-            echo '<img src="'.$base_save_file_name3.'" alt="" class="thumbnail"><br>';
-            list($saved_w, $saved_h) = getimagesize($base_save_file_name3);
-            if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
-                echo $sizes[0].'x'.$sizes[1].' =&gt; ';
-            }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a>';
-            echo '</td>' . "\n";
-            unset($base_save_file_name3, $saved_h, $saved_w);
-        }
-        echo '</tr>' . "\n";
-        unset($base_save_file_name, $base_save_file_name2, $sizes);
-        // not allow resize larger, master dim = height
-        $master_dim = 'height';
-        $Image->allow_resize_larger = false;
-        echo '<tr>' . "\n";
-        echo '<td colspan="5"><h3>Not allow resize larger, master dimension '.$master_dim.'</h3></td>'."\n";
-        echo '</tr>' . "\n";
-        $base_save_file_name = '../processed-images/rundiz-gd-image-resizeratio-testpage';
-        $base_save_file_name2 = $base_save_file_name . '-nolarger-masterdim-'.$master_dim;
-        $Image->master_dim = $master_dim;
-        echo '<tr>' . "\n";
-        echo '<td>Saved as</td>' . "\n";
-        foreach ($items['resize_sizes'] as $sizes) {
-            $base_save_file_name3 = $base_save_file_name2 . '-resize-'.$sizes[0].'x'.$sizes[1].'.'.$items['save_as'];
-            $Image->resize($sizes[0], $sizes[1]);
-            $Image->save($base_save_file_name3);
-            $Image->clear();
-            echo '<td>' . "\n";
-            echo '<img src="'.$base_save_file_name3.'" alt="" class="thumbnail"><br>';
-            list($saved_w, $saved_h) = getimagesize($base_save_file_name3);
-            if ($saved_w != $sizes[0] || $saved_h != $sizes[1]) {
-                echo $sizes[0].'x'.$sizes[1].' =&gt; ';
-            }
-            echo '<a href="'.$base_save_file_name3.'">'.$saved_w.'x'.$saved_h.'</a>';
-            echo '</td>' . "\n";
-            unset($base_save_file_name3, $saved_h, $saved_w);
-        }
-        echo '</tr>' . "\n";
-        unset($base_save_file_name, $base_save_file_name2, $sizes);
-        unset($Image, $master_dim);
+            unset($imgData);
+            echo '</td>'."\n";
+            echo '</tr>' . "\n";
 
-        echo '</tbody></table>' . "\n";
-    }// endforeach;
-    unset($items, $main_ext);
+            foreach ($settings as $eachSettingsSet) {
+                echo '<tr>' . "\n";
+                echo '<td>';
+                $settingsMsg = [];
+                $exampleCodeMsg = [];
+                foreach ($eachSettingsSet as $settingProp => $settingValueDesc) {
+                    $settingsMsg[] = $settingValueDesc[1];
+                    $exampleCodeMsg[] = '$Image->' . $settingProp . ' = ' . var_export($settingValueDesc[0], true) . ';';
+                }// endforeach each settings set.
+                unset($settingProp, $settingValueDesc);
+                echo implode(', ', $settingsMsg) . "\n";
+                echo '<pre>' . implode("\n", $exampleCodeMsg) . '</pre>' . "\n";
+                unset($exampleCodeMsg, $settingsMsg);
+                echo '</td>' . "\n";
+
+                foreach ($resizeDims as $eachDim) {
+                    $file_name = '../processed-images/' . basename(__FILE__, '.php') . 
+                        '_src' . str_replace(' ', '-', strtolower($img_type_name)) .
+                        '_' . $eachDim[0] . 'x' . $eachDim[1];
+                    $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
+                    foreach ($eachSettingsSet as $settingProp => $settingValueDesc) {
+                        $Image->{$settingProp} = $settingValueDesc[0];
+                        $file_name .= '_' . str_replace([' ', '\'', '_'], '', $settingProp) . '-' .
+                            str_replace([' ', '\'', '"', '_'], '', trim(var_export($settingValueDesc[0], true)));
+                    }// endforeach each settings set.
+                    $file_name .= '.' . pathinfo($item['source_image_path'], PATHINFO_EXTENSION);
+                    unset($settingProp, $settingValueDesc);
+                    $Image->resize($eachDim[0], $eachDim[1]);
+                    $saveResult = $Image->save($file_name);
+                    $Image->clear();
+                    unset($Image);
+                    echo '<td>';
+                    if ($saveResult === true) {
+                        echo '<a href="' . $file_name . '"><img src="' . $file_name . '" alt="" class="thumbnail"></a><br>';
+                        $img_data = getimagesize($file_name);
+                        echo  $eachDim[0] . 'x' . $eachDim[1];
+                        if (is_array($img_data) && isset($img_data[0]) && isset($img_data[1])) {
+                            echo ' =&gt; ';
+                            echo $img_data[0] . 'x' . $img_data[1] . ' ';
+                        }
+                    } else {
+                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
+                    }
+                    echo '</td>' . "\n";
+                    unset($file_name, $saveResult);
+                }// endforeach; dimensions
+                unset($eachDim);
+
+                echo '</tr>' . "\n";
+            }// endforeach; settings
+            unset($eachSettingsSet);
+
+            echo '</tbody></table>' . "\n";
+            echo "\n\n";
+        }// endforeach;
+    }
+    unset($resizeDims, $settings);
 }// displayTestResizeRatio
 ?>
 <!DOCTYPE html>
@@ -112,34 +109,13 @@ function displayTestResizeRatio(array $test_data_set)
         <link rel="stylesheet" href="./style.css">
     </head>
     <body>
-        <h1>GD test resize by aspect ratio</h1>
         <?php
-        $resize_sizes = [
-            [300, 300],
-            [900, 400],
-            [400, 700],
-            [2100, 1500],
-        ];
-        $test_data_set = [
-            'JPG' => [
-                'source_image_path' => $source_image_jpg,
-                'resize_sizes' => $resize_sizes,
-                'save_as' => 'jpg',
-            ],
-            'PNG' => [
-                'source_image_path' => $source_image_png,
-                'resize_sizes' => $resize_sizes,
-                'save_as' => 'png',
-            ],
-            'GIF' => [
-                'source_image_path' => $source_image_gif,
-                'resize_sizes' => $resize_sizes,
-                'save_as' => 'gif',
-            ],
-        ];
         displayTestResizeRatio($test_data_set);
-        // ------------------------------------------------------------------------------------------------------
+        unset($test_data_set);
+        ?>
+        <hr>
+        <?php
         include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
-        ?> 
+        ?>
     </body>
 </html>

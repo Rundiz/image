@@ -17,6 +17,10 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
 
     $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '-txtc' . $txtColor . '-fillc' . $fillBg . '.jpg';
     if (strtolower($driver) === 'imagick') {
+        if (!extension_loaded('imagick')) {
+            echo 'You don\'t have Imagick extension for PHP installed on this server.<br>';
+            return ;
+        }
         $Image = new \Rundiz\Image\Drivers\Imagick($sourceImageSquare);
     } else {
         $Image = new \Rundiz\Image\Drivers\Gd($sourceImageSquare);

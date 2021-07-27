@@ -12,6 +12,15 @@ html, body {
 body {
     margin: 20px;
 }
+code {
+    color: #ac6710;
+}
+pre {
+    background-color: #eee;
+    padding: 5px;
+    word-break: break-all;
+    word-wrap: break-word;
+}
 table {
     border: 1px solid #ccc;
     border-collapse: collapse;
