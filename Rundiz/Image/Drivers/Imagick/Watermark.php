@@ -176,7 +176,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         $yellow = new \ImagickPixel('rgb(255, 255, 0)');
         $cyan = new \ImagickPixel('rgb(0, 255, 255)');
         $magenta = new \ImagickPixel('rgb(255, 0, 255)');
-        $colorDebugBg = new \ImagickPixel('blue');
+        $colorDebugBg = new \ImagickPixel('rgba(0, 0, 255, 0.3)');
         $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');// set color transparent white
         $transwhitetext = new \ImagickPixel('rgba(255, 255, 255, '.$this->convertAlpha127ToRgba($wm_txt_font_alpha).')');
         if (!isset($$wm_txt_font_color)) {
@@ -198,9 +198,6 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         // fill background color
         $ImagickDraw->setFillColor($fillWmBg);
-        if (isset($options['backgroundColor']) && strtolower($options['backgroundColor']) === 'debug') {
-            $ImagickDraw->setFillOpacity(0.3);
-        }
         $ImagickDraw->rectangle($wm_txt_start_x, $wm_txt_start_y, ($wm_txt_start_x + $wm_txt_width), ($wm_txt_start_y + $wm_txt_height));
         $this->ImagickD->Imagick->drawImage($ImagickDraw);
         // fill font color
