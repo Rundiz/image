@@ -26,7 +26,7 @@ function displayTestsConstructor(array $test_data_set)
 
 function displayTestSaveCrossExts(array $test_data_set)
 {
-    $saveExts = ['gif', 'jpg', 'png'];
+    $saveExts = ['gif', 'jpg', 'png', 'webp'];
     echo '<h2>Save across different extensions.</h2>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h3>'.$img_type_name.'</h3>'."\n";

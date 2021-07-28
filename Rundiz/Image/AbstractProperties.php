@@ -37,7 +37,7 @@ abstract class AbstractProperties
      */
     public $allow_resize_larger = false;
     /**
-     * JPEG quality.
+     * JPEG & WebP quality.
      * @var int Quality from 0 (worst quality, smallest file) to 100 (best quality, biggest file). Default is 100.
      */
     public $jpg_quality = 100;

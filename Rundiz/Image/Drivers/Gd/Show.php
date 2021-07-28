@@ -31,15 +31,12 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
         $check_file_ext = strtolower($file_ext);
 
         // show image to browser.
-        if ($check_file_ext == 'gif') {
+        if ($check_file_ext === 'gif') {
+            // if save to gif
             if ($this->Gd->source_image_type === IMAGETYPE_PNG) {
-                // source image is png file. convert transparency png to white before save.
-                $temp_image_object = imagecreatetruecolor($this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $white = imagecolorallocate($temp_image_object, 255, 255, 255);
-                imagefill($temp_image_object, 0, 0, $white);
-                imagecopy($temp_image_object, $this->Gd->destination_image_object, 0, 0, 0, 0, $this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $this->Gd->destination_image_object = $temp_image_object;
-                unset($white);
+                // if source image is png file. 
+                // preserve transparency part.
+                $this->fillTransparentDestinationImage();
             }
 
             $show_result = imagegif($this->Gd->destination_image_object);
@@ -48,15 +45,12 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
                 imagedestroy($temp_image_object);
                 unset($temp_image_object);
             }
-        } elseif ($check_file_ext == 'jpg') {
+        } elseif ($check_file_ext === 'jpg') {
+            // if save to jpg
             if ($this->Gd->source_image_type === IMAGETYPE_PNG || $this->Gd->source_image_type === IMAGETYPE_GIF) {
-                // source image is png or gif file. convert transparency png to white before save.
-                $temp_image_object = imagecreatetruecolor($this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $white = imagecolorallocate($temp_image_object, 255, 255, 255);
-                imagefill($temp_image_object, 0, 0, $white);
-                imagecopy($temp_image_object, $this->Gd->destination_image_object, 0, 0, 0, 0, $this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $this->Gd->destination_image_object = $temp_image_object;
-                unset($white);
+                // if source image is png or gif file. 
+                // convert transparency png to white before save.
+                $this->fillWhiteDestinationImage();
             }
 
             $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
@@ -70,17 +64,9 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
                 imagedestroy($temp_image_object);
                 unset($temp_image_object);
             }
-        } elseif ($check_file_ext == 'png') {
-            if ($this->Gd->source_image_type === IMAGETYPE_GIF) {
-                // source image is gif file. convert transparency gif to white before save.
-                // source transparent png to gif have no problem but source transparent gif to png it always left transparency. it must be filled.
-                $temp_image_object = imagecreatetruecolor($this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $white = imagecolorallocate($temp_image_object, 255, 255, 255);
-                imagefill($temp_image_object, 0, 0, $white);
-                imagecopy($temp_image_object, $this->Gd->destination_image_object, 0, 0, 0, 0, $this->Gd->destination_image_width, $this->Gd->destination_image_height);
-                $this->Gd->destination_image_object = $temp_image_object;
-                unset($temp_image_object, $white);
-            }
+        } elseif ($check_file_ext === 'png') {
+            // if save to png
+            // if source image is gif then it is fine, transparency will be send to png with no problem.
 
             $this->Gd->png_quality = intval($this->Gd->png_quality);
             if ($this->Gd->png_quality < 0 || $this->Gd->png_quality > 9) {
@@ -88,6 +74,33 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
             }
 
             $show_result = imagepng($this->Gd->destination_image_object, null, $this->Gd->png_quality);
+        } elseif ($check_file_ext === 'webp') {
+            // if save to webp
+            // transparency png to webp will be black and transparency gif to webp will be white prior PHP 7.0
+            // this is known bug but can't fix and no more update fix from PHP.
+            if (version_compare(PHP_VERSION, '7.0', '<')) {
+                // if php version is older than 7.0
+                // fill white bg.
+                $this->fillWhiteDestinationImage();
+            }
+            if (
+                function_exists('imagepalettetotruecolor') && 
+                ($this->Gd->source_image_type === IMAGETYPE_GIF || $this->Gd->source_image_type === IMAGETYPE_PNG)
+            ) {
+                // if imagepalettetotruecolor() function exists (PHP 5.5+)
+                // and if source image is gif, png.
+                // there will be "Paletter image not supported by webp" error. fix by convert to truecolor.
+                imagepalettetotruecolor($this->Gd->destination_image_object);
+                imagealphablending($this->Gd->destination_image_object, true);
+                imagesavealpha($this->Gd->destination_image_object, true);
+            }
+
+            $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
+            if ($this->Gd->jpg_quality < 0 || $this->Gd->jpg_quality > 100) {
+                $this->Gd->jpg_quality = 100;
+            }
+
+            $show_result = imagewebp($this->Gd->destination_image_object, null, $this->Gd->jpg_quality);
         } else {
             $this->Gd->status = false;
             $this->Gd->status_msg = 'Unable to show this kind of image.';

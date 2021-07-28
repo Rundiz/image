@@ -21,6 +21,7 @@
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam.jpg</strong></li>
                             <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
+                            <li><strong>city-amsterdam-non-transparent.png</strong> (must NOT contain transparent in the image)</li>
                             <li><strong>city-amsterdam.webp</strong> (non animated webp.)</li>
                         </ul>
                         Copy one file from JPG and rename to .png.
@@ -36,7 +37,7 @@
                             <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
                             <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>
                         </ul>
-                        Please note that Imagick does not support animated PNG (APNG).
+                        Please note that Imagick does not support animated PNG (APNG) nor animated WebP.
                     </li>
                     <li>
                         Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
@@ -95,7 +96,9 @@
             <li><a href="native-imagick-gif.php">process gif image</a></li>
             <li><a href="native-imagick-gif-watermark-png.php">gif image with watermark png</a></li>
             <li><a href="native-imagick-animated-gif.php">process animated gif image</a> (this is slower than process non animated gif.)</li>
+            <li><a href="native-imagick-jpg-compression-tests.php">jpg compression tests</a></li>
             <li><a href="native-imagick-png-compression-tests.php">png compression tests</a></li>
+            <li><a href="native-imagick-webp-compression-tests.php">webp compression tests</a></li>
         </ul>
         <h3>Rundiz Image GD class test</h3>
         <ul>

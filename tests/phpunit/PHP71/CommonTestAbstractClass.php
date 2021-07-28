@@ -13,7 +13,12 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     protected static $source_watermark_fonts_set = array('font.ttf');
     protected static $watermark_text = 'Rundiz watermark สั้น ญู ให้ ทดสอบสระ.';
     protected static $processed_images_dir;
-    protected static $processed_extensions = array('gif', 'jpg', 'png');
+    protected static $processed_extensions = [
+        IMAGETYPE_GIF => 'gif', 
+        IMAGETYPE_JPEG => 'jpg', 
+        IMAGETYPE_PNG => 'png', 
+        IMAGETYPE_WEBP => 'webp'
+    ];
 
 
     /**
@@ -89,7 +94,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
 
     /**
      * Get processed extension type number.<br>
-     * gif = 1, jpg = 2, png = 3
+     * gif = 1, jpg = 2, png = 3, webp = 18
      * 
      * @param string $extension
      * @return integer
@@ -97,7 +102,7 @@ abstract class CommonTestAbstractClass extends \PHPUnit\Framework\TestCase
     protected function getProcessedExtensionTypeNumber($extension)
     {
         if (is_array(self::$processed_extensions) && in_array($extension, self::$processed_extensions)) {
-            return (array_search($extension, self::$processed_extensions) + 1);
+            return array_search($extension, self::$processed_extensions);
         }
 
         return false;

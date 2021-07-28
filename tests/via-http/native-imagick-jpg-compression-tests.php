@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.png';
+$sourceImageFile = '../source-images/city-amsterdam.jpg';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -14,13 +14,13 @@ echo '<hr>' . PHP_EOL;
 
 $Imagick = new Imagick(realpath($sourceImageFile));
 
-for ($compression = 0; $compression <= 9; $compression++) {
+for ($compression = 0; $compression <= 100; $compression += 10) {
     echo 'Compression: ' . $compression . '.';
     $ImagickCloned = clone $Imagick;
-    $ImagickCloned->setImageFormat('png');
-    $ImagickCloned->setCompressionQuality(intval($compression . 5));
-    $saveImgLink = basename(__FILE__, '.php') . '-compression' . $compression . '.png';
-    $ImagickCloned->writeImage('png:' . $processImagesFullpath . $saveImgLink);
+    $ImagickCloned->setImageFormat('jpg');
+    $ImagickCloned->setImageCompressionQuality($compression);
+    $saveImgLink = basename(__FILE__, '.php') . '-compression' . $compression . '.jpg';
+    $ImagickCloned->writeImage($processImagesFullpath . $saveImgLink);
     $ImagickCloned->clear();
     unset($ImagickCloned);
     clearstatcache();

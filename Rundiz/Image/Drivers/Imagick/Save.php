@@ -16,6 +16,9 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
 {
 
 
+    use \Rundiz\Image\Drivers\Traits\ImagickTrait;
+
+
     public function execute($file_name)
     {
         $FS = new \Rundiz\Image\FileSystem();
@@ -24,78 +27,70 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
         unset($FS);
 
         // save to file. each image types use different ways to save.
-        if ($check_file_ext == 'gif') {
-            if ($this->ImagickD->source_image_type === IMAGETYPE_PNG) {
-                // source file is png
-                // convert from transparent to white before save
-                $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
-                $this->ImagickD->Imagick->setImageBackgroundColor('white');
-                $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                $this->ImagickD->Imagick = $this->ImagickD->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
-            }
+        if ($check_file_ext === 'gif') {
+            // if save to gif
+            // in case that source image is PNG and have transparency, then this is no problem. just keep transparent.
 
             if ($this->ImagickD->source_image_type === IMAGETYPE_GIF && $this->ImagickD->save_animate_gif === true) {
-                // source file is gif and allow to save animated
+                // if source file is gif and allow to save animated
                 $save_result = $this->ImagickD->Imagick->writeImages($file_name, true);
             } else {
                 if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to non-animated gif, get the first frame.
-                    $this->ImagickD->Imagick->clear();
-                    $this->ImagickD->Imagick = $this->ImagickD->ImagickFirstFrame;
-                    $this->ImagickD->ImagickFirstFrame = null;
+                    // if source image is animated gif and save to non-animated gif
+                    // get the first frame.
+                    $this->getFirstFrame();
                 }
 
                 if ($this->ImagickD->source_image_type !== IMAGETYPE_GIF) {
-                    // source image is other than gif, it is required to set image page.
+                    // if source image is other than gif, it is required to set image page.
                     $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
                 }
 
                 $save_result = $this->ImagickD->Imagick->writeImage($file_name);
             }
-        } elseif ($check_file_ext == 'jpg') {
+        } elseif ($check_file_ext === 'jpg') {
+            // if save to jpg
             if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
-                // source file is gif
+                // if source file is gif
                 if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to non-animated gif, get the first frame.
-                    $this->ImagickD->Imagick->clear();
-                    $this->ImagickD->Imagick = $this->ImagickD->ImagickFirstFrame;
-                    $this->ImagickD->ImagickFirstFrame = null;
+                    // if source image is animated gif and save to jpg
+                    // get the first frame.
+                    $this->getFirstFrame();
                 }
 
                 // covnert from transparent to white before save
-                $this->ImagickD->Imagick->setImageBackgroundColor('white');
-                $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                $this->ImagickD->Imagick = $this->ImagickD->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+                $this->fillWhiteToImage();
             } elseif ($this->ImagickD->source_image_type === IMAGETYPE_PNG) {
-                // source file is png
-                // convert from transparent to white before save
+                // if source file is png
+                // set image page.
                 $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
-                $this->ImagickD->Imagick->setImageBackgroundColor('white');
-                $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                $this->ImagickD->Imagick = $this->ImagickD->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+                // convert from transparent to white before save
+                $this->fillWhiteToImage();
             }
 
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
-            if ($this->ImagickD->jpg_quality < 0 || $this->ImagickD->jpg_quality > 100) {
+            if ($this->ImagickD->jpg_quality < 1) {
+                // if quality is less than 1.
+                // `setImageCompressionQuality()` support minimum 1, not 0.
+                $this->ImagickD->jpg_quality = 1;
+            }
+            if ($this->ImagickD->jpg_quality > 100) {
                 $this->ImagickD->jpg_quality = 100;
             }
 
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
             $save_result = $this->ImagickD->Imagick->writeImage($file_name);
-        } elseif ($check_file_ext == 'png') {
+        } elseif ($check_file_ext === 'png') {
+            // if save to png
             if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
-                // source file is gif
+                // if source file is gif
                 if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to non-animated gif, get the first frame.
-                    $this->ImagickD->Imagick->clear();
-                    $this->ImagickD->Imagick = $this->ImagickD->ImagickFirstFrame;
-                    $this->ImagickD->ImagickFirstFrame = null;
+                    // if source image is animated gif and save to png
+                    // get the first frame.
+                    $this->getFirstFrame();
                 }
 
-                // covnert from transparent to white before save
-                $this->ImagickD->Imagick->setImageBackgroundColor('white');
-                $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                $this->ImagickD->Imagick = $this->ImagickD->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+                // keep transparency from gif without any modification.
             }
 
             // png compression
@@ -105,6 +100,20 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
             }
             $this->ImagickD->Imagick->setCompressionQuality(intval($this->ImagickD->png_quality . 5));
 
+            $save_result = $this->ImagickD->Imagick->writeImage($file_name);
+        } elseif ($check_file_ext === 'webp') {
+            // if save to webp
+            $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
+            if ($this->ImagickD->jpg_quality < 1) {
+                // if quality is less than 1.
+                // `setImageCompressionQuality()` support minimum 1, not 0.
+                $this->ImagickD->jpg_quality = 1;
+            }
+            if ($this->ImagickD->jpg_quality > 100) {
+                $this->ImagickD->jpg_quality = 100;
+            }
+
+            $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
             $save_result = $this->ImagickD->Imagick->writeImage($file_name);
         } else {
             $this->ImagickD->status = false;

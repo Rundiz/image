@@ -1,6 +1,7 @@
 <?php
 $source_image_jpg = '../source-images/city-amsterdam.jpg';
 $source_image_png = '../source-images/city-amsterdam.png';
+$source_image_pngnt = '../source-images/city-amsterdam-non-transparent.png';
 $source_image_gif = '../source-images/city-amsterdam.gif';
 $source_image_animated_gif = '../source-images/city-amsterdam-animated.gif';
 $source_image_fake = '../source-images/city-amsterdam-jpg.png';

@@ -58,7 +58,6 @@ class ImageGdTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
                     $Image->clear();
                     list($width, $height, $image_type) = getimagesize($save_file_name);
                     $processed_image_data = array('width' => $width, 'image_type' => $image_type);
-
                     // test assert.
                     $this->assertTrue(
                         empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(

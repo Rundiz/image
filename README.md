@@ -8,6 +8,7 @@ Image manipulation use GD or Imagick as drivers.
 * GIF
 * JPG (JPEG)
 * PNG
+* WEBP `*`
 
 ### Functional
 
@@ -55,3 +56,9 @@ $Image->save('/path/to/new-file-name.jpg');
 ```
 
 For more details, please look in tests folder
+
+---
+Remark:
+
+* `*` WEBP is currently for `show()`, or `save()` but not support as source image.<br>
+    There are known bugs that prior PHP 7.0, the transparent PNG or GIF that converted WEBP will be filled with the background color.

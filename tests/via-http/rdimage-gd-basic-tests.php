@@ -26,7 +26,7 @@ function displayTestsConstructor(array $test_data_set)
 
 function displayTestSaveCrossExts(array $test_data_set)
 {
-    $saveExts = ['gif', 'jpg', 'png'];
+    $saveExts = ['gif', 'jpg', 'png', 'webp'];
     echo '<h2>Save across different extensions.</h2>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h3>'.$img_type_name.'</h3>'."\n";
@@ -126,11 +126,16 @@ function displayTestSaveCrossExts(array $test_data_set)
         ?><hr>
         <?php
         // add wong extension image.
-        $test_data_set = array_slice($test_data_set, 0, 3, true) +
+        $test_data_set = array_slice($test_data_set, 0, 2, true) +
+            ['Non transparent PNG' => [
+                'source_image_path' => $source_image_pngnt,
+            ]] +
+        array_slice($test_data_set, 2, NULL, true);
+        $test_data_set = array_slice($test_data_set, 0, 4, true) +
             ['Wrong image extension' => [
                 'source_image_path' => $source_image_fake,
             ]] +
-        array_slice($test_data_set, 3, NULL, true);
+        array_slice($test_data_set, 4, NULL, true);
         // display test
         displayTestSaveCrossExts($test_data_set);
         unset($test_data_set);

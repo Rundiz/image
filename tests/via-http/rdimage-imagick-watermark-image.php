@@ -100,17 +100,14 @@ function displayTestWatermarkImageSaveExts(array $test_data_set)
         ['center', 'top'],
         ['right', 'top'],
     ];
-    $saveExts = ['gif', 'jpg', 'png'];
     $wmExts = ['jpg', 'gif', 'png'];
-
-    echo '<h3>Save across different extensions.</h3>' . "\n";
 
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h4>' . $img_type_name . '</h4>' . "\n";
         echo '<table><tbody>' . "\n";
         echo '<tr>' . "\n";
         echo '<td style="width: 200px;">Source image</td>' . "\n";
-        echo '<td colspan="' . count($saveExts) . '"><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
+        echo '<td colspan="3"><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
         $srcImgSize = getimagesize($item['source_image_path']);
         if (is_array($srcImgSize)) {
             echo $srcImgSize[0] . 'x' . $srcImgSize[1] . ' ';
@@ -123,54 +120,52 @@ function displayTestWatermarkImageSaveExts(array $test_data_set)
             $watermarkImage = '../source-images/watermark.' . $eachWmExt;
             echo '<tr>' . "\n";
             echo '<td>Watermark</td>' . "\n";
-            echo '<td colspan="' . count($saveExts) . '"><a href="' . $watermarkImage . '"><img class="thumbnail" src="' . $watermarkImage . '" alt=""></a><br>';
+            echo '<td colspan="3"><a href="' . $watermarkImage . '"><img class="thumbnail" src="' . $watermarkImage . '" alt=""></a><br>';
             echo 'Extension: ' . $eachWmExt . '; ';
             $Finfo = new finfo();
             echo 'Mime type: ' . $Finfo->file($watermarkImage, FILEINFO_MIME_TYPE);
             unset($Finfo);
             echo '</td>' . "\n";
             echo '</tr>' . "\n";
+            echo '<tr>' . "\n";
+            echo '<td></td>' . "\n";
             $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
             foreach ($positions as $positionXY) {
-                echo '<tr>' . "\n";
-                echo '<td>Position ' . $positionXY[0] . ',' . $positionXY[1] . '</td>' . "\n";
+                $eachExt = pathinfo($item['source_image_path'], PATHINFO_EXTENSION);// use in stead of save extensions.
+                $fileName = '../processed-images/' . basename(__FILE__, '.php') . '_src' . $img_type_name .
+                    '_position-' . $positionXY[0].','.$positionXY[1] .
+                    '_wmimg-' . $eachWmExt .
+                    '_target' . $eachExt .
+                    '.' . $eachExt;
+                $wmResult = $Image->watermarkImage($watermarkImage, $positionXY[0], $positionXY[1]);
+                if ($wmResult !== true) {
+                    $wmStatusMsg = $Image->status_msg;
+                }
+                $saveResult = $Image->save($fileName);
+                $Image->clear();
+                unset($wmResult);
 
-                foreach ($saveExts as $eachExt) {
-                    $fileName = '../processed-images/' . basename(__FILE__, '.php') . '_src' . $img_type_name .
-                        '_position-' . $positionXY[0].','.$positionXY[1] .
-                        '_wmimg-' . $eachWmExt .
-                        '_target' . $eachExt .
-                        '.' . $eachExt;
-                    $wmResult = $Image->watermarkImage($watermarkImage, $positionXY[0], $positionXY[1]);
-                    if ($wmResult !== true) {
-                        $wmStatusMsg = $Image->status_msg;
-                    }
-                    $saveResult = $Image->save($fileName);
-                    $Image->clear();
-                    unset($wmResult);
-
-                    echo '<td>';
-                    echo '<a href="' . $fileName . '"><img class="thumbnail" src="' . $fileName . '"></a><br>';
-                    echo 'Save as ' . $eachExt;
-                    if (isset($wmStatusMsg)) {
-                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$wmStatusMsg.'</span>';
-                    }
-                    if ($saveResult != true) {
-                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>';
-                    } else {
-                        $Finfo = new finfo();
-                        echo '; Mime type: ' . $Finfo->file($fileName, FILEINFO_MIME_TYPE);
-                        unset($Finfo);
-                    }
-                    echo '</td>' . "\n";
-                    unset($saveResult, $wmStatusMsg);
-                }// endforeach save extensions
+                echo '<td>';
+                echo '<a href="' . $fileName . '"><img class="thumbnail" src="' . $fileName . '"></a><br>';
+                echo 'Position ' . $positionXY[0] . ',' . $positionXY[1] . '<br>';
+                echo 'Save as ' . $eachExt;
+                if (isset($wmStatusMsg)) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$wmStatusMsg.'</span>';
+                }
+                if ($saveResult != true) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>';
+                } else {
+                    $Finfo = new finfo();
+                    echo '; Mime type: ' . $Finfo->file($fileName, FILEINFO_MIME_TYPE);
+                    unset($Finfo);
+                }
+                echo '</td>' . "\n";
+                unset($saveResult, $wmStatusMsg);
                 unset($eachExt);
-
-                echo '</tr>' . "\n";
             }// endforeach; positions
             unset($positionXY);
             unset($Image);
+            echo '</tr>' . "\n";
             unset($watermarkImage);
         }// endforeach; watermark ext.
         unset($eachWmExt);
@@ -178,7 +173,7 @@ function displayTestWatermarkImageSaveExts(array $test_data_set)
     }// endforeach;
     unset($img_type_name, $item);
 
-    unset($positions, $saveExts, $wmExts);
+    unset($positions, $wmExts);
 }// displayTestWatermarkImageSaveExts
 ?>
 <!DOCTYPE html>

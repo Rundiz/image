@@ -28,8 +28,21 @@ if (strpos($show_ext, '.') !== false) {
 }
 $show_ext = str_ireplace('jpeg', 'jpg', $show_ext);
 $show_ext = strtolower($show_ext);
-if ($show_ext != 'jpg' && $show_ext != 'gif' && $show_ext != 'png') {
-    $show_ext = '';
+
+switch ($show_ext) {
+    case 'gif':
+        $mimetype = 'image/gif';
+        break;
+    case 'png':
+        $mimetype = 'image/png';
+        break;
+    case 'webp':
+        $mimetype = 'image/webp';
+        break;
+    case 'jpg':
+    default:
+        $mimetype = 'image/jpeg';
+        break;
 }
 
 if ($width < 0) {
@@ -88,6 +101,6 @@ if ($Image->status === false) {
     die($Image->status_msg);
 }
 
-header('Content-type: '.$Image->source_image_data['mime']);
+header('Content-type: ' . $mimetype);
 $Image->show($show_ext);
 $Image->clear();
