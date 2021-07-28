@@ -228,7 +228,6 @@ function displayTestWatermarkTextSaveExts(array $test_data_set)
         ?>
         <hr>
         <?php
-        // ------------------------------------------------------------------------------------------------------
         include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
         ?> 
     </body>

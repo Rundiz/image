@@ -224,11 +224,17 @@ function displayTestWatermarkTextSaveExts(array $test_data_set)
         ?>
         <hr>
         <?php
+        // add animated GIF after GIF.
+        $test_data_set = array_slice($test_data_set, 0, 3, true) +
+            ['GIF Animation' => [
+                'source_image_path' => $source_image_animated_gif,
+            ]] +
+        array_slice($test_data_set, 3, NULL, true);
+        // display test
         displayTestWatermarkTextSaveExts($test_data_set);
         ?>
         <hr>
         <?php
-        // ------------------------------------------------------------------------------------------------------
         include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
         ?> 
     </body>

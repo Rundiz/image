@@ -19,7 +19,6 @@
                         (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                         <ul>
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
-                            <li><strong>city-amsterdam-non-transparent.gif</strong> (must not contain transparent in the image)</li>
                             <li><strong>city-amsterdam.jpg</strong></li>
                             <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam.webp</strong> (non animated webp.)</li>
@@ -105,10 +104,9 @@
             <li><a href="rdimage-gd-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-gd-resize-ratio.php">resize by aspect ratio</a></li>
             <li><a href="rdimage-gd-rotate.php">rotate &amp; flip</a></li>
-            <li><a href="rdimage-gd-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
+            <li><a href="rdimage-gd-watermark-image.php">watermark image</a></li>
             <li><a href="rdimage-gd-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-gd-multi-process.php">multiple process</a></li>
-            <li><a href="rdimage-gd-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Image Imagick class test</h3>
         <?php
@@ -122,11 +120,9 @@
             <li><a href="rdimage-imagick-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-imagick-resize-ratio.php">resize by aspect ratio</a></li>
             <li><a href="rdimage-imagick-rotate.php">rotate &amp; flip</a></li>
-            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a> (a lot of tests very slow, please wait)</li>
+            <li><a href="rdimage-imagick-watermark-image.php">watermark image</a></li>
             <li><a href="rdimage-imagick-watermark-text.php">watermark text</a></li>
-            <li><a href="rdimage-imagick-animated-gif-watermark-text.php">animated gif and watermark text</a></li>
             <li><a href="rdimage-imagick-multi-process.php">multiple process</a></li>
-            <li><a href="rdimage-imagick-transparent-nontransparent-gif.php">transparent &amp; non-transparent gif</a></li>
         </ul>
         <h3>Rundiz Image GD &amp; Imagick comparison</h3>
         <p>Some feature comparison</p>
