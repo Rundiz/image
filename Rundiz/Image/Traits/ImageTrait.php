@@ -42,12 +42,20 @@ trait ImageTrait
                 version_compare(PHP_VERSION, '7.1.0', '<') &&
                 function_exists('imagecreatefromwebp')
             ) {
-                // if it is .webp and current PHP version is not supported and webp feature for GD is enabled.
+                // if it is .webp and current PHP version is not supported (getimagesize not work prior PHP 7.1)
+                // and webp feature for GD is enabled.
                 try {
-                    $WebP = new Extensions\WebP();
+                    $WebP = new \Rundiz\Image\Extensions\WebP();
                     $webpInfo = $WebP->webPInfo($imagePath);
-                    if (is_array($webpInfo) && isset($webpInfo['Animation']) && $webpInfo['Animation'] === false) {
+                    if (
+                        is_array($webpInfo) && 
+                        (isset($webpInfo['ANIMATION']) && $webpInfo['ANIMATION'] === false)
+                    ) {
                         // if not animated webp.
+                        if (version_compare(PHP_VERSION, '7.0', '<') && isset($webpInfo['ALPHA']) && $webpInfo['ALPHA'] === true) {
+                            // if current PHP version is not supported for transparent webp.
+                            return false;
+                        }
                         $output = [];
 
                         // use gd to get width, height.
@@ -55,9 +63,6 @@ trait ImageTrait
                         if (false !== $GD) {
                             $output[0] = imagesx($GD);
                             $output[1] = imagesy($GD);
-                            if (!defined('IMAGETYPE_WEBP')) {
-                                define('IMAGETYPE_WEBP', 18);
-                            }
                             $output[2] = IMAGETYPE_WEBP;
                             $output['mime'] = 'image/webp';
                             $output['ext'] = '.webp';

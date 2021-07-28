@@ -17,6 +17,19 @@ class WebP
 
 
     /**
+     * Check that WEBP constant (`IMAGETYPE_WEBP`) is already define, if not then define it.
+     * 
+     * This constant is not define prior PHP 7.1.
+     */
+    public function checkWebPConstant()
+    {
+        if (!defined('IMAGETYPE_WEBP')) {
+            define('IMAGETYPE_WEBP', 18);
+        }
+    }// checkWebPConstant
+
+
+    /**
      * Get WebP file info.
      * 
      * @link https://www.php.net/manual/en/function.pack.php unpack format reference.

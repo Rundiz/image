@@ -26,11 +26,8 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
     {
         switch ($this->ImagickD->watermark_image_type) {
             case IMAGETYPE_GIF:
-                // gif
             case IMAGETYPE_JPEG:
-                // jpg
             case IMAGETYPE_PNG:
-                // png
                 if ($this->ImagickD->source_image_frames > 1) {
                     // if source image is animated gif
                     $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();

@@ -4,6 +4,10 @@ require_once 'include-rundiz-image.php';
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 
 
+$imgType = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+$imgType = strip_tags($imgType);
+
+
 function displayTestsConstructor(array $test_data_set)
 {
     echo '<h2>Constructor image data.</h2>'."\n";
@@ -16,6 +20,19 @@ function displayTestsConstructor(array $test_data_set)
             }
             $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
             echo '<pre class="mini-data-box">'.print_r($Image, true).'</pre>'."\n";
+            if ($Image->status !== true) {
+                echo '<p class="text-error">' . $Image->status_msg . '</p>' . "\n";
+                $sourceExt = strtolower(pathinfo($item['source_image_path'], PATHINFO_EXTENSION));
+                if ($sourceExt === 'webp') {
+                    $WebP = new \Rundiz\Image\Extensions\WebP();
+                    echo 'WebP info' . "\n";
+                    echo '<pre class="mini-data-box">';
+                    echo var_export($WebP->webPInfo($item['source_image_path']), true);
+                    echo '</pre>' . "\n";
+                    unset($WebP);
+                }// endif; soure ext
+                unset($sourceExt);
+            }// endif status
             unset($Image);
         }
         echo "\n\n";
@@ -34,10 +51,13 @@ function displayTestSaveCrossExts(array $test_data_set)
             echo '<table><tbody>' . "\n";
             echo '<tr>' . "\n";
             echo '<td style="width: 200px;">Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
-            $srcImageSize = getimagesize($item['source_image_path']);
-            if (is_array($srcImageSize)) {
-                echo $srcImageSize[0] . 'x' . $srcImageSize[1] . ' ';
-                echo 'Mime type: ' . $srcImageSize['mime'];
+            $srcImageSize = false;
+            if (is_file($item['source_image_path'])) {
+                $srcImageSize = getimagesize($item['source_image_path']);
+                if (is_array($srcImageSize)) {
+                    echo $srcImageSize[0] . 'x' . $srcImageSize[1] . ' ';
+                    echo 'Mime type: ' . $srcImageSize['mime'];
+                }
             }
             echo '</td>'."\n";
             $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
@@ -49,19 +69,20 @@ function displayTestSaveCrossExts(array $test_data_set)
                 $file_name = '../processed-images/' . basename(__FILE__, '.php') . '_src'.str_replace(' ', '-', strtolower($img_type_name)) .
                     '_target' . trim($eachExt) . '.' . $eachExt;
                 $saveResult = $Image->save($file_name);
+                $statusMsg = $Image->status_msg;
                 $Image->clear();
                 echo '<td>';
                 echo '<a href="' . $file_name . '"><img class="thumbnail" src="' . $file_name . '" alt=""></a><br>';
                 echo 'Extension: ' . $eachExt;
                 if ($saveResult != true) {
-                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>'."\n";
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$statusMsg.'</span>'."\n";
                 } else {
                     $Finfo = new finfo();
                     echo '; Mime type: ' . $Finfo->file($file_name, FILEINFO_MIME_TYPE);
                     unset($Finfo);
                 }
                 echo '</td>' . "\n";
-                unset($file_name, $saveResult);
+                unset($file_name, $saveResult, $statusMsg);
             }// endforeach; save extensions
             unset($eachExt);
             echo '</tr>' . "\n";
@@ -106,39 +127,27 @@ function displayTestSaveCrossExts(array $test_data_set)
     <body>
         <h1>Imagick basic tests</h1>
         <?php 
-        // add more extensions.
-        $test_data_set2 = array_slice($test_data_set, 0, 3, true) +
-            [
-                'Wrong image extension' => [
-                    'source_image_path' => $source_image_fake,
-                ],
-                'Fake image' => [
-                    'source_image_path' => $source_image_fake2,
-                ],
-                'Not exists image' => [
-                    'source_image_path' => $source_image_404,
-                ],
-            ] +
-        array_slice($test_data_set, 3, NULL, true);
-
-        displayTestsConstructor($test_data_set2);
-        unset($test_data_set2);
+        // default do test data set.
+        $doTestData = [
+            $imgType => [],
+        ];
+        // set do test data from parameter.
+        if (array_key_exists($imgType, $test_data_set)) {
+            $doTestData = [$imgType => $test_data_set[$imgType]];
+        } else {
+            if (array_key_exists($imgType, $test_data_pngnt)) {
+                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+                $doTestData = [$imgType => $test_data_falsy[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_gifa)) {
+                $doTestData = [$imgType => $test_data_gifa[$imgType]];
+            }
+        }
+        displayTestsConstructor($doTestData);
         ?><hr>
         <?php
-        // add wong extension image.
-        $test_data_set = array_slice($test_data_set, 0, 3, true) +
-            [
-                'Wrong image extension' => [
-                    'source_image_path' => $source_image_fake,
-                ],
-                'GIF Animation' => [
-                    'source_image_path' => $source_image_animated_gif,
-                ],
-            ] +
-        array_slice($test_data_set, 3, NULL, true);
-        // display test
-        displayTestSaveCrossExts($test_data_set);
-        unset($test_data_set);
+        displayTestSaveCrossExts($doTestData);
+        unset($doTestData);
         ?>
         <hr>
         <?php

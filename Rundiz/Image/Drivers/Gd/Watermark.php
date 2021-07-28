@@ -29,13 +29,10 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
     {
         switch ($this->Gd->watermark_image_type) {
             case IMAGETYPE_GIF:
-                // gif
             case IMAGETYPE_JPEG:
-                // jpg
                 imagecopy($this->Gd->source_image_object, $this->Gd->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->Gd->watermark_image_width, $this->Gd->watermark_image_height);
                 break;
             case IMAGETYPE_PNG:
-                // png
                 if ($this->Gd->source_image_type === IMAGETYPE_GIF) {
                     // if source image is gif (which maybe transparent) and watermark image is png. so, this cannot just use imagecopy() function.
                     // see more at http://stackoverflow.com/questions/4437557/using-gd-in-php-how-can-i-make-a-transparent-png-watermark-on-png-and-gif-files
@@ -208,7 +205,6 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         // copy text to image
         switch ($this->Gd->source_image_type) {
             case IMAGETYPE_GIF:
-                // gif
                 $this->applyWatermarkToGifImage(
                     $wm_txt_object, 
                     $wm_txt_width, 
@@ -218,10 +214,9 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
                 );
                 break;
             case IMAGETYPE_PNG:
-                // png
+            case IMAGETYPE_WEBP:
                 imagealphablending($this->Gd->source_image_object, true);
             case IMAGETYPE_JPEG:
-                // jpg
             default:
                 imagecopy($this->Gd->source_image_object, $wm_txt_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height);
                 break;

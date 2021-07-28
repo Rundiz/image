@@ -32,7 +32,6 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
             // rotate by degree
             switch ($this->ImagickD->source_image_type) {
                 case IMAGETYPE_GIF:
-                    // gif
                     if ($this->ImagickD->source_image_frames > 1) {
                         $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();
                         if (is_object($this->ImagickD->Imagick)) {
@@ -54,9 +53,8 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     }
                     break;
                 case IMAGETYPE_JPEG:
-                    // jpg
                 case IMAGETYPE_PNG:
-                    // png
+                case IMAGETYPE_WEBP:
                     $this->ImagickD->Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
                     break;
                 default:
@@ -110,9 +108,8 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     }
                     break;
                 case IMAGETYPE_JPEG:
-                    // jpg
                 case IMAGETYPE_PNG:
-                    // png
+                case IMAGETYPE_WEBP:
                     if ($degree === 'hor') {
                         $this->ImagickD->Imagick->flopImage();
                     } elseif ($degree == 'vrt') {

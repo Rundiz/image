@@ -30,6 +30,7 @@ function displayTestResizeNotRatio(array $test_data_set)
             $saveExt = pathinfo($item['source_image_path'], PATHINFO_EXTENSION);
             $Image->resizeNoRatio($resizeDim[0], $resizeDim[1]);
             $save_result = $Image->save($file_name . '.' . $saveExt);
+            $statusMsg = $Image->status_msg;
             $Image->clear();
             echo '<td>' . "\n";
             if ($save_result === true) {
@@ -43,10 +44,10 @@ function displayTestResizeNotRatio(array $test_data_set)
                     echo ' Mime type: ' . $img_data['mime'];
                 }
             } else {
-                echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
+                echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$statusMsg . '</span>' . "\n";
             }
             echo '</td>' . "\n";
-            unset($img_data, $save_result);
+            unset($img_data, $save_result, $statusMsg);
 
             echo '</tr>'."\n";
             unset($file_name, $Image);

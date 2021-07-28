@@ -21,8 +21,8 @@
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam.jpg</strong></li>
                             <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
+                            <li><strong>city-amsterdam.webp</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam-non-transparent.png</strong> (must NOT contain transparent in the image)</li>
-                            <li><strong>city-amsterdam.webp</strong> (non animated webp.)</li>
                         </ul>
                         Copy one file from JPG and rename to .png.
                         <ul>
@@ -102,7 +102,25 @@
         </ul>
         <h3>Rundiz Image GD class test</h3>
         <ul>
-            <li><a href="rdimage-gd-basic-tests.php">basic tests</a></li>
+            <li>basic tests
+                <ul>
+                    <?php
+                    include 'include-image-source.php';
+                    $test_data_set2 = array_slice($test_data_set, 0, 2, true) +
+                        $test_data_pngnt +
+                    array_slice($test_data_set, 2, NULL, true);
+                    $test_data_set2 = array_slice($test_data_set2, 0, 5, true) +
+                        $test_data_falsy +
+                    array_slice($test_data_set2, 5, NULL, true);
+                    foreach ($test_data_set2 as $imgType => $imgItem) {
+                        ?> 
+                    <li><a href="rdimage-gd-basic-tests.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
+                        <?php
+                    }// endforeach;
+                    unset($imgItem, $imgType);
+                    ?> 
+                </ul>
+            </li>
             <li><a href="rdimage-gd-crop.php">crop</a></li>
             <li><a href="rdimage-gd-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-gd-resize-ratio.php">resize by aspect ratio</a></li>
@@ -118,7 +136,23 @@
         }
         ?> 
         <ul>
-            <li><a href="rdimage-imagick-basic-tests.php">basic tests</a></li>
+            <li>basic tests
+                <ul>
+                    <?php
+                    $test_data_set2 = array_slice($test_data_set2, 0, 4, true) +
+                        ['GIF Animation' => [
+                            'source_image_path' => $source_image_animated_gif,
+                        ]] +
+                    array_slice($test_data_set2, 4, NULL, true);
+                    foreach ($test_data_set2 as $imgType => $imgItem) {
+                        ?> 
+                    <li><a href="rdimage-imagick-basic-tests.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
+                        <?php
+                    }// endforeach;
+                    unset($imgItem, $imgType, $test_data_set2);
+                    ?> 
+                </ul>
+            </li>
             <li><a href="rdimage-imagick-crop.php">crop</a></li>
             <li><a href="rdimage-imagick-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
             <li><a href="rdimage-imagick-resize-ratio.php">resize by aspect ratio</a></li>

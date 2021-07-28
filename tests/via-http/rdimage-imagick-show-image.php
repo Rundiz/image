@@ -18,8 +18,10 @@ if ($source_image_file == null) {
 if (!is_file($source_image_file)) {
     die('Source image is not exists.');
 }
-$image_data = getimagesize($source_image_file);
-if (!is_array($image_data) || (is_array($image_data) && !array_key_exists('mime', $image_data))) {
+$Finfo = new finfo();
+$sourceMimetype = $Finfo->file($source_image_file, FILEINFO_MIME_TYPE);
+unset($Finfo);
+if (stripos($sourceMimetype, 'image/') === false) {
     die('Source image is not an image file.');
 }
 

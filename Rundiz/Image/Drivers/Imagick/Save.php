@@ -60,8 +60,11 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
                 // covnert from transparent to white before save
                 $this->fillWhiteToImage();
-            } elseif ($this->ImagickD->source_image_type === IMAGETYPE_PNG) {
-                // if source file is png
+            } elseif (
+                $this->ImagickD->source_image_type === IMAGETYPE_PNG || 
+                $this->ImagickD->source_image_type === IMAGETYPE_WEBP
+            ) {
+                // if source file is png or webp
                 // set image page.
                 $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
                 // convert from transparent to white before save

@@ -136,4 +136,10 @@ abstract class AbstractProperties
     protected $watermark_image_height;
 
 
+    /**
+     * Unable to set source image from this kind of image.
+     */
+    const RDIERROR_SOURCE_IMG_NOT_SUPPORTED = 1;
+
+
 }

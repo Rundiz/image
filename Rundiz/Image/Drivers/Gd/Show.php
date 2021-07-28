@@ -33,8 +33,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
         // show image to browser.
         if ($check_file_ext === 'gif') {
             // if save to gif
-            if ($this->Gd->source_image_type === IMAGETYPE_PNG) {
-                // if source image is png file. 
+            if (
+                $this->Gd->source_image_type === IMAGETYPE_PNG || 
+                $this->Gd->source_image_type === IMAGETYPE_WEBP
+            ) {
+                // if source image is png or webp file. 
                 // preserve transparency part.
                 $this->fillTransparentDestinationImage();
             }
@@ -47,8 +50,12 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
             }
         } elseif ($check_file_ext === 'jpg') {
             // if save to jpg
-            if ($this->Gd->source_image_type === IMAGETYPE_PNG || $this->Gd->source_image_type === IMAGETYPE_GIF) {
-                // if source image is png or gif file. 
+            if (
+                $this->Gd->source_image_type === IMAGETYPE_PNG || 
+                $this->Gd->source_image_type === IMAGETYPE_GIF ||
+                $this->Gd->source_image_type === IMAGETYPE_WEBP
+            ) {
+                // if source image is png or gif or webp file. 
                 // convert transparency png to white before save.
                 $this->fillWhiteDestinationImage();
             }

@@ -32,7 +32,6 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
             // rotate by degree
             switch ($this->Gd->source_image_type) {
                 case IMAGETYPE_GIF:
-                    // gif
                     // set source image width and height
                     $source_image_width = imagesx($this->Gd->source_image_object);
                     $source_image_height = imagesy($this->Gd->source_image_object);
@@ -46,13 +45,12 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
                     unset($source_image_height, $source_image_width, $transwhite);
                     break;
                 case IMAGETYPE_JPEG:
-                    // jpg
                     $white = imagecolorallocate($this->Gd->source_image_object, 255, 255, 255);
                     $this->Gd->destination_image_object = imagerotate($this->Gd->source_image_object, $degree, $white);
                     unset($white);
                     break;
                 case IMAGETYPE_PNG:
-                    // png
+                case IMAGETYPE_WEBP:
                     $transwhite = imageColorAllocateAlpha($this->Gd->source_image_object, 0, 0, 0, 127);
                     $this->Gd->destination_image_object = imagerotate($this->Gd->source_image_object, $degree, $transwhite);
                     imagealphablending($this->Gd->destination_image_object, false);

@@ -32,27 +32,29 @@ class Resize extends \Rundiz\Image\Drivers\AbstractGdCommand
         }
 
         // begins resize
-        if ($this->Gd->source_image_type === IMAGETYPE_GIF) {
-            // gif
-            $transwhite = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
-            imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-            imagecolortransparent($this->Gd->destination_image_object, $transwhite);
-            imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
-            unset($transwhite);
-        } elseif ($this->Gd->source_image_type === IMAGETYPE_JPEG) {
-            // jpg
-            imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
-        } elseif ($this->Gd->source_image_type === IMAGETYPE_PNG) {
-            // png
-            imagealphablending($this->Gd->destination_image_object, false);
-            imagesavealpha($this->Gd->destination_image_object, true);
-            imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
-        } else {
-            $this->Gd->status = false;
-            $this->Gd->status_msg = 'Unable to resize this kind of image.';
-            unset($source_image_height, $source_image_width);
-            return false;
-        }
+        switch ($this->Gd->source_image_type) {
+            case IMAGETYPE_GIF:
+                $transwhite = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
+                imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
+                imagecolortransparent($this->Gd->destination_image_object, $transwhite);
+                imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
+                unset($transwhite);
+                break;
+            case IMAGETYPE_JPEG:
+                imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
+                break;
+            case IMAGETYPE_PNG:
+            case IMAGETYPE_WEBP:
+                imagealphablending($this->Gd->destination_image_object, false);
+                imagesavealpha($this->Gd->destination_image_object, true);
+                imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
+                break;
+            default:
+                $this->Gd->status = false;
+                $this->Gd->status_msg = 'Unable to resize this kind of image.';
+                unset($source_image_height, $source_image_width);
+                return false;
+        }// endswitch;
 
         // clear unused variable
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {
