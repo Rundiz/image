@@ -60,5 +60,5 @@ For more details, please look in tests folder
 ---
 Remark:
 
-* `*` WEBP is currently for `show()`, or `save()` but not support as source image.<br>
+* `*` WEBP<br>
     There are known bugs that prior PHP 7.0, the transparent PNG or GIF that converted to WEBP will be filled with the background color.
