@@ -31,7 +31,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      * Class constructor.
      * 
      * @param string $source_image_path Path to source image file.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to `statusCode` or `status_msg` property to see the details on failure.
      */
     public function __construct($source_image_path)
     {
@@ -77,7 +77,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      * Build source image data
      * 
      * @param string $source_image_path Path to source image file.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed. Call to `statusCode` or `status_msg` property to see the details on failure.
      */
     protected function buildSourceImageData($source_image_path)
     {
@@ -87,7 +87,14 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
 
         if (is_file($source_image_path)) {
             $source_image_path = realpath($source_image_path);
-            $image_data = $this->getImageFileData($source_image_path);
+            try {
+                $image_data = $this->getImageFileData($source_image_path);
+            } catch (\Exception $ex) {
+                $this->status = false;
+                $this->statusCode = $ex->getCode();
+                $this->status_msg = $ex->getMessage();
+                return false;
+            }
 
             if (false !== $image_data && is_array($image_data) && !empty($image_data)) {
                 $this->source_image_path = $source_image_path;
@@ -100,17 +107,20 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
                 unset($image_data);
 
                 $this->status = true;
+                $this->statusCode = null;
                 $this->status_msg = null;
                 return true;
             } else {
                 unset($image_data);
 
                 $this->status = false;
-                $this->status_msg = 'Unable to get image data. This file maybe a fake image.';
+                $this->statusCode = static::RDIERROR_SRC_NOTIMAGE;
+                $this->status_msg = 'Unable to get image data. This file is not an image.';
                 return false;
             }
         } else {
             $this->status = false;
+            $this->statusCode = static::RDIERROR_SRC_NOTEXISTS;
             $this->status_msg = 'Source image is not exists.';
             return false;
         }
@@ -120,22 +130,26 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
     /**
      * {@inheritDoc}
      * 
-     * This will be reset all properties that is commonly use but not reset specific properties for GD, Imagick.
+     * This method will be reset all properties that is commonly use but not reset specific properties for GD, Imagick.<br>
+     * The properties that will be clear is based on `ImageInterface` interface that was described.
      */
     public function clear()
     {
-        $this->watermark_image_height = null;
-        $this->watermark_image_type = null;
-        $this->watermark_image_width = null;
-        $this->wmTextBottomPadding = null;
+        // don't reset setting properties to let it continuous run.
 
+        // reset result properties.
         $this->status = false;
+        $this->statusCode = null;
         $this->status_msg = null;
 
-        $this->destination_image_height = null;
-        $this->destination_image_width = null;
+        // reset working process properties.
         $this->last_modified_image_height = null;
         $this->last_modified_image_width = null;
+        $this->destination_image_height = null;
+        $this->destination_image_width = null;
+        $this->watermark_image_type = null;
+        $this->watermark_image_width = null;
+        $this->watermark_image_height = null;
     }// clear
 
 
@@ -195,7 +209,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      */
     protected function isPreviousError()
     {
-        if ($this->status == false && $this->status_msg != null) {
+        if ($this->status == false && ($this->statusCode != null || $this->status_msg != null)) {
             return true;
         }
         return false;
@@ -221,7 +235,8 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
             )
         ) {
             $this->status = false;
-            $this->status_msg = 'Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio instead.';
+            $this->statusCode = static::RDIERROR_CALCULATEFAILED_USE_RESIZENORATIO;
+            $this->status_msg = 'Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio() instead.';
             return false;
         }
 

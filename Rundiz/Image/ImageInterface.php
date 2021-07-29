@@ -3,7 +3,7 @@
  * PHP Image manipulation class.
  * 
  * @package Image
- * @version 3.0.3
+ * @version 3.1.0
  * @author Vee W.
  * @license http://opensource.org/licenses/MIT
  */
@@ -21,7 +21,7 @@ interface ImageInterface
 
 
     /**
-     * Clear and reset everything to make it ready for new call.
+     * Clear and reset processed results to make it ready for new process while keep the original source.
      * 
      * @return bool Return true on successfully cleared.
      */

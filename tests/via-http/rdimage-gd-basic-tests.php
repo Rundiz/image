@@ -19,7 +19,7 @@ function displayTestsConstructor(array $test_data_set)
                 echo '<a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a>'."\n";
             }
             $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
-            echo '<pre class="mini-data-box">'.print_r($Image, true).'</pre>'."\n";
+            echo '<pre class="mini-data-box">'.var_export($Image, true).'</pre>'."\n";
             if ($Image->status !== true) {
                 echo '<p class="text-error">' . $Image->status_msg . '</p>' . "\n";
                 $sourceExt = strtolower(pathinfo($item['source_image_path'], PATHINFO_EXTENSION));

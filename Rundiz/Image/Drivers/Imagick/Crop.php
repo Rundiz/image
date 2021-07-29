@@ -119,8 +119,11 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 }
                 break;
             default:
+                $Ims = $this->ImagickD->getStatic();
                 $this->ImagickD->status = false;
+                $this->ImagickD->statusCode = $Ims::RDIERROR_CROP_UNKNOWNIMG;
                 $this->ImagickD->status_msg = 'Unable to crop this kind of image.';
+                unset($Ims);
                 return false;
         }// endswitch;
 

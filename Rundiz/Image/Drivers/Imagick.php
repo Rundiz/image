@@ -68,7 +68,7 @@ class Imagick extends AbstractImage
         // verify php imagick extension and image magick version
         $this->verifyImagickVersion();
 
-        if ($this->status == false && $this->status_msg != null) {
+        if ($this->status == false && ($this->statusCode != null || $this->status_msg != null)) {
             return false;
         } else {
             $this->buildSourceImageData($source_image_path);
@@ -90,7 +90,7 @@ class Imagick extends AbstractImage
      * Build source image data (special for Image Magick).
      * 
      * @param string $source_image_path Path to source image.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     protected function buildSourceImageData($source_image_path)
     {
@@ -98,7 +98,7 @@ class Imagick extends AbstractImage
             parent::buildSourceImageData($source_image_path);
         }
 
-        if ($this->status == false && $this->status_msg != null) {
+        if ($this->status == false && ($this->statusCode != null || $this->status_msg != null)) {
             return false;
         }
 
@@ -184,6 +184,17 @@ class Imagick extends AbstractImage
 
 
     /**
+     * Get this class as static call.
+     * 
+     * @return static
+     */
+    public function getStatic()
+    {
+        return new static($this->source_image_path);
+    }// getStatic
+
+
+    /**
      * {@inheritDoc}
      */
     public function resizeNoRatio($width, $height)
@@ -252,6 +263,7 @@ class Imagick extends AbstractImage
 
         if (!$this->isPreviousError()) {
             $this->status = true;
+            $this->statusCode = null;
             $this->status_msg = null;
         }
         return true;
@@ -286,7 +298,7 @@ class Imagick extends AbstractImage
      * Setup source image object.
      * After calling this the Imagick property will get new Image Magick object if it does not set before.
      * 
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function setupSourceImageObject()
     {
@@ -303,10 +315,12 @@ class Imagick extends AbstractImage
 
             if ($this->Imagick != null && is_object($this->Imagick)) {
                 $this->status = true;
+                $this->statusCode = null;
                 $this->status_msg = null;
                 return true;
             } else {
                 $this->status = false;
+                $this->statusCode = static::RDIERROR_SRC_UNKNOWN;
                 $this->status_msg = 'Unable to set source from this kind of image.';
                 return false;
             }
@@ -314,59 +328,10 @@ class Imagick extends AbstractImage
 
         // come to this means source image object is already set.
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// setupSourceImageObject
-
-
-    /**
-     * Setup watermark image object.
-     * After calling this the ImagickWatermark will get new Image Magick object if it does not set before.
-     * 
-     * @param string $wm_img_path Path to watermark image.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
-     */
-    private function setupWatermarkImageObject($wm_img_path)
-    {
-        if (!is_file($wm_img_path)) {
-            $this->status = false;
-            $this->status_msg = 'Watermark image was not found.';
-            return false;
-        }
-        $wm_img_path = realpath($wm_img_path);
-
-        list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
-
-        if ($wm_height == null || $wm_width == null || $wm_type == null) {
-            $this->status = false;
-            $this->status_msg = 'Watermark is not an image.';
-            return false;
-        }
-
-        if (is_object($this->ImagickWatermark)) {
-            $this->ImagickWatermark->clear();
-            $this->ImagickWatermark = null;
-        }
-
-        if ($this->ImagickWatermark == null || !is_object($this->ImagickWatermark)) {
-            $this->ImagickWatermark = new \Imagick($wm_img_path);
-
-            if ($this->ImagickWatermark == null || !is_object($this->ImagickWatermark)) {
-                $this->status = false;
-                $this->status_msg = 'Unable to set watermark from this kind of image.';
-                return false;
-            }
-        }
-
-        $this->watermark_image_height = $wm_height;
-        $this->watermark_image_width = $wm_width;
-        $this->watermark_image_type = $wm_type;
-
-        unset($wm_height, $wm_img_path, $wm_type, $wm_width);
-        $this->status = true;
-        $this->status_msg = null;
-        return true;
-    }// setupWatermarkImageObject
 
 
     /**
@@ -397,13 +362,14 @@ class Imagick extends AbstractImage
     /**
      * Verify PHP Imagick extension and Image Magick version.
      * 
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function verifyImagickVersion()
     {
         if (extension_loaded('imagick') !== true) {
             // imagick extension was not loaded.
             $this->status = false;
+            $this->statusCode = static::RDIERROR_IMAGICK_NOTLOAD;
             $this->status_msg = 'The PHP Imagick extension was not loaded.';
             return false;
         }
@@ -414,6 +380,7 @@ class Imagick extends AbstractImage
             // if Imagick version is less than 3.
             // it cannot use `\Imagick::getVersion()` method.
             $this->status = false;
+            $this->statusCode = static::RDIERROR_IMAGICK_NOTMEETREQUIREMENT;
             $this->status_msg = 'Require at least Imagick version 3.0';
             unset($imagickVersion);
             return false;
@@ -424,6 +391,7 @@ class Imagick extends AbstractImage
         if (!is_array($immVA) || !array_key_exists('versionString', $immVA)) {
             // don't know Image Magick version.
             $this->status = false;
+            $this->statusCode = static::RDIERROR_IMAGICK_VERSIONUNKNOW;
             $this->status_msg = 'Unable to verify Image Magick version.';
             unset($immVA);
             return false;
@@ -435,6 +403,7 @@ class Imagick extends AbstractImage
             if (!is_array($matches) || !array_key_exists(1, $matches)) {
                 // if not found version number.
                 $this->status = false;
+                $this->statusCode = static::RDIERROR_IMAGICK_VERSIONUNKNOW;
                 $this->status_msg = 'Unable to verify Image Magick version.';
                 unset($matches);
                 return false;
@@ -442,6 +411,7 @@ class Imagick extends AbstractImage
                 if (version_compare($matches[1], '6.2.4', '<')) {
                     // if Image Magick version is lower than requirement in PHP page.
                     $this->status = false;
+                    $this->statusCode = static::RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT;
                     $this->status_msg = 'Require at least Image Magick 6.2.4.';
                     unset($matches);
                     return false;
@@ -453,6 +423,7 @@ class Imagick extends AbstractImage
         unset($imagick_extension_version);
         if (!$this->isPreviousError()) {
             $this->status = true;
+            $this->statusCode = null;
             $this->status_msg = null;
         }
         return true;
@@ -471,6 +442,7 @@ class Imagick extends AbstractImage
         // check watermark image path exists
         if (!is_file($wm_img_path)) {
             $this->status = false;
+            $this->statusCode = static::RDIERROR_WMI_NOTEXISTS;
             $this->status_msg = 'Watermark image was not found.';
             return false;
         }
@@ -494,7 +466,9 @@ class Imagick extends AbstractImage
         }
 
         // setup watermark object for use later.
-        $this->setupWatermarkImageObject($wm_img_path);
+        $Watermark = new Imagick\Watermark($this);
+        $Watermark->setupWatermarkImageObject($wm_img_path);
+        unset($Watermark);
 
         // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
         if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
@@ -522,7 +496,7 @@ class Imagick extends AbstractImage
      * @param string $wm_img_path Path to watermark image.
      * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
@@ -539,6 +513,7 @@ class Imagick extends AbstractImage
         unset($result);
 
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// watermarkImageProcess
@@ -573,6 +548,7 @@ class Imagick extends AbstractImage
 
         if (!is_file($wm_txt_font_path)) {
             $this->status = false;
+            $this->statusCode = static::RDIERROR_WMT_FONT_NOTEXISTS;
             $this->status_msg = 'Unable to load font file.';
             return false;
         }
@@ -586,6 +562,7 @@ class Imagick extends AbstractImage
         unset($result);
 
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// watermarkText

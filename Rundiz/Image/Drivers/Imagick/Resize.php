@@ -47,8 +47,11 @@ class Resize extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 $this->ImagickD->Imagick->resizeImage($width, $height, $this->ImagickD->imagick_filter, 1);
                 break;
             default:
+                $Ims = $this->ImagickD->getStatic();
                 $this->ImagickD->status = false;
+                $this->ImagickD->statusCode = $Ims::RDIERROR_RESIZE_UNKNOWIMG;
                 $this->ImagickD->status_msg = 'Unable to resize this kind of image.';
+                unset($Ims);
                 return false;
         }// endswitch;
 

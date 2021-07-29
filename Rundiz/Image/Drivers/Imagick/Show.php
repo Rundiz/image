@@ -129,8 +129,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
             $show_result = $this->ImagickD->Imagick->getImageBlob();
         } else {
+            $Ims = $this->ImagickD->getStatic();
             $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_SHOW_UNSUPPORT;
             $this->ImagickD->status_msg = 'Unable to show this kind of image.';
+            unset($Ims);
             return false;
         }
 
@@ -139,14 +142,18 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         if ($show_result !== false) {
             $this->ImagickD->status = true;
+            $this->ImagickD->statusCode = null;
             $this->ImagickD->status_msg = null;
             // Because in PHP GD it is automatically show the image content by omit the file name in `imagexxx()` function without echo command.
             // But in PHP Imagick must echo content that have got from getImageBlob() of Imagick class, then we have to echo it here to make this image class work in the same way.
             echo $show_result;
             return true;
         } else {
+            $Ims = $this->ImagickD->getStatic();
             $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_SHOW_FAILED;
             $this->ImagickD->status_msg = 'Failed to show the image.';
+            unset($Ims);
             return false;
         }
     }// execute

@@ -122,6 +122,17 @@ class Gd extends AbstractImage
 
 
     /**
+     * Get this class as static call.
+     * 
+     * @return static
+     */
+    public function getStatic()
+    {
+        return new static($this->source_image_path);
+    }// getStatic
+
+
+    /**
      * {@inheritDoc}
      */
     public function resizeNoRatio($width, $height)
@@ -193,6 +204,7 @@ class Gd extends AbstractImage
 
         if (!$this->isPreviousError()) {
             $this->status = true;
+            $this->statusCode = null;
             $this->status_msg = null;
         }
         return true;
@@ -228,7 +240,7 @@ class Gd extends AbstractImage
      * 
      * @param int $width Destination image object width.
      * @param int $height Destination image object height.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function setupDestinationImageObjectWithSize($width, $height)
     {
@@ -246,6 +258,7 @@ class Gd extends AbstractImage
 
         // come to this means destination image object is already set.
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// setupDestinationImageObjectWithSize
@@ -255,7 +268,7 @@ class Gd extends AbstractImage
      * Setup source image object.
      * After calling this the source_image_object will get new image resource by chaining from previous destination or from image file.
      * 
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function setupSourceImageObject()
     {
@@ -273,6 +286,7 @@ class Gd extends AbstractImage
                 $this->destination_image_object = null;
 
                 $this->status = true;
+                $this->statusCode = null;
                 $this->status_msg = null;
                 return true;
             } else {
@@ -300,10 +314,12 @@ class Gd extends AbstractImage
 
                 if ($this->source_image_object != null) {
                     $this->status = true;
+                    $this->statusCode = null;
                     $this->status_msg = null;
                     return true;
                 } else {
                     $this->status = false;
+                    $this->statusCode = static::RDIERROR_SRC_UNKNOWN;
                     $this->status_msg = 'Unable to set source from this kind of image.';
                     return false;
                 }
@@ -312,6 +328,7 @@ class Gd extends AbstractImage
 
         // come to this means source image object is already set.
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// setupSourceImageObject
@@ -353,6 +370,7 @@ class Gd extends AbstractImage
         // check watermark image path exists
         if (!is_file($wm_img_path)) {
             $this->status = false;
+            $this->statusCode = static::RDIERROR_WMI_NOTEXISTS;
             $this->status_msg = 'Watermark image was not found.';
             return false;
         }
@@ -406,7 +424,7 @@ class Gd extends AbstractImage
      * @param string $wm_img_path Path to watermark image.
      * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int $wm_img_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return true on success, false on failed.
      */
     private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
@@ -423,6 +441,7 @@ class Gd extends AbstractImage
         unset($result);
 
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// watermarkImageProcess
@@ -457,6 +476,7 @@ class Gd extends AbstractImage
 
         if (!is_file($wm_txt_font_path)) {
             $this->status = false;
+            $this->statusCode = static::RDIERROR_WMT_FONT_NOTEXISTS;
             $this->status_msg = 'Unable to load font file.';
             return false;
         }
@@ -470,6 +490,7 @@ class Gd extends AbstractImage
         unset($result);
 
         $this->status = true;
+        $this->statusCode = null;
         $this->status_msg = null;
         return true;
     }// watermarkText

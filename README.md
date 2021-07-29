@@ -55,10 +55,12 @@ $Image->crop(500, 500, 'center', 'middle');
 $Image->save('/path/to/new-file-name.jpg');
 ```
 
-For more details, please look in tests folder
+For more details, please look in tests folder or see [API doc][1]
 
 ---
 Remark:
 
 * `*` WEBP<br>
     There are known bugs that prior PHP 7.0, the transparent PNG or GIF that converted to WEBP will be filled with the background color.
+
+[1]: http://apidocs.rundiz.com/image/

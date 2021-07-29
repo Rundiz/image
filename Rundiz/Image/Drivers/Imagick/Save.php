@@ -119,18 +119,25 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
             $save_result = $this->ImagickD->Imagick->writeImage($file_name);
         } else {
+            $Ims = $this->ImagickD->getStatic();
             $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_SAVE_UNSUPPORT;
             $this->ImagickD->status_msg = sprintf('Unable to save this kind of image. (%s)', $check_file_ext);
+            unset($Ims);
             return false;
         }
 
         if (isset($save_result) && $save_result !== false) {
             $this->ImagickD->status = true;
+            $this->ImagickD->statusCode = null;
             $this->ImagickD->status_msg = null;
             return true;
         } else {
+            $Ims = $this->ImagickD->getStatic();
             $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_SAVE_FAILED;
             $this->ImagickD->status_msg = 'Failed to save the image.';
+            unset($Ims);
             return false;
         }
     }// execute

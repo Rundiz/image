@@ -32,6 +32,7 @@ trait ImageTrait
      *              `mime` key is mime type.<br> 
      *              `ext` key is file extension with dot (.ext).<br>
      *              Return `false` on failure.
+     * @throws \DomainException Throw the errors if image is not supported.
      */
     protected function getImageFileData($imagePath)
     {
@@ -44,37 +45,33 @@ trait ImageTrait
             ) {
                 // if it is .webp and current PHP version is not supported (getimagesize not work prior PHP 7.1)
                 // and webp feature for GD is enabled.
-                try {
-                    $WebP = new \Rundiz\Image\Extensions\WebP();
-                    $webpInfo = $WebP->webPInfo($imagePath);
-                    if (
-                        is_array($webpInfo) && 
-                        (isset($webpInfo['ANIMATION']) && $webpInfo['ANIMATION'] === false)
-                    ) {
-                        // if not animated webp.
-                        if (version_compare(PHP_VERSION, '7.0', '<') && isset($webpInfo['ALPHA']) && $webpInfo['ALPHA'] === true) {
-                            // if current PHP version is not supported for transparent webp.
-                            return false;
-                        }
-                        $output = [];
-
-                        // use gd to get width, height.
-                        $GD = imagecreatefromwebp($imagePath);
-                        if (false !== $GD) {
-                            $output[0] = imagesx($GD);
-                            $output[1] = imagesy($GD);
-                            $output[2] = IMAGETYPE_WEBP;
-                            $output['mime'] = 'image/webp';
-                            $output['ext'] = '.webp';
-                            unset($GD);
-                            return $output;
-                        }
-                        unset($GD, $output);
+                $WebP = new \Rundiz\Image\Extensions\WebP();
+                $webpInfo = $WebP->webPInfo($imagePath);
+                if (
+                    is_array($webpInfo) && 
+                    (isset($webpInfo['ANIMATION']) && $webpInfo['ANIMATION'] === false)
+                ) {
+                    // if not animated webp.
+                    if (version_compare(PHP_VERSION, '7.0', '<') && isset($webpInfo['ALPHA']) && $webpInfo['ALPHA'] === true) {
+                        // if current PHP version is not supported for transparent webp.
+                        throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
                     }
-                    unset($WebP, $webpInfo);
-                } catch (\Exception $ex) {
-                    // failed.
+                    $output = [];
+
+                    // use gd to get width, height.
+                    $GD = imagecreatefromwebp($imagePath);
+                    if (false !== $GD) {
+                        $output[0] = imagesx($GD);
+                        $output[1] = imagesy($GD);
+                        $output[2] = IMAGETYPE_WEBP;
+                        $output['mime'] = 'image/webp';
+                        $output['ext'] = '.webp';
+                        unset($GD);
+                        return $output;
+                    }
+                    unset($GD, $output);
                 }
+                unset($WebP, $webpInfo);
             } else {
                 // if generic image.
                 $imgResult = getimagesize($imagePath);

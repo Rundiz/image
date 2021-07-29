@@ -114,7 +114,10 @@ class Crop extends \Rundiz\Image\Drivers\AbstractGdCommand
                 break;
             default:
                 $this->Gd->status = false;
+                $Gds = $this->Gd->getStatic();
+                $this->Gd->statusCode = $Gds::RDIERROR_CROP_UNKNOWNIMG;
                 $this->Gd->status_msg = 'Unable to crop this kind of image.';
+                unset($Gds);
                 return false;
         }// endswitch;
 

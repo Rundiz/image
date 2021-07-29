@@ -53,8 +53,11 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 }
                 break;
             default:
+                $Ims = $this->ImagickD->getStatic();
                 $this->ImagickD->status = false;
+                $this->ImagickD->statusCode = $Ims::RDIERROR_WMI_UNKNOWIMG;
                 $this->ImagickD->status_msg = 'Unable to set watermark from this kind of image.';
+                unset($Ims);
                 return false;
         }
 
@@ -241,6 +244,66 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         return true;
     }// applyText
+
+
+    /**
+     * Setup watermark image object.
+     * After calling this the ImagickWatermark will get new Image Magick object if it does not set before.
+     * 
+     * @param string $wm_img_path Path to watermark image.
+     * @return bool Return true on success, false on failed. Call to `status_msg` property to see the details on failure.
+     */
+    public function setupWatermarkImageObject($wm_img_path)
+    {
+        if (!is_file($wm_img_path)) {
+            $Ims = $this->ImagickD->getStatic();
+            $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_WMI_NOTEXISTS;
+            $this->ImagickD->status_msg = 'Watermark image was not found.';
+            unset($Ims);
+            return false;
+        }
+        $wm_img_path = realpath($wm_img_path);
+
+        list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
+
+        if ($wm_height == null || $wm_width == null || $wm_type == null) {
+            $Ims = $this->ImagickD->getStatic();
+            $this->ImagickD->status = false;
+            $this->ImagickD->statusCode = $Ims::RDIERROR_WMI_UNKNOWIMG;
+            $this->ImagickD->status_msg = 'Watermark is not an image.';
+            unset($Ims);
+            return false;
+        }
+
+        if (is_object($this->ImagickD->ImagickWatermark)) {
+            $this->ImagickD->ImagickWatermark->clear();
+            $this->ImagickD->ImagickWatermark = null;
+        }
+
+        if ($this->ImagickD->ImagickWatermark == null || !is_object($this->ImagickD->ImagickWatermark)) {
+            $this->ImagickD->ImagickWatermark = new \Imagick($wm_img_path);
+
+            if ($this->ImagickD->ImagickWatermark == null || !is_object($this->ImagickD->ImagickWatermark)) {
+                $Ims = $this->ImagickD->getStatic();
+                $this->ImagickD->status = false;
+                $this->ImagickD->statusCode = $Ims::RDIERROR_WMI_UNKNOWIMG;
+                $this->ImagickD->status_msg = 'Unable to set watermark from this kind of image.';
+                unset($Ims);
+                return false;
+            }
+        }
+
+        $this->ImagickD->watermark_image_height = $wm_height;
+        $this->ImagickD->watermark_image_width = $wm_width;
+        $this->ImagickD->watermark_image_type = $wm_type;
+
+        unset($wm_height, $wm_img_path, $wm_type, $wm_width);
+        $this->ImagickD->status = true;
+        $this->ImagickD->statusCode = null;
+        $this->ImagickD->status_msg = null;
+        return true;
+    }// setupWatermarkImageObject
 
 
 }

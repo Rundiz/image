@@ -58,8 +58,11 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     $this->ImagickD->Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), $this->calculateCounterClockwise($degree));
                     break;
                 default:
+                    $Ims = $this->ImagickD->getStatic();
                     $this->ImagickD->status = false;
+                    $this->ImagickD->statusCode = $Ims::RDIERROR_ROTATE_UNKNOWIMG;
                     $this->ImagickD->status_msg = 'Unable to rotate this kind of image.';
+                    unset($Ims);
                     return false;
             }
 
@@ -120,8 +123,11 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     }
                     break;
                 default:
+                    $Ims = $this->ImagickD->getStatic();
                     $this->ImagickD->status = false;
+                    $this->ImagickD->statusCode = $Ims::RDIERROR_FLIP_UNKNOWIMG;
                     $this->ImagickD->status_msg = 'Unable to flip this kind of image.';
+                    unset($Ims);
                     return false;
             }
 
