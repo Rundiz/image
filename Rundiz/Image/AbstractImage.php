@@ -81,6 +81,10 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      */
     protected function buildSourceImageData($source_image_path)
     {
+        if (!is_string($source_image_path)) {
+            $source_image_path = (string) $source_image_path;
+        }
+
         $WebP = new Extensions\WebP();
         $WebP->checkWebPConstant();
         unset($WebP);

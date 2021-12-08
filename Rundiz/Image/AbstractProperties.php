@@ -87,7 +87,7 @@ abstract class AbstractProperties
     /**
      * @var string Path to source image file.
      */
-    protected $source_image_path;
+    protected $source_image_path = '';
     /**
      * @var int Source image width. 
      */
