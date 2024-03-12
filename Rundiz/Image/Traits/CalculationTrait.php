@@ -222,7 +222,7 @@ trait CalculationTrait
      * @param int $canvasWidth Canvas size.
      * @return int Calculated size.
      */
-    protected function calculateStartXOfCenter($objWidth, $canvasWidth) 
+    public function calculateStartXOfCenter($objWidth, $canvasWidth) 
     {
         if (!is_numeric($objWidth) || !is_numeric($canvasWidth)) {
             return 0;
@@ -246,7 +246,7 @@ trait CalculationTrait
      * @return array Return array with width as index 0, height as index 1.
      * @throws \InvalidArgumentException Throw exception if invalid argument type was specified.
      */
-    protected function calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, array $options = [])
+    public function calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, array $options = [])
     {
         if (!is_numeric($imgHeight) || !is_numeric($imgWidth)) {
             throw new \InvalidArgumentException('The $imgWidth and $imgHeight must be number.');
@@ -313,7 +313,7 @@ trait CalculationTrait
      * @param int $number Alpha number (0 to 127). 127 is completely transparent.
      * @return string Return RGBA value (1.00 to 0.00). 0.00 is completely transparent.
      */
-    protected function convertAlpha127ToRgba($number)
+    public function convertAlpha127ToRgba($number)
     {
         $alpha_min = 0; // 100%
         $alpha_max = 127; // 0%

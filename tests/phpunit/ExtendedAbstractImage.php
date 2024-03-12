@@ -47,36 +47,9 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }// calculateVariableSpace
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public function calculateStartXOfCenter($objWidth, $canvasWidth)
-    {
-        return parent::calculateStartXOfCenter($objWidth, $canvasWidth);
-    }// calculateStartXOfCenter
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, array $options = [])
-    {
-        return parent::calculateWatermarkImageStartXY($wmStartX, $wmStartY, $imgWidth, $imgHeight, $wmWidth, $wmHeight, $options);
-    }// calculateWatermarkImageStartXY
-
-
     public function clear()
     {
     }
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function convertAlpha127ToRgba($number)
-    {
-        return parent::convertAlpha127ToRgba($number);
-    }// convertAlpha127ToRgba
 
 
     public function crop($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent')
