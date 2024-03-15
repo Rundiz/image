@@ -18,7 +18,7 @@ Image manipulation use GD or Imagick as drivers.
 * Rotate
 * Watermark image (including alpha transparency.)
 * Watermark text (including alpha transparency.)
-* Supported transparent GIF, PNG.
+* Supported transparent GIF, PNG, WEBP.
 * Supported animated GIF (Imagick only).
 
 [![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
