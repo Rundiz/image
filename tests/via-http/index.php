@@ -59,7 +59,7 @@
                         Create white empty image where it is portrait size (tall) and save as <strong>sample-portrait.jpg</strong>
                     </li>
                     <li>
-                        Create watermark image files.
+                        Create watermark image files. Recommended dimension is 200&times;50 pixels.
                         <ul>
                             <li><strong>watermark.gif</strong> transparent background, write some text.</li>
                             <li><strong>watermark.jpg</strong> filled background with color, write some text.</li>
