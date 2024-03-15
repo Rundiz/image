@@ -261,6 +261,8 @@ trait CalculationTrait
 
         if (!array_key_exists('padding', $options) || !is_numeric($options['padding'])) {
             $options['padding'] = 10;
+        } elseif (isset($options['padding']) && is_numeric($options['padding'])) {
+            $options['padding'] = intval($options['padding']);
         }
 
         if (is_string($wmStartX)) {
