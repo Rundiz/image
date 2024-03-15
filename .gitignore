@@ -1,5 +1,6 @@
+.apidoc/
 .phpunit.cache/
 .phpunit.result.cache
-.phpdoc
-.wiki
+.phpdoc/
+.wiki/
 vendor/

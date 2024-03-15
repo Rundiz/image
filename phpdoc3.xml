@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor
+        configVersion="3"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://www.phpdoc.org"
+>
+    <title><![CDATA[Rundiz\Image]]></title>
+    <paths>
+        <cache>.phpdoc/cache</cache>
+        <output>.apidoc</output>
+    </paths>
+    <version number="latest">
+        <api>
+            <ignore>
+                <path>vendor/**/*</path>
+                <path>tests*/**/*</path>
+                <path>phinx.php</path>
+            </ignore>
+        </api>
+    </version>
+</phpdocumentor>
