@@ -6,3 +6,7 @@
 	php_value memory_limit 256M
 	php_value max_execution_time 30000
 </IfModule>
+<IfModule mod_php8.c>
+	php_value memory_limit 256M
+	php_value max_execution_time 30000
+</IfModule>

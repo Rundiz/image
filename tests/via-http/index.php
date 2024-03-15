@@ -15,7 +15,7 @@
                 Download and create the photo as named below into <strong><?php echo realpath('../source-images'); ?></strong> folder.
                 <ul>
                     <li>
-                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1281.<br>
+                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1282.<br>
                         (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                         <ul>
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
@@ -167,5 +167,8 @@
             <li><a href="rdimage-gdimagick-watermark-text.php">watermark text</a></li>
             <li><a href="rdimage-gdimagick-watermark-image.php">watermark image</a></li>
         </ul>
+
+        <hr>
+        <p><small>Fork me on <a href="https://github.com/Rundiz/image" target="github">GitHub</a>.</small></p>
     </body>
 </html>

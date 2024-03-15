@@ -61,6 +61,8 @@ For more details, please look in tests folder or see [API doc][1]
 Remark:
 
 * `*` WEBP<br>
-    There are known bugs that prior PHP 7.0, the transparent PNG or GIF that converted to WEBP will be filled with the background color.
+    There are known bugs ([1][oldgdwebpbug], [2][oldgdwebpbug2]) that prior PHP 7.0, the transparent PNG or GIF that converted to WEBP will be filled with the background color.
 
 [1]: http://apidocs.rundiz.com/image/
+[oldgdwebpbug]: https://github.com/rosell-dk/webp-convert/issues/238#issuecomment-545928597
+[oldgdwebpbug2]: https://stackoverflow.com/a/58543717/128761
