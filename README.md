@@ -55,6 +55,45 @@ $Image->crop(500, 500, 'center', 'middle');
 $Image->save('/path/to/new-file-name.jpg');
 ```
 
+### Image manipulation methods
+```php
+// crop an image.
+$Image->crop(400, 400, 'center', 'middle');// crop start from center of X and Y
+$Image->crop(400, 400, 20, 90);// crop start from X 20 and Y 90
+
+// resize
+$Image->resize(600, 400);
+// resize without aspect ratio
+$Image->resizeNoRatio(500, 300);
+
+// rotate
+$Image->rotate();// 90 degree
+$Image->rotate(180);
+$Image->rotate(270);
+$Image->rotate('hor');// flip horizontal
+$Image->rotate('vrt');// flip vertical
+$Image->rotate('horvrt');// flip horizontal and vertical
+
+// watermark image
+$Image->watermarkImage('/var/www/image/watermark.png', 'center', 'middle');
+$Image->watermarkImage('/var/www/image/watermark.png', 50, 90);// watermark start from X 50 and Y 90
+
+// watermark text
+$Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 'center', 'middle', 16);
+$Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 50, 90, 16);// watermark start from X 50 and Y 90
+```
+
+#### Multiple image process
+```php
+$Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
+$Image->resize(900, 600);
+$Image->save('/path/to/new-file-name-900x600.jpg');
+// use method clear() to clear all processed data and start new image process with the same image source.
+$Image->clear();
+$Image->resize(300, 100);
+$Image->save('/path/to/new-file-name-300x100.jpg');
+```
+
 For more details, please look in tests folder or see [API doc][1]
 
 ---
