@@ -7,7 +7,7 @@
  */
 
 
-namespace Rundiz\Image\Tests;
+namespace Rundiz\Image\Tests\HTTP;
 
 /**
  * Copy from PSR-4

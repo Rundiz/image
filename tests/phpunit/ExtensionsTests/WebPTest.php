@@ -4,16 +4,16 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71\Extensions;
+namespace Rundiz\Image\Tests\ExtensionsTests;
 
 
-/**
- * @group processing
- */
-class WebPTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testWebPInfo()
     {
         $Webp = new \Rundiz\Image\Extensions\WebP();

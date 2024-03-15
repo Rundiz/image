@@ -14,9 +14,4 @@ if (
     die('Required PHPUnit version ' . $requiredPhpUnitVersion);
 }
 
-require __DIR__.'/Autoload.php';
-
-$Autoload = new \Rundiz\Image\Tests\Autoload();
-$Autoload->addNamespace('Rundiz\\Image\\Tests', __DIR__);
-$Autoload->addNamespace('Rundiz\\Image', dirname(dirname(__DIR__)).'/Rundiz/Image');
-$Autoload->register();
+require dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';

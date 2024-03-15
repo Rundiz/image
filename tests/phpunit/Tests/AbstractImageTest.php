@@ -4,19 +4,18 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71;
+namespace Rundiz\Image\Tests\Tests;
 
 
-/**
- * @group processing
- */
-class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testBuildSourceImageData()
     {
-        $this->requireFilesExistsAndFolderWritable();
         foreach (static::$source_images_set as $source_image) {
             $ImgAC = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . $source_image);
             $this->assertTrue($ImgAC->status);
@@ -29,7 +28,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClas
     {
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertTrue(
-            empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(
+            empty(\Rundiz\Image\Tests\Helpers\Arrays::array_diff_assoc_recursive(
                 array(
                     'width' => 1920, 
                     'height' => 1281
@@ -38,7 +37,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClas
             ))
         );
         $this->assertFalse(
-            empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(
+            empty(\Rundiz\Image\Tests\Helpers\Arrays::array_diff_assoc_recursive(
                 array(
                     'width' => 1921, 
                     'height' => 1281
@@ -48,7 +47,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClas
         );
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-portrait.jpg');
         $this->assertTrue(
-            empty(\Rundiz\Image\Tests\PHPUnitFunctions\Arrays::array_diff_assoc_recursive(
+            empty(\Rundiz\Image\Tests\Helpers\Arrays::array_diff_assoc_recursive(
                 array(
                     'width' => 400, 
                     'height' => 800
@@ -80,6 +79,27 @@ class AbstractImageTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClas
         $this->assertFalse($ImgAc->isClassSetup());
         unset($ImgAc);
     }// testIsClassSetup
+
+
+    public function testVerifyMasterDimension()
+    {
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+
+        $ImgAc->verifyMasterDimension();
+        $this->assertSame('auto', $ImgAc->master_dim);
+
+        $ImgAc->master_dim = 'width';
+        $ImgAc->verifyMasterDimension();
+        $this->assertSame('width', $ImgAc->master_dim);
+
+        $ImgAc->master_dim = 'height';
+        $ImgAc->verifyMasterDimension();
+        $this->assertSame('height', $ImgAc->master_dim);
+
+        $ImgAc->master_dim = 'invalid';
+        $ImgAc->verifyMasterDimension();
+        $this->assertSame('auto', $ImgAc->master_dim);
+    }// testVerifyMasterDimension
 
 
 }

@@ -4,7 +4,7 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHPUnitFunctions;
+namespace Rundiz\Image\Tests\Helpers;
 
 
 class Arrays
@@ -12,6 +12,7 @@ class Arrays
 
 
     /**
+     * Recursive computes the difference of arrays with additional index check.
      * 
      * @link https://www.php.net/manual/en/function.array-diff-assoc.php#V111675 Original source code.
      * @param array $array1

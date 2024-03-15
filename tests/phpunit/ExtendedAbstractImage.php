@@ -140,9 +140,15 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }
 
 
+    public function verifyMasterDimension()
+    {
+        return parent::verifyMasterDimension();
+    }// verifyMasterDimension
+
+
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
     {
-    }
+    }// watermarkImage
 
 
     public function watermarkText(
@@ -155,7 +161,7 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
         $wm_txt_font_alpha = 60,
         array $options = []
     ) {
-    }
+    }// watermarkText
 
 
 }

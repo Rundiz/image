@@ -37,7 +37,7 @@ class FileSystem
 
 
     /**
-     * Get file real path in case that `$filename` argument contain path to file name that is not exists or not created, if using `realpath()` then it will become `false`.
+     * Get file real path of the parameter `$filename`.
      * 
      * In case that the directory that is parent of file name does not exists, you have to create it before calling this.
      * 

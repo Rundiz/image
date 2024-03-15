@@ -4,13 +4,13 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71\TraitsTest;
+namespace Rundiz\Image\Tests\TraitsTest;
 
 
 /**
- * @group processing
+ * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
  */
-class ImageTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class ImageTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 

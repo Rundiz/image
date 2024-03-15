@@ -4,16 +4,16 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71\Extensions;
+namespace Rundiz\Image\Tests\ExtensionsTests;
 
 
-/**
- * @group processing
- */
-class GifTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class GifTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testGifInfo()
     {
         $Gif = new \Rundiz\Image\Extensions\Gif();

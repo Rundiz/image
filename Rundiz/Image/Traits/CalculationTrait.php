@@ -54,40 +54,6 @@ trait CalculationTrait
 
 
     /**
-     * Calculate variable space.
-     * 
-     * (min space - (different size * different each))
-     * 
-     * Example: current size is 20, min size = 10, min space = 0, different each space = 0.3<br>
-     * The result will be<br>
-     * 20 - 10 = 10 (different size)<br>
-     * 0 - (10 * .3) = -3<br>
-     * 
-     * @param int $currentSize
-     * @param int $minSize
-     * @param int $minSpace
-     * @param float $differentEach
-     * @return int
-     * @throws \InvalidArgumentException Throw the errors if invalid argument.
-     */
-    protected function calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach)
-    {
-        if (!is_numeric($currentSize) || !is_numeric($minSize) || !is_numeric($minSpace) || !is_numeric($differentEach)) {
-            throw new \InvalidArgumentException('The arguments must be number.');
-        }
-
-        $return = $minSpace;
-        if ($currentSize > $minSize) {
-            $sizeDiffMin = ($currentSize - $minSize);
-            $return = ($minSpace - ($sizeDiffMin * $differentEach));
-        }
-
-        unset($sizeDiffMin);
-        return (int) $return;
-    }// calculateVariableSpace
-
-
-    /**
      * Calculate image size by aspect ratio.
      * 
      * @param int $width New width set to calculate.
@@ -230,6 +196,40 @@ trait CalculationTrait
 
         return intval(round(($canvasWidth/2)-($objWidth/2)));
     }// calculateStartXOfCenter
+
+
+    /**
+     * Calculate variable space.
+     * 
+     * (min space - (different size * different each))
+     * 
+     * Example: current size is 20, min size = 10, min space = 0, different each space = 0.3<br>
+     * The result will be<br>
+     * 20 - 10 = 10 (different size)<br>
+     * 0 - (10 * .3) = -3<br>
+     * 
+     * @param int $currentSize
+     * @param int $minSize
+     * @param int $minSpace
+     * @param float $differentEach
+     * @return int
+     * @throws \InvalidArgumentException Throw the errors if invalid argument.
+     */
+    protected function calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach)
+    {
+        if (!is_numeric($currentSize) || !is_numeric($minSize) || !is_numeric($minSpace) || !is_numeric($differentEach)) {
+            throw new \InvalidArgumentException('The arguments must be number.');
+        }
+
+        $return = $minSpace;
+        if ($currentSize > $minSize) {
+            $sizeDiffMin = ($currentSize - $minSize);
+            $return = ($minSpace - ($sizeDiffMin * $differentEach));
+        }
+
+        unset($sizeDiffMin);
+        return (int) $return;
+    }// calculateVariableSpace
 
 
     /**

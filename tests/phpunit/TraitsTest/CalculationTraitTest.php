@@ -4,13 +4,10 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71\TraitsTest;
+namespace Rundiz\Image\Tests\TraitsTest;
 
 
-/**
- * @group processing
- */
-class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class CalculationTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
@@ -34,16 +31,6 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
         $this->assertSame(237, $ImgAc->calculateCounterClockwise(123));// non 90 degrees
         unset($ImgAc);
     }// testCalculateCounterClockwise
-
-
-    public function testCalculateVariableSpace()
-    {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
-        $this->assertSame(-3, $ImgAc->calculateVariableSpace(20, 10, 0, .3));
-        $this->assertSame(-6, $ImgAc->calculateVariableSpace(30, 10, 0, .3));
-        $this->assertSame(-7, $ImgAc->calculateVariableSpace(30, 10, 3, .5));
-        unset($ImgAc);
-    }// testCalculateVariableSpace
 
 
     public function testCalculateImageSizeRatio()
@@ -132,6 +119,16 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractC
         $this->assertSame(550, $ImgAc->calculateStartXOfCenter(400, 1500));
         unset($ImgAc);
     }// testCalculateStartXOfCenter
+
+
+    public function testCalculateVariableSpace()
+    {
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+        $this->assertSame(-3, $ImgAc->calculateVariableSpace(20, 10, 0, .3));
+        $this->assertSame(-6, $ImgAc->calculateVariableSpace(30, 10, 0, .3));
+        $this->assertSame(-7, $ImgAc->calculateVariableSpace(30, 10, 3, .5));
+        unset($ImgAc);
+    }// testCalculateVariableSpace
 
 
     public function testCalculateWatermarkImageStartXY()

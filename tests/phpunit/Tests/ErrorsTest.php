@@ -4,21 +4,22 @@
  */
 
 
-namespace Rundiz\Image\Tests\PHP71;
+namespace Rundiz\Image\Tests\Tests;
 
 
-/**
- * @group processing
- */
-class ErrorsTest extends \Rundiz\Image\Tests\PHP71\CommonTestAbstractClass
+class ErrorsTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testSourceErrors()
     {
         // normal image, shoud have no errors.
         $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam.jpg');
         $this->assertTrue($Image->status);
+
         // now errors.
         $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam-text.jpg');
         $this->assertFalse($Image->status);
