@@ -26,14 +26,15 @@ Image manipulation use GD or Imagick as drivers.
 [![Total Downloads](https://poser.pugx.org/rundiz/image/downloads)](https://packagist.org/packages/rundiz/image)
 
 ## Example
-### Gd driver
+### Drivers
+#### Gd driver
 
 ```php
 $Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
 $Image->resize(900, 600);
 $Image->save('/path/to/new-file-name.jpg');
 ```
-### Imagick driver
+#### Imagick driver
 
 ```php
 $Image = new \Rundiz\Image\Drivers\Imagick('/path/to/source-image.jpg');
@@ -41,7 +42,7 @@ $Image->resize(900, 600);
 $Image->save('/path/to/new-file-name.jpg');
 ```
 
-### Fallback drivers
+#### Fallback drivers
 You can use multiple drivers as fallback if it does not support.
 
 ```php
