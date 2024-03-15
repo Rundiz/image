@@ -7,13 +7,13 @@
 namespace Rundiz\Image\Tests\TraitsTest;
 
 
-/**
- * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
- */
 class ImageTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testGetImageFileData()
     {
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');

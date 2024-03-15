@@ -270,12 +270,6 @@ trait CalculationTrait
                     $wmStartX = $this->calculateStartXOfCenter($wmWidth, $imgWidth);
                     break;
                 case 'right':
-                    // use width from source image.
-                    $imgWidth = $this->source_image_width;
-                    if ($this->last_modified_image_width != null) {
-                        // if found last modified img width, use this one instead.
-                        $imgWidth = $this->last_modified_image_width;
-                    }
                     $wmStartX = intval($imgWidth - ($wmWidth + $options['padding']));
                     break;
                 case 'left':
@@ -292,12 +286,6 @@ trait CalculationTrait
                     $wmStartY = $this->calculateStartXOfCenter($wmHeight, $imgHeight);
                     break;
                 case 'bottom':
-                    // use height from source image.
-                    $imgHeight = $this->source_image_height;
-                    if ($this->last_modified_image_height != null) {
-                        // if found last modified img height, use this one instead.
-                        $imgHeight = $this->last_modified_image_height;
-                    }
                     $wmStartY = intval($imgHeight - ($wmHeight + $options['padding']));
                     break;
                 case 'top':

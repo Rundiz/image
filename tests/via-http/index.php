@@ -15,7 +15,7 @@
                 Download and create the photo as named below into <strong><?php echo realpath('../source-images'); ?></strong> folder.
                 <ul>
                     <li>
-                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1282.<br>
+                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920x1282 but the actual size should be 1920x1281.<br>
                         (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
                         <ul>
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>

@@ -104,28 +104,6 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }
 
 
-    /**
-     * Force set source image height for testing.
-     * 
-     * @param int $height
-     */
-    public function setSourceImageHeight($height)
-    {
-        $this->source_image_height = $height;
-    }// setSourceImageHeight
-
-
-    /**
-     * Force set source image width for testing.
-     * 
-     * @param int $width
-     */
-    public function setSourceImageWidth($width)
-    {
-        $this->source_image_width = $width;
-    }// setSourceImageWidth
-
-
     public function show($file_ext = '')
     {
     }

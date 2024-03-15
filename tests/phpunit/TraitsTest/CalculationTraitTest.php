@@ -123,21 +123,39 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testCalculateWatermarkImageStartXY()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+        $sourceImage = static::$source_images_dir . 'city-amsterdam.jpg';
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage($sourceImage);
         $this->assertSame([10, 10], $ImgAc->calculateWatermarkImageStartXY('left', 'top', 800, 600, 200, 100));
-        $ImgAc->setSourceImageWidth(800);
-        $ImgAc->setSourceImageHeight(600);
         $this->assertSame([10, 490], $ImgAc->calculateWatermarkImageStartXY('left', 'bottom', 800, 600, 200, 100));// (600-100)-10 that is padding = 490
-        $ImgAc->setSourceImageWidth(800);
-        $ImgAc->setSourceImageHeight(600);
-        $this->assertSame([590, 490], $ImgAc->calculateWatermarkImageStartXY('right', 'bottom', 800, 600, 200, 100));
-        $ImgAc->setSourceImageWidth(800);
-        $ImgAc->setSourceImageHeight(600);
+        $this->assertSame([590, 490], $ImgAc->calculateWatermarkImageStartXY('right', 'bottom', 800, 600, 200, 100));// (800-(200+10 that is padding)) = 590
         $this->assertSame([590, 10], $ImgAc->calculateWatermarkImageStartXY('right', 'top', 800, 600, 200, 100));
-        $ImgAc->setSourceImageWidth(800);
-        $ImgAc->setSourceImageHeight(600);
         $this->assertSame([300, 250], $ImgAc->calculateWatermarkImageStartXY('center', 'middle', 800, 600, 200, 100));
         unset($ImgAc);
+
+        // test resizeed with a real image and then calculate again.
+        $Image = new \Rundiz\Image\Drivers\Gd($sourceImage);
+        list($origWidth, $origHeight) = getimagesize($sourceImage);
+        $imgSizes = $Image->getImageSize();
+        // make sure that original image size is the same as retrieved via `getImageSize()` method.
+        $this->assertSame($origWidth, $imgSizes['width']);
+        $this->assertSame($origHeight, $imgSizes['height']);
+        unset($imgSizes, $origHeight, $origWidth);
+        $Image->resize(600, 500);
+        // make sure that property's value had changed.
+        $this->assertSame(600, $Image->last_modified_image_width);
+        $this->assertSame(400, $Image->last_modified_image_height);
+        // now, the same calculate with test above should now changed the value from 490 to 290. New height is now 400, half of watermark width is (200/2) = 100, padding is 10 by default.
+        $this->assertSame([10, 290], $Image->calculateWatermarkImageStartXY('left', 'bottom', $Image->last_modified_image_width, $Image->last_modified_image_height, 200, 100));// (400-100)-10 = 290
+        // New width is now 600, watermark width is 200, padding is 10 by default.
+        $this->assertSame([390, 290], $Image->calculateWatermarkImageStartXY('right', 'bottom', $Image->last_modified_image_width, $Image->last_modified_image_height, 200, 100));// (600-(200+10)) = 390
+
+        // resize again without any reset or clear (smaller).
+        $Image->resize(200, 100);
+        $this->assertSame(200, $Image->last_modified_image_width);
+        $this->assertSame(133, $Image->last_modified_image_height);
+        $this->assertSame([10, 23], $Image->calculateWatermarkImageStartXY('left', 'bottom', $Image->last_modified_image_width, $Image->last_modified_image_height, 200, 100));// (133-100)-10 = 23
+        $this->assertSame([-10, 23], $Image->calculateWatermarkImageStartXY('right', 'bottom', $Image->last_modified_image_width, $Image->last_modified_image_height, 200, 100));// (200-(200+10)) = -10
+        unset($sourceImage);
     }// testCalculateWatermarkImageStartXY
 
 
