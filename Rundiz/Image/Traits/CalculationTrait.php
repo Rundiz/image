@@ -208,6 +208,8 @@ trait CalculationTrait
      * 20 - 10 = 10 (different size)<br>
      * 0 - (10 * .3) = -3<br>
      * 
+     * @todo This method is no longer in use, remove this method in v3.2.
+     * @deprecated since v3.1.3. Will be removed in v3.2.
      * @param int $currentSize
      * @param int $minSize
      * @param int $minSpace
@@ -220,6 +222,8 @@ trait CalculationTrait
         if (!is_numeric($currentSize) || !is_numeric($minSize) || !is_numeric($minSpace) || !is_numeric($differentEach)) {
             throw new \InvalidArgumentException('The arguments must be number.');
         }
+
+        trigger_error('This method is no longer in use and will be removed in v3.2.', E_USER_DEPRECATED);
 
         $return = $minSpace;
         if ($currentSize > $minSize) {

@@ -121,16 +121,6 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testCalculateStartXOfCenter
 
 
-    public function testCalculateVariableSpace()
-    {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
-        $this->assertSame(-3, $ImgAc->calculateVariableSpace(20, 10, 0, .3));
-        $this->assertSame(-6, $ImgAc->calculateVariableSpace(30, 10, 0, .3));
-        $this->assertSame(-7, $ImgAc->calculateVariableSpace(30, 10, 3, .5));
-        unset($ImgAc);
-    }// testCalculateVariableSpace
-
-
     public function testCalculateWatermarkImageStartXY()
     {
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');

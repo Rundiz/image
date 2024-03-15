@@ -38,15 +38,6 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }// calculateImageSizeRatio
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public function calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach)
-    {
-        return parent::calculateVariableSpace($currentSize, $minSize, $minSpace, $differentEach);
-    }// calculateVariableSpace
-
-
     public function clear()
     {
     }
