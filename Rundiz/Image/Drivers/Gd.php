@@ -361,7 +361,7 @@ class Gd extends AbstractImage
     /**
      * {@inheritDoc}
      */
-    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
+    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])
     {
         if (false === $this->isClassSetup()) {
             return false;
@@ -410,7 +410,8 @@ class Gd extends AbstractImage
                 imagesx($this->source_image_object),
                 imagesy($this->source_image_object),
                 $this->watermark_image_width,
-                $this->watermark_image_height
+                $this->watermark_image_height,
+                $options
             );
         }
 

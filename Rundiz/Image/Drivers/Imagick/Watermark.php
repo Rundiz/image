@@ -118,6 +118,12 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $wm_txt_start_y = intval($wm_txt_start_y);
         }
 
+        if (!array_key_exists('padding', $options) || !is_numeric($options['padding'])) {
+            $options['padding'] = 10;
+        } elseif (isset($options['padding']) && is_numeric($options['padding'])) {
+            $options['padding'] = intval($options['padding']);
+        }
+
         // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
         if (!is_numeric($wm_txt_start_x) || !is_numeric($wm_txt_start_y)) {
             if (!is_numeric($wm_txt_start_x)) {
@@ -132,13 +138,13 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
                         break;
                     case 'right':
                         $image_width = $this->ImagickD->Imagick->getImageWidth();
-                        $wm_txt_start_x = intval(($image_width - $wm_txt_width) - 10);// add blank space to right.
+                        $wm_txt_start_x = intval(($image_width - $wm_txt_width) - $options['padding']);// add blank space to right.
 
                         unset($image_width);
                         break;
                     case 'left':
                     default:
-                        $wm_txt_start_x = 10;// add blank space to left.
+                        $wm_txt_start_x = $options['padding'];// add blank space to left.
                         break;
                 }
             }
@@ -155,12 +161,12 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
                         break;
                     case 'bottom':
                         $image_height = $this->ImagickD->Imagick->getImageHeight();
-                        $wm_txt_start_y = intval($image_height - (($wm_txt_height + 10) - $baseline));// add blank space to bottom.
+                        $wm_txt_start_y = intval($image_height - (($wm_txt_height + $options['padding']) - $baseline));// add blank space to bottom.
                         unset($image_height);
                         break;
                     case 'top':
                     default:
-                        $wm_txt_start_y = 10;// add blank space to top.
+                        $wm_txt_start_y = $options['padding'];// add blank space to top.
                         break;
                 }
             }

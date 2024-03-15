@@ -115,7 +115,7 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }// verifyMasterDimension
 
 
-    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
+    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])
     {
     }// watermarkImage
 

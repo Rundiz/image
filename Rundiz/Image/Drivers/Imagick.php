@@ -433,7 +433,7 @@ class Imagick extends AbstractImage
     /**
      * {@inheritDoc}
      */
-    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
+    public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])
     {
         if (false === $this->isClassSetup()) {
             return false;
@@ -482,7 +482,8 @@ class Imagick extends AbstractImage
                 $this->Imagick->getImageWidth(),
                 $this->Imagick->getImageHeight(),
                 $this->watermark_image_width,
-                $this->watermark_image_height
+                $this->watermark_image_height,
+                $options
             );
         }
 
