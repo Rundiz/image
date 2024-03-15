@@ -265,7 +265,14 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         }
         $wm_img_path = realpath($wm_img_path);
 
-        list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
+        try {
+            list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
+        } catch (\Exception $ex) {
+            $this->Gd->status = false;
+            $this->Gd->statusCode = $ex->getCode();
+            $this->Gd->status_msg = $ex->getMessage();
+            return false;
+        }
 
         if ($wm_height == null || $wm_width == null || $wm_type == null) {
             $Ims = $this->ImagickD->getStatic();
