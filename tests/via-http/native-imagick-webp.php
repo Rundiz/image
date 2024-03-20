@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.png';
+$sourceImageFile = '../source-images/city-amsterdam.webp';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -33,8 +33,8 @@ require_once __DIR__.'/include-imagick-functions.php';
                         // resize
                         $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
                         // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . (isset($previousSize[0]) ? '-from-' . $previousSize[0] . 'x' . $previousSize[1] : '') . '.png';
-                        // png compression for imagick does not work!!!
+                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . (isset($previousSize[0]) ? '-from-' . $previousSize[0] . 'x' . $previousSize[1] : '') . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<td>' . PHP_EOL;
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
@@ -62,7 +62,8 @@ require_once __DIR__.'/include-imagick-functions.php';
                         // crop from previous resized image.
                         $Imagick->cropImage($cropWidth, $cropHeight, 0, 0);
                         // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-' . $previousSize[0] . 'x' . $previousSize[1] . '.png';
+                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-' . $previousSize[0] . 'x' . $previousSize[1] . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
                         echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
@@ -79,7 +80,8 @@ require_once __DIR__.'/include-imagick-functions.php';
                         $Imagick->readImage(realpath($sourceImageFile));// same as new \Imagick(realpath($sourceImageFile));
                         $Imagick->cropImage($cropWidth, $cropHeight, 0, 0);
                         // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.png';
+                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.webp';
+                        $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
                         echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
@@ -97,7 +99,7 @@ require_once __DIR__.'/include-imagick-functions.php';
                         // rotate
                         // @link https://www.php.net/manual/en/imagick.rotateimage.php check out this
                         $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($deg));
-                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.png';
+                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.webp';
                         $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
@@ -115,7 +117,7 @@ require_once __DIR__.'/include-imagick-functions.php';
                         $Imagick = new \Imagick(realpath($sourceImageFile));
                         // rotate
                         $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($deg));
-                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-source-image.png';
+                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-source-image.webp';
                         $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
@@ -137,8 +139,8 @@ require_once __DIR__.'/include-imagick-functions.php';
                         // resize
                         $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
                         // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-png.jpg';
-                        $Imagick = $Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);// convert from transparent to white. for PNG source. without this, the transparent part will become black.
+                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-webp.jpg';
+                        $Imagick = $Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);// convert from transparent to white. for WEBP source. without this, the transparent part will become black.
                         $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
@@ -158,7 +160,7 @@ require_once __DIR__.'/include-imagick-functions.php';
                         // resize
                         $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
                         // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-png.gif';
+                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-webp.gif';
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
                         echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;

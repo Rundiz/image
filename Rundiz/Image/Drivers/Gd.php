@@ -307,7 +307,7 @@ class Gd extends AbstractImage
                 } elseif ($this->source_image_type === IMAGETYPE_WEBP) {
                     // webp
                     $this->source_image_object = imagecreatefromwebp($this->source_image_path);
-                    // add alpha, alpha blending to support transparency png
+                    // add alpha, alpha blending to support transparency webp
                     imagealphablending($this->source_image_object, false);
                     imagesavealpha($this->source_image_object, true);
                 }// endif;

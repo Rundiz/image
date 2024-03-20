@@ -81,6 +81,7 @@
             <li><a href="native-gd-jpg.php">process jpg image</a></li>
             <li><a href="native-gd-png.php">process png image</a></li>
             <li><a href="native-gd-gif.php">process gif image</a></li>
+            <li><a href="native-gd-webp.php">process webp image</a></li>
             <li><a href="native-gd-gif-watermark-png.php">gif image with watermark png</a></li>
         </ul>
         <h3>Native PHP Imagick class test</h3>
@@ -94,6 +95,7 @@
             <li><a href="native-imagick-jpg.php">process jpg image</a></li>
             <li><a href="native-imagick-png.php">process png image</a></li>
             <li><a href="native-imagick-gif.php">process gif image</a></li>
+            <li><a href="native-imagick-webp.php">process webp image</a></li>
             <li><a href="native-imagick-gif-watermark-png.php">gif image with watermark png</a></li>
             <li><a href="native-imagick-animated-gif.php">process animated gif image</a> (this is slower than process non animated gif.)</li>
             <li><a href="native-imagick-jpg-compression-tests.php">jpg compression tests</a></li>
