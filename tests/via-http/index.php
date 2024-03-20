@@ -32,7 +32,10 @@
                         <ul>
                             <li><strong>city-amsterdam-text.jpg</strong> (This is text file with jpg extension.)</li>
                         </ul>
-                        Use animation program to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
+                        Use animation program (
+                        Example <a href="https://forums.getpaint.net/topic/118869-gif-animations-and-images-filetype-plugin-gif-agif-latest-v15-2021-11-16/" target="paintnet_plugingif">1</a>
+                        , <a href="https://forums.getpaint.net/topic/119134-webp-animations-and-images-filetype-plugin-webp-awebp-latest-v14-2022-01-24/" target="paintnet_pluginwebp">2</a>
+                        ) to open JPG file, and add some animation (2 - 3 frames is enough) and save as..
                         <ul>
                             <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image. It is for test with Imagick functions only.)</li>
                             <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image. It is for test with <code>webPInfo()</code> method only.)</li>

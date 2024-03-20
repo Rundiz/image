@@ -58,10 +58,13 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
             // if save to jpg
             if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
                 // if source file is gif
-                if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to jpg
-                    // get the first frame.
-                    $this->getFirstFrame();
+                if ($this->ImagickD->source_image_frames > 1) {
+                    // if source image is animated gif.
+                    if (is_object($this->ImagickD->ImagickFirstFrame)) {
+                        // if there is first frame object.
+                        // get the first frame.
+                        $this->getFirstFrame();
+                    }
                 }
 
                 // covnert from transparent to white before save
@@ -73,7 +76,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 // if source file is png or webp
                 // convert from transparent to white before save
                 $this->fillWhiteToImage();
-            }
+            }// endif;
 
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
             if ($this->ImagickD->jpg_quality < 1) {
@@ -93,11 +96,18 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
             // if save to png
             if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
                 // if source file is gif
-                if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to png
-                    // get the first frame.
-                    $this->getFirstFrame();
-                }
+                if ($this->ImagickD->source_image_frames > 1) {
+                    // if source image is animated gif and first frame object is set.
+                    if (is_object($this->ImagickD->ImagickFirstFrame)) {
+                        // if there is first frame object.
+                        // get the first frame.
+                        $this->getFirstFrame();
+                    }
+
+                    // set first frame to prevent Imagick retrieve from last frame and have different dimension.
+                    // read more about this here ( https://stackoverflow.com/questions/55176565/imagick-gives-wrong-width-and-height-of-gif )
+                    $this->ImagickD->Imagick->setFirstIterator();
+                }// endif;
 
                 // keep transparency from gif without any modification.
             }
@@ -114,6 +124,15 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $show_result = $this->ImagickD->Imagick->getImageBlob();
         } elseif ($check_file_ext === 'webp') {
             // if save to webp
+            if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
+                // if source file is gif
+                if ($this->ImagickD->source_image_frames > 1) {
+                    // if animated gif. set first frame to prevent Imagick retrieve from last frame and have different dimension.
+                    // read more about this here ( https://stackoverflow.com/questions/55176565/imagick-gives-wrong-width-and-height-of-gif )
+                    $this->ImagickD->Imagick->setFirstIterator();
+                }
+            }// endif;
+
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
             if ($this->ImagickD->jpg_quality < 1) {
                 // if quality is less than 1.
