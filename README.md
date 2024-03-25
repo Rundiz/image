@@ -101,8 +101,11 @@ For more details, please look in tests folder or see [API doc][1]
 Remark:
 
 * `*` WEBP<br>
-    There are known bugs ([1][oldgdwebpbug], [2][oldgdwebpbug2]) that prior PHP 7.0, the transparent PNG or GIF that converted to WEBP will be filled with the background color.
+    * PHP all version ([last checked 8.3][animatedwebpbug]) doesn't support animated WEBP with GD.
+    * PHP prior 7.0 with GD ([1][oldgdwebpbug], [2][oldgdwebpbug2]) doesn't supported open or save transparent WEBP.
+    * PHP prior 5.6 with GD doesn't fully supported WEBP and may cause image becomes green. Tested with PHP on Windows.
 
 [1]: http://apidocs.rundiz.com/image/
 [oldgdwebpbug]: https://github.com/rosell-dk/webp-convert/issues/238#issuecomment-545928597
 [oldgdwebpbug2]: https://stackoverflow.com/a/58543717/128761
+[animatedwebpbug]: https://www.php.net/manual/en/function.imagecreatefromwebp.php
