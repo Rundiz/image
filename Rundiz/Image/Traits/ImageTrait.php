@@ -38,57 +38,86 @@ trait ImageTrait
     {
         if (is_file($imagePath)) {
             $imagePath = realpath($imagePath);
+            // get image size and other data using `getimagesize()` function.
+            $imgResult = getimagesize($imagePath);
             if (
-                stripos($imagePath, '.webp') !== false && 
-                version_compare(PHP_VERSION, '7.1.0', '<') &&
-                function_exists('imagecreatefromwebp')
+                    is_array($imgResult) 
+                    && array_key_exists(0, $imgResult) 
+                    && is_numeric($imgResult[0]) 
+                    && array_key_exists(1, $imgResult) 
+                    && is_numeric($imgResult[1]) 
+                    && array_key_exists(2, $imgResult) 
+                    && array_key_exists('mime', $imgResult)
             ) {
-                // if it is .webp and current PHP version is not supported (getimagesize not work prior PHP 7.1)
-                // and webp feature for GD is enabled.
+                // if image was supported and it really is an image, these keys must exists.
+                $imgResult['ext'] = image_type_to_extension($imgResult[2]);
+                return $imgResult;
+            }
+            unset($imgResult);
+
+            // Come to this means, it couldn't get image data. Some older version of PHP can't get image data for example WEBP and PHP <= 7.0.
+            if (strtolower(pathinfo($imagePath, PATHINFO_EXTENSION)) === 'webp') {
+                // if it is WEBP.
                 $WebP = new \Rundiz\Image\Extensions\WebP();
                 $webpInfo = $WebP->webPInfo($imagePath);
-                if (
-                    is_array($webpInfo) && 
-                    (isset($webpInfo['ANIMATION']) && $webpInfo['ANIMATION'] === false)
-                ) {
-                    // if not animated webp.
-                    if (version_compare(PHP_VERSION, '7.0', '<') && isset($webpInfo['ALPHA']) && $webpInfo['ALPHA'] === true) {
-                        // if current PHP version is not supported for transparent webp.
-                        throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
-                    }
-                    $output = [];
-
-                    // use gd to get width, height.
-                    $GD = imagecreatefromwebp($imagePath);
-                    if (false !== $GD) {
-                        $output[0] = imagesx($GD);
-                        $output[1] = imagesy($GD);
-                        $output[2] = IMAGETYPE_WEBP;
-                        $output['mime'] = 'image/webp';
-                        $output['ext'] = '.webp';
-                        unset($GD);
-                        return $output;
-                    }
-                    unset($GD, $output);
-                }
+                $isAnimated = (is_array($webpInfo) && isset($webpInfo['ANIMATION']) && true === $webpInfo['ANIMATION']);
+                $isTransparent = (is_array($webpInfo) && isset($webpInfo['ALPHA']) && true === $webpInfo['ALPHA']);
                 unset($WebP, $webpInfo);
-            } else {
-                // if generic image.
-                $imgResult = getimagesize($imagePath);
-                if (
-                        is_array($imgResult) &&
-                        array_key_exists(0, $imgResult) &&
-                        array_key_exists(1, $imgResult) &&
-                        array_key_exists(2, $imgResult) &&
-                        array_key_exists('mime', $imgResult)
-                ) {
-                    // if image was supported and it really is an image, these keys must exists.
-                    $imgResult['ext'] = image_type_to_extension($imgResult[2]);
-                    return $imgResult;
-                }
-                unset($imgResult);
-            }
-        }
+
+                if (extension_loaded('imagick') === true && class_exists('imagick')) {
+                    // if imagick is installed.
+                    if (!$isAnimated || ($isAnimated && version_compare(PHP_VERSION, '7.3', '>='))) {
+                        // if it is not animated or it is animated WEBP but PHP version is supported.
+                        $Imagick = new \imagick($imagePath);
+                        $imgGeo = $Imagick->getImageGeometry();
+                        if (
+                            isset($imgGeo['width']) 
+                            && is_numeric($imgGeo['width'])
+                            && isset($imgGeo['height']) 
+                            && is_numeric($imgGeo['height'])
+                        ) {
+                            // if imagick can get image data.
+                            $output[0] = $imgGeo['width'];
+                            $output[1] = $imgGeo['height'];
+                            $output[2] = IMAGETYPE_WEBP;
+                            $output['mime'] = 'image/webp';
+                            $output['ext'] = '.webp';
+                            unset($Imagick);
+                            return $output;
+                        }// endif; imagick can get image data.
+                        unset($Imagick, $imgGeo);
+                    }// endif; version supported.
+                }// endif; imagick is installed.
+
+                if (function_exists('imagecreatefromwebp')) {
+                    // if there is a GD function supported.
+                    if (!$isAnimated) {
+                        // if not animated WEBP.
+                        if (
+                            version_compare(PHP_VERSION, '7.0', '<') 
+                            && $isTransparent
+                        ) {
+                            // if current PHP version is not supported for transparent webp.
+                            throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
+                        }
+
+                        $output = [];
+                        $GD = imagecreatefromwebp($imagePath);
+                        if (false !== $GD) {
+                            $output[0] = imagesx($GD);
+                            $output[1] = imagesy($GD);
+                            $output[2] = IMAGETYPE_WEBP;
+                            $output['mime'] = 'image/webp';
+                            $output['ext'] = '.webp';
+                            unset($GD);
+                            return $output;
+                        }
+                        unset($GD, $output);
+                    }// endif; not animated
+
+                }// endif; there is a GD function supported
+            }// endif; it is WEBP.
+        }// endif; file exists.
 
         return false;
     }// getImageFileData
