@@ -124,9 +124,9 @@ trait ImageTrait
 
 
     /**
-     * Nomalize degree.
+     * Normalize degree.
      * 
-     * If degree is allowed string then it will be return as-is. If degree is number then it will be convert to ineger.
+     * If degree is allowed string then it will be return as-is. If degree is number then it will be convert to integer.
      * 
      * @param int|string $degree The degree.
      * @return int|string Return converted degree.
