@@ -21,7 +21,7 @@ trait ImageTrait
     /**
      * Get image file data such as width, height, mime type.
      * 
-     * This will be use `getimagesize()` function if supported, use GD functions as backup.
+     * This will be use `getimagesize()` function if supported, use Imagick, GD functions as backup.
      * 
      * @since 3.1.0
      * @param string $imagePath Full path to image file.
@@ -32,9 +32,9 @@ trait ImageTrait
      *              `mime` key is mime type.<br> 
      *              `ext` key is file extension with dot (.ext).<br>
      *              Return `false` on failure.
-     * @throws \DomainException Throw the errors if image is not supported.
+     * @throws \DomainException Throw the errors if image and current PHP version is not supported.
      */
-    protected function getImageFileData($imagePath)
+    public function getImageFileData($imagePath)
     {
         if (is_file($imagePath)) {
             $imagePath = realpath($imagePath);
