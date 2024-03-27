@@ -51,9 +51,7 @@ class Resize extends \Rundiz\Image\Drivers\AbstractGdCommand
                 break;
             default:
                 $Gds = $this->Gd->getStatic();
-                $this->Gd->status = false;
-                $this->Gd->statusCode = $Gds::RDIERROR_RESIZE_UNKNOWIMG;
-                $this->Gd->status_msg = 'Unable to resize this kind of image.';
+                $this->setErrorMessage('Unable to resize this kind of image.', $Gds::RDIERROR_RESIZE_UNKNOWIMG);
                 unset($Gds, $source_image_height, $source_image_width);
                 return false;
         }// endswitch;

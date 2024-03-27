@@ -83,35 +83,34 @@ trait CalculationTrait
             $source_image_height = $this->last_modified_image_height;
         }
 
-        $source_image_orientation = $this->getSourceImageOrientation();
-        // find height and width by aspect ratio.
-        $find_h = round(($source_image_height/$source_image_width)*$width);
-        $find_w = round(($source_image_width/$source_image_height)*$height);
+        // calculate height and width by aspect ratio.
+        $calc_h = round(($source_image_height/$source_image_width)*$width);
+        $calc_w = round(($source_image_width/$source_image_height)*$height);
 
         $this->verifyMasterDimension();
 
         switch ($this->master_dim) {
             case 'width':
                 $new_width = $width;
-                $new_height = $find_h;
+                $new_height = $calc_h;
 
-                // if not allow resize larger.
                 if ($this->allow_resize_larger == false) {
-                    // if new width larger than source image width
+                    // if not allow resize larger.
                     if ($width > $source_image_width) {
+                        // if new width larger than source image width
                         $new_width = $source_image_width;
                         $new_height = $source_image_height;
                     }
                 }
                 break;
             case 'height':
-                $new_width = $find_w;
+                $new_width = $calc_w;
                 $new_height = $height;
 
-                // if not allow resize larger.
                 if ($this->allow_resize_larger == false) {
-                    // if new height is larger than source image height
+                    // if not allow resize larger.
                     if ($height > $source_image_height) {
+                        // if new height is larger than source image height
                         $new_width = $source_image_width;
                         $new_height = $source_image_height;
                     }
@@ -120,19 +119,20 @@ trait CalculationTrait
             case 'auto':
             default:
                 // master dimension auto.
+                $source_image_orientation = $this->getSourceImageOrientation();
                 switch ($source_image_orientation) {
                     case 'P':
                         // image orientation portrait
-                        $new_width = $find_w;
+                        $new_width = $calc_w;
                         $new_height = $height;
 
-                        // if not allow resize larger
                         if ($this->allow_resize_larger == false) {
+                            // if not allow resize larger
                             // determine new image size must not larger than source image size.
                             if ($height > $source_image_height && $width <= $source_image_width) {
                                 // if new height larger than source image height and width smaller or equal to source image width
                                 $new_width = $width;
-                                $new_height = $find_h;
+                                $new_height = $calc_h;
                             } else {
                                 if ($height > $source_image_height) {
                                     $new_width = $source_image_width;
@@ -148,14 +148,14 @@ trait CalculationTrait
                     default:
                         // image orientation landscape and square
                         $new_width = $width;
-                        $new_height = $find_h;
+                        $new_height = $calc_h;
 
-                        // if not allow resize larger
                         if ($this->allow_resize_larger == false) {
+                            // if not allow resize larger
                             // determine new image size must not larger than source image size.
                             if ($width > $source_image_width && $height <= $source_image_height) {
                                 // if new width larger than source image width and height smaller or equal to source image height
-                                $new_width = $find_w;
+                                $new_width = $calc_w;
                                 $new_height = $height;
                             } else {
                                 if ($width > $source_image_width) {
@@ -166,10 +166,11 @@ trait CalculationTrait
                         }
                         break;
                 }
+                unset($source_image_orientation);
                 break;
         }// endswitch;
 
-        unset($find_h, $find_w, $source_image_height, $source_image_orientation, $source_image_width);
+        unset($calc_h, $calc_w, $source_image_height, $source_image_width);
         return [
             'height' => $new_height, 
             'width' => $new_width

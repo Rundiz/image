@@ -232,6 +232,7 @@ abstract class AbstractProperties
     const RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT = 21;
     /**
      * Not support animated WebP for current PHP version.
+     * @since 3.1.4
      */
     const RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED = 22;
 

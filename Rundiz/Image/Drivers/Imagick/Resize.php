@@ -48,9 +48,7 @@ class Resize extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 break;
             default:
                 $Ims = $this->ImagickD->getStatic();
-                $this->ImagickD->status = false;
-                $this->ImagickD->statusCode = $Ims::RDIERROR_RESIZE_UNKNOWIMG;
-                $this->ImagickD->status_msg = 'Unable to resize this kind of image.';
+                $this->setErrorMessage('Unable to resize this kind of image.', $Ims::RDIERROR_RESIZE_UNKNOWIMG);
                 unset($Ims);
                 return false;
         }// endswitch;

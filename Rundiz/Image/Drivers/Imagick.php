@@ -262,9 +262,7 @@ class Imagick extends AbstractImage
         unset($result);
 
         if (!$this->isPreviousError()) {
-            $this->status = true;
-            $this->statusCode = null;
-            $this->status_msg = null;
+            $this->setStatusSuccess();
         }
         return true;
     }// rotate
@@ -314,22 +312,16 @@ class Imagick extends AbstractImage
             $this->Imagick = new \Imagick($this->source_image_path);
 
             if ($this->Imagick != null && is_object($this->Imagick)) {
-                $this->status = true;
-                $this->statusCode = null;
-                $this->status_msg = null;
+                $this->setStatusSuccess();
                 return true;
             } else {
-                $this->status = false;
-                $this->statusCode = static::RDIERROR_SRC_UNKNOWN;
-                $this->status_msg = 'Unable to set source from this kind of image.';
+                $this->setErrorMessage('Unable to set source from this kind of image.', static::RDIERROR_SRC_UNKNOWN);
                 return false;
             }
         }
 
         // come to this means source image object is already set.
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// setupSourceImageObject
 
@@ -368,9 +360,7 @@ class Imagick extends AbstractImage
     {
         if (extension_loaded('imagick') !== true) {
             // imagick extension was not loaded.
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_IMAGICK_NOTLOAD;
-            $this->status_msg = 'The PHP Imagick extension was not loaded.';
+            $this->setErrorMessage('The PHP Imagick extension was not loaded.', static::RDIERROR_IMAGICK_NOTLOAD);
             return false;
         }
 
@@ -379,9 +369,7 @@ class Imagick extends AbstractImage
         if (version_compare($imagickVersion, '3.0', '<')) {
             // if Imagick version is less than 3.
             // it cannot use `\Imagick::getVersion()` method.
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_IMAGICK_NOTMEETREQUIREMENT;
-            $this->status_msg = 'Require at least Imagick version 3.0';
+            $this->setErrorMessage('Require at least Imagick version 3.0', static::RDIERROR_IMAGICK_NOTMEETREQUIREMENT);
             unset($imagickVersion);
             return false;
         }
@@ -390,9 +378,7 @@ class Imagick extends AbstractImage
         $immVA = \Imagick::getVersion();// get Image Magick version array.
         if (!is_array($immVA) || !array_key_exists('versionString', $immVA)) {
             // don't know Image Magick version.
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_IMAGICK_VERSIONUNKNOW;
-            $this->status_msg = 'Unable to verify Image Magick version.';
+            $this->setErrorMessage('Unable to verify Image Magick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
             unset($immVA);
             return false;
         } else {
@@ -402,17 +388,13 @@ class Imagick extends AbstractImage
             unset($immVA);
             if (!is_array($matches) || !array_key_exists(1, $matches)) {
                 // if not found version number.
-                $this->status = false;
-                $this->statusCode = static::RDIERROR_IMAGICK_VERSIONUNKNOW;
-                $this->status_msg = 'Unable to verify Image Magick version.';
+                $this->setErrorMessage('Unable to verify Image Magick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
                 unset($matches);
                 return false;
             } else {
                 if (version_compare($matches[1], '6.2.4', '<')) {
                     // if Image Magick version is lower than requirement in PHP page.
-                    $this->status = false;
-                    $this->statusCode = static::RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT;
-                    $this->status_msg = 'Require at least Image Magick 6.2.4.';
+                    $this->setErrorMessage('Require at least Image Magick 6.2.4.', static::RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT);
                     unset($matches);
                     return false;
                 }
@@ -422,9 +404,7 @@ class Imagick extends AbstractImage
 
         unset($imagick_extension_version);
         if (!$this->isPreviousError()) {
-            $this->status = true;
-            $this->statusCode = null;
-            $this->status_msg = null;
+            $this->setStatusSuccess();
         }
         return true;
     }// verifyImagickVersion
@@ -441,9 +421,7 @@ class Imagick extends AbstractImage
 
         // check watermark image path exists
         if (!is_file($wm_img_path)) {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_WMI_NOTEXISTS;
-            $this->status_msg = 'Watermark image was not found.';
+            $this->setErrorMessage('Watermark image was not found.', static::RDIERROR_WMI_NOTEXISTS);
             return false;
         }
 
@@ -513,9 +491,7 @@ class Imagick extends AbstractImage
         }
         unset($result);
 
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// watermarkImageProcess
 
@@ -548,9 +524,7 @@ class Imagick extends AbstractImage
         }
 
         if (!is_file($wm_txt_font_path)) {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_WMT_FONT_NOTEXISTS;
-            $this->status_msg = 'Unable to load font file.';
+            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
             return false;
         }
         
@@ -562,9 +536,7 @@ class Imagick extends AbstractImage
         }
         unset($result);
 
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// watermarkText
 

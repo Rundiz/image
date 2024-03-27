@@ -59,9 +59,7 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     break;
                 default:
                     $Ims = $this->ImagickD->getStatic();
-                    $this->ImagickD->status = false;
-                    $this->ImagickD->statusCode = $Ims::RDIERROR_ROTATE_UNKNOWIMG;
-                    $this->ImagickD->status_msg = 'Unable to rotate this kind of image.';
+                    $this->setErrorMessage('Unable to rotate this kind of image.', $Ims::RDIERROR_ROTATE_UNKNOWIMG);
                     unset($Ims);
                     return false;
             }
@@ -124,9 +122,7 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractImagickCommand
                     break;
                 default:
                     $Ims = $this->ImagickD->getStatic();
-                    $this->ImagickD->status = false;
-                    $this->ImagickD->statusCode = $Ims::RDIERROR_FLIP_UNKNOWIMG;
-                    $this->ImagickD->status_msg = 'Unable to flip this kind of image.';
+                    $this->setErrorMessage('Unable to flip this kind of image.', $Ims::RDIERROR_FLIP_UNKNOWIMG);
                     unset($Ims);
                     return false;
             }

@@ -59,9 +59,7 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
                     break;
                 default:
                     $Gds = $this->Gd->getStatic();
-                    $this->Gd->status = false;
-                    $this->Gd->statusCode = $Gds::RDIERROR_ROTATE_UNKNOWIMG;
-                    $this->Gd->status_msg = 'Unable to rotate this kind of image.';
+                    $this->setErrorMessage('Unable to rotate this kind of image.', $Gds::RDIERROR_ROTATE_UNKNOWIMG);
                     unset($Gds);
                     return false;
             }
@@ -75,9 +73,7 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
             // flip image
             if (version_compare(phpversion(), '5.5', '<')) {
                 $Gds = $this->Gd->getStatic();
-                $this->Gd->status = false;
-                $this->Gd->statusCode = $Gds::RDIERROR_FLIP_NOTSUPPORTED;
-                $this->Gd->status_msg = 'Unable to flip image using PHP older than 5.5.';
+                $this->setErrorMessage('Unable to flip image using PHP older than 5.5.', $Gds::RDIERROR_FLIP_NOTSUPPORTED);
                 unset($Gds);
                 return false;
             }

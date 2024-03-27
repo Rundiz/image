@@ -94,9 +94,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
             try {
                 $image_data = $this->getImageFileData($source_image_path);
             } catch (\Exception $ex) {
-                $this->status = false;
-                $this->statusCode = $ex->getCode();
-                $this->status_msg = $ex->getMessage();
+                $this->setErrorMessage($ex->getMessage(), $ex->getCode());
                 return false;
             }
 
@@ -110,22 +108,16 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
                 $this->source_image_data = $image_data;
                 unset($image_data);
 
-                $this->status = true;
-                $this->statusCode = null;
-                $this->status_msg = null;
+                $this->setStatusSuccess();
                 return true;
             } else {
                 unset($image_data);
 
-                $this->status = false;
-                $this->statusCode = static::RDIERROR_SRC_NOTIMAGE;
-                $this->status_msg = 'Unable to get image data. This file is not an image.';
+                $this->setErrorMessage('Unable to get image data. This file is not an image.', static::RDIERROR_SRC_NOTIMAGE);
                 return false;
             }
         } else {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_SRC_NOTEXISTS;
-            $this->status_msg = 'Source image is not exists.';
+            $this->setErrorMessage('Source image is not exists.', static::RDIERROR_SRC_NOTEXISTS);
             return false;
         }
     }// buildSourceImageData
@@ -238,14 +230,48 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
                 (!array_key_exists('height', $sizes) || !array_key_exists('width', $sizes))
             )
         ) {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_CALCULATEFAILED_USE_RESIZENORATIO;
-            $this->status_msg = 'Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio() instead.';
+            $this->setErrorMessage('Unable to calculate sizes, please try to calculate on your own and call to resizeNoRatio() instead.', static::RDIERROR_CALCULATEFAILED_USE_RESIZENORATIO);
             return false;
         }
 
         return $this->resizeNoRatio($sizes['width'], $sizes['height']);
     }// resize
+
+
+    /**
+     * Set error message and code. This will be set statusXxx properties.
+     * 
+     * @since 3.1.4
+     * @param string $errorMessage The error message.
+     * @param int $errorCode The error code, usually it is class's constant.
+     * @throws \InvalidArgumentException Throw the exception if argument type is invalid.
+     */
+    protected function setErrorMessage($errorMessage, $errorCode)
+    {
+        if (!is_string($errorMessage)) {
+            throw new \InvalidArgumentException('The argument $errorMessage must be string.');
+        }
+        if (!is_int($errorCode)) {
+            throw new \InvalidArgumentException('The argument $errorCode must be integer.');
+        }
+
+        $this->status = false;
+        $this->status_msg = $errorMessage;
+        $this->statusCode = $errorCode;
+    }// setErrorMessage
+
+
+    /**
+     * Set status as success and remove error message, error code.
+     * 
+     * @since 3.1.4
+     */
+    protected function setStatusSuccess()
+    {
+        $this->status = true;
+        $this->status_msg = null;
+        $this->statusCode = null;
+    }// setStatusSuccess
 
 
     /**

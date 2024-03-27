@@ -110,9 +110,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
             $show_result = imagewebp($this->Gd->destination_image_object, null, $this->Gd->jpg_quality);
         } else {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_SHOW_UNSUPPORT;
-            $this->Gd->status_msg = 'Unable to show this kind of image.';
+            $this->setErrorMessage('Unable to show this kind of image.', $Gds::RDIERROR_SHOW_UNSUPPORT);
             unset($Gds);
             return false;
         }
@@ -121,15 +119,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
         unset($check_file_ext, $file_ext);
 
         if ($show_result !== false) {
-            $this->Gd->status = true;
-            $this->Gd->statusCode = null;
-            $this->Gd->status_msg = null;
+            $this->setStatusSuccess();
             return true;
         } else {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_SHOW_FAILED;
-            $this->Gd->status_msg = 'Failed to show the image.';
+            $this->setErrorMessage('Failed to show the image.', $Gds::RDIERROR_SHOW_FAILED);
             unset($Gds);
             return false;
         }

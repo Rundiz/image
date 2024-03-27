@@ -203,9 +203,7 @@ class Gd extends AbstractImage
         unset($result);
 
         if (!$this->isPreviousError()) {
-            $this->status = true;
-            $this->statusCode = null;
-            $this->status_msg = null;
+            $this->setStatusSuccess();
         }
         return true;
     }// rotate
@@ -257,9 +255,7 @@ class Gd extends AbstractImage
         }
 
         // come to this means destination image object is already set.
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// setupDestinationImageObjectWithSize
 
@@ -285,9 +281,7 @@ class Gd extends AbstractImage
                 $this->source_image_object = $this->destination_image_object;
                 $this->destination_image_object = null;
 
-                $this->status = true;
-                $this->statusCode = null;
-                $this->status_msg = null;
+                $this->setStatusSuccess();
                 return true;
             } else {
                 if ($this->source_image_type === IMAGETYPE_GIF) {
@@ -313,23 +307,17 @@ class Gd extends AbstractImage
                 }// endif;
 
                 if ($this->source_image_object != null) {
-                    $this->status = true;
-                    $this->statusCode = null;
-                    $this->status_msg = null;
+                    $this->setStatusSuccess();
                     return true;
                 } else {
-                    $this->status = false;
-                    $this->statusCode = static::RDIERROR_SRC_UNKNOWN;
-                    $this->status_msg = 'Unable to set source from this kind of image.';
+                    $this->setErrorMessage('Unable to set source from this kind of image.', static::RDIERROR_SRC_UNKNOWN);
                     return false;
                 }
             }
         }
 
         // come to this means source image object is already set.
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// setupSourceImageObject
 
@@ -369,9 +357,7 @@ class Gd extends AbstractImage
 
         // check watermark image path exists
         if (!is_file($wm_img_path)) {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_WMI_NOTEXISTS;
-            $this->status_msg = 'Watermark image was not found.';
+            $this->setErrorMessage('Watermark image was not found.', static::RDIERROR_WMI_NOTEXISTS);
             return false;
         }
 
@@ -441,9 +427,7 @@ class Gd extends AbstractImage
         }
         unset($result);
 
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// watermarkImageProcess
 
@@ -476,9 +460,7 @@ class Gd extends AbstractImage
         }
 
         if (!is_file($wm_txt_font_path)) {
-            $this->status = false;
-            $this->statusCode = static::RDIERROR_WMT_FONT_NOTEXISTS;
-            $this->status_msg = 'Unable to load font file.';
+            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
             return false;
         }
         
@@ -490,9 +472,7 @@ class Gd extends AbstractImage
         }
         unset($result);
 
-        $this->status = true;
-        $this->statusCode = null;
-        $this->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// watermarkText
 

@@ -139,23 +139,17 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $save_result = $this->ImagickD->Imagick->writeImage($file_name);
         } else {
             $Ims = $this->ImagickD->getStatic();
-            $this->ImagickD->status = false;
-            $this->ImagickD->statusCode = $Ims::RDIERROR_SAVE_UNSUPPORT;
-            $this->ImagickD->status_msg = sprintf('Unable to save this kind of image. (%s)', $check_file_ext);
+            $this->setErrorMessage(sprintf('Unable to save this kind of image. (%s)', $check_file_ext), $Ims::RDIERROR_SAVE_UNSUPPORT);
             unset($Ims);
             return false;
         }
 
         if (isset($save_result) && $save_result !== false) {
-            $this->ImagickD->status = true;
-            $this->ImagickD->statusCode = null;
-            $this->ImagickD->status_msg = null;
+            $this->setStatusSuccess();
             return true;
         } else {
             $Ims = $this->ImagickD->getStatic();
-            $this->ImagickD->status = false;
-            $this->ImagickD->statusCode = $Ims::RDIERROR_SAVE_FAILED;
-            $this->ImagickD->status_msg = 'Failed to save the image.';
+            $this->setErrorMessage('Failed to save the image.', $Ims::RDIERROR_SAVE_FAILED);
             unset($Ims);
             return false;
         }

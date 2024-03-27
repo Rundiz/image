@@ -96,9 +96,7 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
             $save_result = imagewebp($this->Gd->destination_image_object, $file_name, $this->Gd->jpg_quality);
         } else {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_SAVE_UNSUPPORT;
-            $this->Gd->status_msg = sprintf('Unable to save this kind of image. (%s)', $check_file_ext);
+            $this->setErrorMessage(sprintf('Unable to save this kind of image. (%s)', $check_file_ext), $Gds::RDIERROR_SAVE_UNSUPPORT);
             unset($Gds);
             return false;
         }
@@ -107,15 +105,11 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
         unset($check_file_ext, $file_ext);
 
         if (isset($save_result) && $save_result !== false) {
-            $this->Gd->status = true;
-            $this->Gd->statusCode = null;
-            $this->Gd->status_msg = null;
+            $this->setStatusSuccess();
             return true;
         } else {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_SAVE_FAILED;
-            $this->Gd->status_msg = 'Failed to save the image.';
+            $this->setErrorMessage('Failed to save the image.', $Gds::RDIERROR_SAVE_FAILED);
             unset($Gds);
             return false;
         }

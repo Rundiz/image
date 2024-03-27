@@ -49,9 +49,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
                 break;
             default:
                 $Gds = $this->Gd->getStatic();
-                $this->Gd->status = false;
-                $this->Gd->statusCode = $Gds::RDIERROR_WMI_UNKNOWIMG;
-                $this->Gd->status_msg = 'Unable to set watermark from this kind of image.';
+                $this->setErrorMessage('Unable to set watermark from this kind of image.', $Gds::RDIERROR_WMI_UNKNOWIMG);
                 unset($Gds);
                 return false;
         }
@@ -296,9 +294,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
     {
         if (!is_file($wm_img_path)) {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_WMI_NOTEXISTS;
-            $this->Gd->status_msg = 'Watermark image was not found.';
+            $this->setErrorMessage('Watermark image was not found.', $Gds::RDIERROR_WMI_NOTEXISTS);
             unset($Gds);
             return false;
         }
@@ -306,17 +302,13 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         try {
             list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
         } catch (\Exception $ex) {
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $ex->getCode();
-            $this->Gd->status_msg = $ex->getMessage();
+            $this->setErrorMessage($ex->getMessage(), $ex->getCode());
             return false;
         }
 
         if ($wm_height == null || $wm_width == null || $wm_type == null) {
             $Gds = $this->Gd->getStatic();
-            $this->Gd->status = false;
-            $this->Gd->statusCode = $Gds::RDIERROR_WMI_UNKNOWIMG;
-            $this->Gd->status_msg = 'Watermark is not an image.';
+            $this->setErrorMessage('Watermark is not an image.', $Gds::RDIERROR_WMI_UNKNOWIMG);
             unset($Gds);
             return false;
         }
@@ -342,9 +334,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
                 break;
             default:
                 $Gds = $this->Gd->getStatic();
-                $this->Gd->status = false;
-                $this->Gd->statusCode = $Gds::RDIERROR_WMI_UNKNOWIMG;
-                $this->Gd->status_msg = 'Unable to set watermark from this kind of image.';
+                $this->setErrorMessage('Unable to set watermark from this kind of image.', $Gds::RDIERROR_WMI_UNKNOWIMG);
                 unset($Gds);
                 return false;
         }
@@ -354,9 +344,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         $this->Gd->watermark_image_type = $wm_type;
 
         unset($wm_height, $wm_img_path, $wm_type, $wm_width);
-        $this->Gd->status = true;
-        $this->Gd->statusCode = null;
-        $this->Gd->status_msg = null;
+        $this->setStatusSuccess();
         return true;
     }// setupWatermarkImageObject
 
