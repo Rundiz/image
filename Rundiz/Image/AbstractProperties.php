@@ -159,10 +159,6 @@ abstract class AbstractProperties
      */
     const RDIERROR_SRC_NOTEXISTS = 3;
     /**
-     * Unable to set source from this kind of image.
-     */
-    const RDIERROR_SRC_UNKNOWN = 16;
-    /**
      * Unable to calculated, please try to calculate on your own and use `resizeNoRatio()` instead.
      */
     const RDIERROR_CALCULATEFAILED_USE_RESIZENORATIO = 4;
@@ -211,6 +207,10 @@ abstract class AbstractProperties
      */
     const RDIERROR_SHOW_FAILED = 15;
     /**
+     * Unable to set source from this kind of image.
+     */
+    const RDIERROR_SRC_UNKNOWN = 16;
+    /**
      * Watermark text font file is not exists.
      */
     const RDIERROR_WMT_FONT_NOTEXISTS = 17;
@@ -230,6 +230,10 @@ abstract class AbstractProperties
      * Image Magick version does not meet requirement.
      */
     const RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT = 21;
+    /**
+     * Not support animated WebP for current PHP version.
+     */
+    const RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED = 22;
 
 
 }

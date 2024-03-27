@@ -79,6 +79,10 @@
         </ul>
         <p><a href="clear-all-processed-images.php">Clear all processed images</a></p>
         <h2>Tests</h2>
+        <h3>Data</h3>
+        <ul>
+            <li><a href="test-show-image-source-data.php">Show image source data</a></li>
+        </ul>
         <h3>Native PHP GD functions test</h3>
         <ul>
             <li><a href="native-gd-jpg.php">process jpg image</a></li>

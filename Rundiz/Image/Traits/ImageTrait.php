@@ -32,7 +32,7 @@ trait ImageTrait
      *              `mime` key is mime type.<br> 
      *              `ext` key is file extension with dot (.ext).<br>
      *              Return `false` on failure.
-     * @throws \DomainException Throw the errors if image and current PHP version is not supported.
+     * @throws \DomainException Throw the errors if it is an image but current PHP version is not supported.
      */
     public function getImageFileData($imagePath)
     {
@@ -58,8 +58,8 @@ trait ImageTrait
             // Come to this means, it couldn't get image data. Some older version of PHP can't get image data for example WEBP and PHP <= 7.0.
             if (strtolower(pathinfo($imagePath, PATHINFO_EXTENSION)) === 'webp') {
                 // if it is WEBP.
-                $WebP = new \Rundiz\Image\Extensions\WebP();
-                $webpInfo = $WebP->webPInfo($imagePath);
+                $WebP = new \Rundiz\Image\Extensions\WebP($imagePath);
+                $webpInfo = $WebP->webPInfo();
                 $isAnimated = (is_array($webpInfo) && isset($webpInfo['ANIMATION']) && true === $webpInfo['ANIMATION']);
                 $isTransparent = (is_array($webpInfo) && isset($webpInfo['ALPHA']) && true === $webpInfo['ALPHA']);
                 unset($WebP, $webpInfo);
@@ -91,16 +91,21 @@ trait ImageTrait
 
                 if (function_exists('imagecreatefromwebp')) {
                     // if there is a GD function supported.
+                    if (
+                        version_compare(PHP_VERSION, '7.0', '<') 
+                        && $isTransparent
+                    ) {
+                        // if current PHP version is not supported for transparent webp.
+                        throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
+                    }
+
+                    if ($isAnimated) {
+                        // if animated WEBP.
+                        throw new \DomainException('Current version of PHP does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                    }
+
                     if (!$isAnimated) {
                         // if not animated WEBP.
-                        if (
-                            version_compare(PHP_VERSION, '7.0', '<') 
-                            && $isTransparent
-                        ) {
-                            // if current PHP version is not supported for transparent webp.
-                            throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
-                        }
-
                         $output = [];
                         $GD = imagecreatefromwebp($imagePath);
                         if (false !== $GD) {
