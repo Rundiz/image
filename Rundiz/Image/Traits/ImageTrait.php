@@ -104,21 +104,18 @@ trait ImageTrait
                         throw new \DomainException('Current version of PHP does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
                     }
 
-                    if (!$isAnimated) {
-                        // if not animated WEBP.
-                        $output = [];
-                        $GD = imagecreatefromwebp($imagePath);
-                        if (false !== $GD) {
-                            $output[0] = imagesx($GD);
-                            $output[1] = imagesy($GD);
-                            $output[2] = IMAGETYPE_WEBP;
-                            $output['mime'] = 'image/webp';
-                            $output['ext'] = '.webp';
-                            unset($GD);
-                            return $output;
-                        }
-                        unset($GD, $output);
-                    }// endif; not animated
+                    $output = [];
+                    $GD = imagecreatefromwebp($imagePath);
+                    if (false !== $GD) {
+                        $output[0] = imagesx($GD);
+                        $output[1] = imagesy($GD);
+                        $output[2] = IMAGETYPE_WEBP;
+                        $output['mime'] = 'image/webp';
+                        $output['ext'] = '.webp';
+                        unset($GD);
+                        return $output;
+                    }
+                    unset($GD, $output);
 
                 }// endif; there is a GD function supported
             }// endif; it is WEBP.
