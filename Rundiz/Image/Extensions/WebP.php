@@ -55,6 +55,7 @@ class WebP
     /**
      * Check if GD supported current WEBP file.
      *
+     * @since 3.1.4
      * @return boolean Return `true` if yes, `false` if no.
      */
     public function isGDSupported()

@@ -59,7 +59,7 @@
                         </ul>
                     </li>
                     <li>
-                        Create white empty image where it is portrait size (tall) and save as <strong>sample-portrait.jpg</strong>
+                        Create white empty portrait (tall) image. Dimension is 400&times;800 pixels and save as <strong>sample-portrait.jpg</strong>
                     </li>
                     <li>
                         Create watermark image files. Recommended dimension is 200&times;50 pixels.
