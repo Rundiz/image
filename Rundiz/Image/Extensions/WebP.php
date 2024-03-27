@@ -17,6 +17,29 @@ class WebP
 
 
     /**
+     * @since 3.1.4
+     * @var string|null File path.
+     */
+    protected $file;
+
+
+    /**
+     * WebP file information class.
+     *
+     * @since 3.1.4
+     * @param string $file Path to WEBP file.
+     */
+    public function __construct($file = '')
+    {
+        if (is_string($file) && !empty($file)) {
+            $this->file = $file;
+        } else {
+            $this->file = null;
+        }
+    }// __construct
+
+
+    /**
      * Check that WEBP constant (`IMAGETYPE_WEBP`) is already define, if not then define it.
      * 
      * This constant is not define prior PHP 7.1.
@@ -30,16 +53,70 @@ class WebP
 
 
     /**
+     * Check if GD supported current WEBP file.
+     *
+     * @return boolean Return `true` if yes, `false` if no.
+     */
+    public function isGDSupported()
+    {
+        $info = $this->webPInfo();
+        if (!is_array($info)) {
+            // If not WEBP.
+            unset($info);
+            return false;
+        }
+
+        if (is_array($info) && array_key_exists('ANIMATION', $info) && true === $info['ANIMATION']) {
+            // If animated WEBP.
+            // Currently there is no supported for animated WEBP (last checked PHP 8.3).
+            // @link https://www.php.net/manual/en/function.imagecreatefromwebp.php Reference for can't read animated WEBP.
+            unset($info);
+            return false;
+        }
+
+        if (function_exists('imagecreatefromwebp')) {
+            // If there is function supported.
+            if (version_compare(PHP_VERSION, '7.0', '>=')) {
+                // If PHP 7.0 or newer.
+                // Yes!
+                unset($info);
+                return true;
+            } else {
+                // If PHP is older than 7.0.
+                // Notice:
+                // PHP <= 5.6 does not supported transparency WEBP and cause error "WebP decode: fail to decode input data".
+                // PHP < 5.6 does not fully supported non-transparency WEBP because image will becomes green or incorrect color.
+                $isTransparent = (is_array($info) && array_key_exists('ALPHA', $info) && true === $info['ALPHA']);
+                if (!$isTransparent) {
+                    // If image does not contain transparency.
+                    // Yes!
+                    unset($info, $isTransparent);
+                    return true;
+                }
+                unset($isTransparent);
+            }
+        }// endif; function_exists().
+
+        unset($info);
+        return false;
+    }// isGDSupported
+
+
+    /**
      * Get WebP file info.
      * 
      * @link https://www.php.net/manual/en/function.pack.php unpack format reference.
      * @link https://developers.google.com/speed/webp/docs/riff_container WebP document.
      * @link https://stackoverflow.com/q/61221874/128761 Original question.
-     * @param string $file Full path to image file.
+     * @param string $file Full path to image file. You can omit this argument and use one in class constructor instead.
      * @return array|false Return associative array if success, return `false` for otherwise.
      */
-    public function webPInfo($file)
+    public function webPInfo($file = '')
     {
+        if (!is_string($file) || (is_string($file) && empty($file))) {
+            $file = $this->file;
+        }
+
         if (!is_file($file)) {
             // if file was not found.
             return false;
