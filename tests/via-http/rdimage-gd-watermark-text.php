@@ -1,7 +1,12 @@
 <?php
-require_once 'include-rundiz-image.php';
+require_once 'includes/include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
+include_once 'includes/include-functions.php';
+
+
+$imgType = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+$imgType = strip_tags($imgType);
 
 
 $fontFile = '../source-images/font.ttf';
@@ -20,20 +25,15 @@ function displayTestWatermarkTextPositions($sourceImage)
 
     echo '<h3>Position tests.</h3>' . "\n";
     echo '<table><tbody>' . "\n";
-    echo '<tr>' . "\n";
-    echo '<td style="width: 200px;">Source image</td>' . "\n";
-    echo '<td colspan="3"><a href="' . $sourceImage . '"><img class="thumbnail" src="' . $sourceImage . '" alt=""></a><br>';
-    $srcImgSize = getimagesize($sourceImage);
-    if (is_array($srcImgSize)) {
-        echo $srcImgSize[0] . 'x' . $srcImgSize[1] . ' ';
-        echo 'Mime type: ' . $srcImgSize['mime'];
-    }
-    unset($srcImgSize);
-    echo '</td>' . "\n";
-    echo '</tr>' . "\n";
-    echo '<tr>' . "\n";
-    echo '<td>Font</td><td colspan="3"><a href="' . $fontFile . '">' . $fontFile . '</a></td>' . "\n";
-    echo '</tr>' . "\n";
+    echo '    <tr>' . "\n";
+    echo '        <td style="width: 200px;">Source image</td>' . "\n";
+    echo '        <td colspan="3">' . "\n";
+    debugImage($sourceImage);
+    echo '        </td>' . "\n";
+    echo '    </tr>' . "\n";
+    echo '    <tr>' . "\n";
+    echo '        <td>Font</td><td colspan="3"><a href="' . $fontFile . '">' . $fontFile . '</a></td>' . "\n";
+    echo '    </tr>' . "\n";
 
     echo "\n" . '<!-- display test in positions -->' . "\n";
     $positions = [
@@ -54,14 +54,24 @@ function displayTestWatermarkTextPositions($sourceImage)
         $Image = new Rundiz\Image\Drivers\Gd($sourceImage);
 
         if ($col === 1) {
-            echo '  <tr>' . "\n";
-            echo '    <td></td>' . "\n";
+            echo '    <tr>' . "\n";
+            echo '        <td></td>' . "\n";
             $col++;
         }
+
+        $imgTypeQuerystring = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+        if (stripos($imgTypeQuerystring, 'animat') !== false) {
+            $sourceExtAppend = 'animated';
+        } elseif (stripos($imgTypeQuerystring, 'non transparent') !== false) {
+            $sourceExtAppend = 'nontransparent';
+        } else {
+            $sourceExtAppend = '';
+        }
         $sourceExt = pathinfo($sourceImage, PATHINFO_EXTENSION);
-        $fileName = '../processed-images/' . basename(__FILE__, '.php') . '_src' . $sourceExt .
-            '_position-' . $positionXY[0].','.$positionXY[1] .
+        $fileName = '../processed-images/' . autoImageFilename() . '_src' . $sourceExt . $sourceExtAppend .
+            '_position-' . $positionXY[0] . ',' . $positionXY[1] .
             '.' . $sourceExt;
+        unset($imgTypeQuerystring, $sourceExtAppend);
         $Image->wmTextBottomPadding = $wmTextBottomPadding;
         $Image->wmTextBoundingBoxYPadding = $wmTextBoundingBoxYPadding;
         $Image->imagickWatermarkTextBaseline = $imagickBaseline;
@@ -82,30 +92,28 @@ function displayTestWatermarkTextPositions($sourceImage)
             $wmStatusMsg = $Image->status_msg;
         }
         $saveResult = $Image->save($fileName);
-        $Image->clear();
-        unset($sourceExt, $wmResult);
-
-        echo '    <td>';
+        echo '        <td>';
         echo '<a href="' . $fileName . '"><img class="thumbnail" src="' . $fileName . '" alt=""></a><br>';
         echo $positionXY[0] . ',' . $positionXY[1];
         if (isset($wmStatusMsg)) {
-            echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$wmStatusMsg.'</span>';
+            echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $wmStatusMsg . '</span><br>';
         }
         if ($saveResult != true) {
-            echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>';
+            echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span><br>';
         }
-        unset($saveResult, $wmStatusMsg);
+        $Image->clear();
+        unset($sourceExt, $wmResult, $wmStatusMsg);
+        unset($fileName, $saveResult);
         echo '</td>' . "\n";
         $col++;
 
         if ($col > $totalCol || is_numeric($positionXY[0]) || is_numeric($positionXY[1])) {
             if (is_numeric($positionXY[0]) || is_numeric($positionXY[1])) {
-                echo '    <td colspan="' . ($totalCol - ($col - 1)) . '"></td>' . "\n";
+                echo '        <td colspan="' . ($totalCol - ($col - 1)) . '"></td>' . "\n";
             }
-            echo '  </tr>' . "\n";
+            echo '    </tr>' . "\n";
             $col = 1;
         }
-        unset($fileName);
 
         unset($Image);
     }// endforeach positions
@@ -115,98 +123,6 @@ function displayTestWatermarkTextPositions($sourceImage)
 
     echo '</tbody></table>' . "\n";
 }// displayTestWatermarkTextPositions
-
-
-function displayTestWatermarkTextSaveExts(array $test_data_set)
-{
-    global $fontFile, $fontSize;
-    global $watermarkText, $wmTextBottomPadding, $wmTextBoundingBoxYPadding;
-    global $imagickBaseline;
-
-    $positions = [
-        ['left', 'top'],
-        ['center', 'top'],
-        ['right', 'top'],
-    ];
-
-    echo '<h3>Save across different extensions.</h3>' . "\n";
-    foreach ($test_data_set as $img_type_name => $item) {
-        echo '<h4>' . $img_type_name . '</h4>' . "\n";
-        echo '<table><tbody>' . "\n";
-        echo '<tr>' . "\n";
-        echo '<td style="width: 200px;">Source image</td>' . "\n";
-        echo '<td colspan="3"><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
-        $srcImgSize = getimagesize($item['source_image_path']);
-        if (is_array($srcImgSize)) {
-            echo $srcImgSize[0] . 'x' . $srcImgSize[1] . ' ';
-            echo 'Mime type: ' . $srcImgSize['mime'];
-        }
-        unset($srcImgSize);
-        echo '</td>'."\n";
-        echo '</tr>' . "\n";
-        echo '<tr>' . "\n";
-        echo '<td>Font</td><td colspan="3"><a href="' . $fontFile . '">' . $fontFile . '</a></td>' . "\n";
-        echo '</tr>' . "\n";
-        echo '<tr>' . "\n";
-        echo '<td></td>' . "\n";
-        $Image = new Rundiz\Image\Drivers\Gd($item['source_image_path']);
-        foreach ($positions as $positionXY) {
-            $eachExt = pathinfo($item['source_image_path'], PATHINFO_EXTENSION);// use in stead of save extensions.
-            $fileName = '../processed-images/' . basename(__FILE__, '.php') . '_src' . $img_type_name .
-                '_position-' . $positionXY[0].','.$positionXY[1] .
-                '_target' . $eachExt .
-                '.' . $eachExt;
-            $Image->wmTextBottomPadding = $wmTextBottomPadding;
-            $Image->wmTextBoundingBoxYPadding = $wmTextBoundingBoxYPadding;
-            $Image->imagickWatermarkTextBaseline = $imagickBaseline;
-            $wmResult = $Image->watermarkText(
-                $watermarkText, 
-                $fontFile, 
-                $positionXY[0], 
-                $positionXY[1], 
-                $fontSize, 
-                'transwhitetext',
-                60,
-                [
-                    'fillBackground' => false,
-                    'backgroundColor' => 'debug',
-                ]
-            );
-            if ($wmResult !== true) {
-                $wmStatusMsg = $Image->status_msg;
-            }
-            $saveResult = $Image->save($fileName);
-            $Image->clear();
-            unset($wmResult);
-
-            echo '<td>';
-            echo '<a href="' . $fileName . '"><img class="thumbnail" src="' . $fileName . '"></a><br>';
-            echo 'Position ' . $positionXY[0] . ',' . $positionXY[1] . '<br>';
-            echo 'Save as ' . $eachExt;
-            if (isset($wmStatusMsg)) {
-                echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$wmStatusMsg.'</span>';
-            }
-            if ($saveResult != true) {
-                echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg.'</span>';
-            } else {
-                $Finfo = new finfo();
-                echo '; Mime type: ' . $Finfo->file($fileName, FILEINFO_MIME_TYPE);
-                unset($Finfo);
-            }
-            echo '</td>' . "\n";
-            unset($saveResult, $wmStatusMsg);
-            unset($eachExt);
-
-        }// endforeach; positions
-        unset($positionXY);
-        unset($Image);
-        echo '</tr>' . "\n";
-        echo '</tbody></table>' . "\n";
-    }// endforeach;
-    unset($img_type_name, $item);
-
-    unset($positions);
-}// displayTestWatermarkTextSaveExts
 ?>
 <!DOCTYPE html>
 <html>
@@ -218,15 +134,26 @@ function displayTestWatermarkTextSaveExts(array $test_data_set)
     <body>
         <h1>Watermark text (GD)</h1>
         <?php
-        displayTestWatermarkTextPositions($source_image_jpg);
+        // default do test data set.
+        $doTestData = [
+            $imgType => [],
+        ];
+        // set do test data from parameter.
+        if (array_key_exists($imgType, $test_data_set)) {
+            $doTestData = [$imgType => $test_data_set[$imgType]];
+        } else {
+            if (array_key_exists($imgType, $test_data_pngnt)) {
+                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+                $doTestData = [$imgType => $test_data_falsy[$imgType]];
+            }
+        }
+        displayTestWatermarkTextPositions($doTestData[$imgType]['source_image_path']);
+        unset($doTestData);
         ?>
         <hr>
         <?php
-        displayTestWatermarkTextSaveExts($test_data_set);
-        ?>
-        <hr>
-        <?php
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?> 
     </body>
 </html>

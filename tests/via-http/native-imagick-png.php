@@ -3,7 +3,8 @@ $sourceImageFile = '../source-images/city-amsterdam.png';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
-require_once __DIR__.'/include-imagick-functions.php';
+include_once 'includes/include-functions.php';
+require_once 'includes/include-imagick-functions.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -13,170 +14,297 @@ require_once __DIR__.'/include-imagick-functions.php';
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        Original image <a href="<?=$sourceImageFile; ?>"><img class="thumbnail" src="<?=$sourceImageFile; ?>" alt=""></a>
+        <h1>Native PHP Imagick class</h1>
         <hr>
         <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>From</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
+                    <th>Original image</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        debugImage($sourceImageFile);
+                        $Imagick = new \Imagick(realpath($sourceImageFile));// Imagick can't read relative path.
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- resize -->
+                <tr>
                     <th>Resize</th>
-                    <?php
-                    $sizes = [
-                        [900, 600],
-                        [700, 467],
-                    ];
-                    $previousSize = [];
-                    foreach ($sizes as $size) {
-                        if (!isset($Imagick) || !is_object($Imagick)) {
-                            $Imagick = new \Imagick(realpath($sourceImageFile));
-                        }
-
-                        // resize
-                        $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
-                        // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . (isset($previousSize[0]) ? '-from-' . $previousSize[0] . 'x' . $previousSize[1] : '') . '.png';
-                        // png compression for imagick does not work!!!
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $newDimension = [900, 600];
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.png';
+                        $Imagick->setCompressionQuality(05);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<td>' . PHP_EOL;
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
+                        debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        echo '</td>' . PHP_EOL;
-
-                        // set previous size and object.
-                        $previousSize[0] = $size[0];
-                        $previousSize[1] = $size[1];
-
                         unset($saveImgLink, $saveResult);
-                    }// endforeach;
-                    //imagedestroy($imgDestinationObject);
-                    unset($size, $sizes);
-                    ?>
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize</th>
+                    <td>Previous processed</td>
+                    <td>
+                        <?php
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
+                        unset($newDimension);
+
+                        $newDimension = [700, 467];
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.png';
+                        $Imagick->setCompressionQuality(05);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- crop -->
+                <tr>
+                    <th>Crop</th>
+                    <td>Previous processed</td>
+                    <td>
+                        <?php
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
+                        unset($newDimension);
+
+                        $newDimension = [460, 460];
+                        $Imagick->cropImage($newDimension[0], $newDimension[1], 0, 0);
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.png';
+                        $Imagick->setCompressionQuality(05);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        ?> 
+                    </td>
                 </tr>
                 <tr>
                     <th>Crop</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        $cropWidth = 460;
-                        $cropHeight = 460;
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
 
-                        // crop from previous resized image.
-                        $Imagick->cropImage($cropWidth, $cropHeight, 0, 0);
-                        // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-' . $previousSize[0] . 'x' . $previousSize[1] . '.png';
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $newDimension = [460, 460];
+                        $Imagick->cropImage($newDimension[0], $newDimension[1], 0, 0);
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.png';
+                        $Imagick->setCompressionQuality(05);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        $Imagick->clear();
-                        unset($Imagick, $saveImgLink, $saveResult);
-                        unset($previousSize);
-                        ?> 
-                    </td>
-                    <td>
-                        <?php
-                        // crop from source image.
-                        $Imagick = new \Imagick();
-                        $Imagick->readImage(realpath($sourceImageFile));// same as new \Imagick(realpath($sourceImageFile));
-                        $Imagick->cropImage($cropWidth, $cropHeight, 0, 0);
-                        // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.png';
-                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
+                        debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- rotate -->
+                <tr>
+                    <th>Rotate</th>
+                    <td>Previous processed</td>
+                    <td>
+                        <?php
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
+                        unset($newDimension);
+
+                        $rotate = 90;
+                        $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.png';
+                        $Imagick->setCompressionQuality(05);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        unset($rotate);
                         ?> 
                     </td>
                 </tr>
                 <tr>
                     <th>Rotate</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        // rotate from previous cropped.
-                        $deg = 90;
-                        // rotate
-                        // @link https://www.php.net/manual/en/imagick.rotateimage.php check out this
-                        $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($deg));
-                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.png';
-                        $Imagick->setImageCompressionQuality(100);
-                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . ' rotate ' . $deg . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        $Imagick->clear();
-                        unset($Imagick, $saveImgLink, $saveResult);
-                        unset($cropHeight, $cropWidth);
-                        ?> 
-                    </td>
-                    <td>
-                        <?php
-                        // rotate from source image.
-                        $deg = 270;
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+
                         $Imagick = new \Imagick(realpath($sourceImageFile));
-                        // rotate
-                        $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($deg));
-                        $saveImgLink = basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-source-image.png';
-                        $Imagick->setImageCompressionQuality(100);
+
+                        $rotate = 270;
+                        $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.png';
+                        $Imagick->setCompressionQuality(05);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        list($width, $height) = getimagesize($processImagesFolder . $saveImgLink);
-                        echo $width . 'x' . $height . ' rotate ' . $deg . '<br>' . PHP_EOL;
+                        debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
-                        unset($deg, $height, $width);
+                        unset($rotate);
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- flip -->
+                <tr>
+                    <th>Flip</th>
+                    <td>Previous processed</td>
+                    <td>
+                        <?php
+                        $flip = 'horizontal';
+                        $Imagick->flopImage();
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.png';
+                        $Imagick->setCompressionQuality(05);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        unset($rotate);
                         ?> 
                     </td>
                 </tr>
                 <tr>
-                    <th>Resize &amp; save to extensions</th>
+                    <th>Flip</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        $size = [900, 600];
-                        list($width, $height) = getimagesize($sourceImageFile);
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+
                         $Imagick = new \Imagick(realpath($sourceImageFile));
-                        // resize
-                        $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
-                        // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-png.jpg';
-                        $Imagick = $Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);// convert from transparent to white. for PNG source. without this, the transparent part will become black.
-                        $Imagick->setImageCompressionQuality(100);
+                        $flip = 'horizontal';
+                        $Imagick->flopImage();
+                        $Imagick->flipImage();
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-source' . '.png';
+                        $Imagick->setCompressionQuality(05);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . '<br>' . PHP_EOL;
-                        $Finfo = new finfo();
-                        echo 'Mime type using <code>finfo()</code>: ' . $Finfo->file($processImagesFolder . $saveImgLink, FILEINFO_MIME_TYPE) . '<br>' . PHP_EOL;
-                        $Imagick->clear();
-                        unset($Finfo, $Imagick, $saveImgLink, $saveResult);
-                        unset($height, $width);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        unset($rotate);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
                         ?> 
                     </td>
+                </tr>
+
+                <!-- resize & save as -->
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        list($width, $height) = getimagesize($sourceImageFile);
                         $Imagick = new \Imagick(realpath($sourceImageFile));
-                        // resize
-                        $Imagick->resizeImage($size[0], $size[1], \Imagick::FILTER_LANCZOS, 1);
-                        // save
-                        $saveImgLink = basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-png.gif';
+
+                        $newDimension = [800, 534];
+                        $saveAs = 'gif';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
-                        echo '<a href="' . $processImagesFolder  . $saveImgLink . '"><img class="thumbnail" src="' . $processImagesFolder  . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . '<br>' . PHP_EOL;
-                        $Finfo = new finfo();
-                        echo 'Mime type using <code>finfo()</code>: ' . $Finfo->file($processImagesFolder . $saveImgLink, FILEINFO_MIME_TYPE) . '<br>' . PHP_EOL;
-                        $Imagick->clear();
-                        unset($Finfo, $Imagick, $saveImgLink, $saveResult);
-                        unset($height, $width, $size);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $saveAs = 'jpg';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        // Convert transparency PNG to white before save to another extension. Without this, the transparent part will become black.
+                        $Imagick->setImageBackgroundColor('white');// convert from transparent to white.
+                        $Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);// convert from transparent to white.
+                        // Or you may use `$Imagick = $Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);` instead.
+                        // End convert transparency PNG to white.
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $saveAs = 'png';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $Imagick->setCompressionQuality(05);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $saveAs = 'webp';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
                         ?> 
                     </td>
                 </tr>
             </tbody>
         </table>
+        <?php
+        unset($newDimension, $previousDimension);
+        ?> 
         <hr>
         <?php 
         unset($processImagesFolder, $processImagesFullpath, $sourceImageFile);
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

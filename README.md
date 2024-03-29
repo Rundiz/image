@@ -101,7 +101,8 @@ For more details, please look in tests folder or see [API doc][1]
 Remark:
 
 * `*` WEBP<br>
-    * PHP all version ([last checked 8.3][animatedwebpbug]) doesn't support animated WEBP with GD.
+    * PHP all version ([last checked 8.3][animatedwebpbug]) with GD doesn't support animated WEBP.
+    * PHP prior 7.3 with Imagick doesn't supported open or save animated WEBP.
     * PHP prior 7.0 with GD ([1][oldgdwebpbug], [2][oldgdwebpbug2]) doesn't supported open or save transparent WEBP.
     * PHP prior 5.6 with GD doesn't fully supported WEBP and may cause image becomes green. Tested with PHP on Windows.
 

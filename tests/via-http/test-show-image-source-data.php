@@ -1,5 +1,5 @@
 <?php
-require_once 'include-rundiz-image.php';
+require_once 'includes/include-rundiz-image.php';
 
 $sourceImageDir = '../source-images';
 ?>
@@ -72,7 +72,7 @@ $sourceImageDir = '../source-images';
         <hr>
         <?php 
         unset($sourceImageFile);
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

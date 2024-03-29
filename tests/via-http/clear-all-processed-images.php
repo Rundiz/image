@@ -28,4 +28,4 @@ $processed_images_folder = dirname(__DIR__).DIRECTORY_SEPARATOR.'processed-image
 rrmdir($processed_images_folder, $processed_images_folder);
 unset($processed_images_folder);
 echo 'Deleted, <a href="./">go back</a>.';
-include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+include 'includes/include-page-footer.php';

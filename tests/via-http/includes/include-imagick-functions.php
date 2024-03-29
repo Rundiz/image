@@ -22,24 +22,28 @@ function calculateCounterClockwise($value)
 
 
 /**
- * Check if image is animated gif.
+ * Check if image is animated GIF or WEBP.
  * 
  * @param string $image Full path to image.
  * @return mixed Return number of frames. There is 1 frame if it is not animated gif, 2 or more if it is animated gif. Return `false` for otherwise.
  */
-function isAnimatedGif($image)
+function isAnimated($image)
 {
     if (!is_file($image)) {
         return false;
     }
 
-    $Imagick = new \Imagick(realpath($image));
-    $number = $Imagick->getNumberImages();
-    $Imagick->clear();
-    unset($Imagick);
+    try {
+        $Imagick = new \Imagick(realpath($image));
+        $number = $Imagick->getNumberImages();
+        $Imagick->clear();
+        unset($Imagick);
+    } catch (\Exception $ex) {
+        return false;
+    }
 
     if (is_numeric($number)) {
         return $number;
     }
     return false;
-}// isAnimatedGif
+}// isAnimated

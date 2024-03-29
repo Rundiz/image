@@ -1,66 +1,61 @@
 <?php
-require_once 'include-rundiz-image.php';
+require_once 'includes/include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
+include_once 'includes/include-functions.php';
 
 
 function displayTestResizeNotRatio(array $test_data_set)
 {
     $resizeDim = [900, 400];
-    echo '<h1>Resize by NOT aspect ratio (Imagick)</h1>'."\n";
+    echo '<h1>Resize by NOT aspect ratio (Imagick)</h1>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
-        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        echo '<h3>' . $img_type_name . '</h3>' ."\n";
         if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            $file_ext = '.' . pathinfo($item['source_image_path'], PATHINFO_EXTENSION);
+            $isSupported = true;
+            if (strtolower($file_ext) === '.webp') {
+                $WebP = new Rundiz\Image\Extensions\WebP($item['source_image_path']);
+                $isSupported = $WebP->isImagickSupported();
+                unset($WebP);
+            }// endif check webp extension.
             echo '<table><tbody>' . "\n";
-            echo '<tr>' . "\n";
-            echo '<td>Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
-            $imgData = getimagesize($item['source_image_path']);
-            if (is_array($imgData)) {
-                echo $imgData[0] . 'x' . $imgData[1] . ' ';
-                echo 'Mime type: ' . $imgData['mime'];
+            echo '    <tr>' . "\n";
+            echo '        <td>Source image</td>' . "\n";
+            echo '        <td>' . "\n";
+            debugImage($item['source_image_path']);
+            echo '        </td>' . "\n";
+            echo '    </tr>' . "\n";
+            if (true === $isSupported) {
+                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
             }
-            unset($imgData);
-            echo '</td>'."\n";
-            echo '</tr>' . "\n";
-            $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-            $file_name = '../processed-images/' . basename(__FILE__, '.php') . '_src'.str_replace(' ', '-', strtolower($img_type_name)).'_' . $resizeDim[0] . 'x' . $resizeDim[1];
-            echo '<tr>' . "\n";
-            echo '<td>Use <code>save()</code> method</td>'."\n";
-
-            $saveExt = pathinfo($item['source_image_path'], PATHINFO_EXTENSION);
-            $Image->resizeNoRatio($resizeDim[0], $resizeDim[1]);
-            $save_result = $Image->save($file_name . '.' . $saveExt);
-            $statusMsg = $Image->status_msg;
-            $Image->clear();
-            echo '<td>' . "\n";
-            if ($save_result === true) {
-                echo '<a href="' . $file_name . '.' . $saveExt . '"><img src="'.$file_name.'.'.$saveExt.'" alt="" class="thumbnail"></a><br>';
-                echo 'Extension: ' . $saveExt . '<br>' . "\n";
-                $img_data = getimagesize($file_name . '.' . $saveExt);
-                if (is_array($img_data) && isset($img_data[0]) && isset($img_data[1])) {
-                    echo $img_data[0] . 'x' . $img_data[1] . ' ';
+            echo '    <tr>' . "\n";
+            echo '        <td>Use <code>save()</code> method</td>' . "\n";
+            echo '        <td>' . "\n";
+            if (true === $isSupported) {
+                $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '_' . $resizeDim[0] . 'x' . $resizeDim[1];
+                $Image->resizeNoRatio($resizeDim[0], $resizeDim[1]);
+                $save_result = $Image->save($file_name . $file_ext);
+                debugImage($file_name . $file_ext);
+                if ($save_result != true) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
                 }
-                if (is_array($img_data) && array_key_exists('mime', $img_data)) {
-                    echo ' Mime type: ' . $img_data['mime'];
-                }
+                unset($file_name, $save_result);
+                $Image->clear();
             } else {
-                echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$statusMsg . '</span>' . "\n";
-            }
-            echo '</td>' . "\n";
-            unset($img_data, $save_result, $statusMsg);
-
-            echo '</tr>'."\n";
-            unset($file_name, $Image);
-
-            echo '<tr>' . "\n";
-            echo '<td>Use <code>show()</code> method</td>' . "\n";
-            $image_class_show_url = 'rdimage-imagick-show-image.php?source_image_file='.$item['source_image_path'].'&amp;show_ext='.$saveExt.'&amp;act=resizenoratio&amp;width=' . $resizeDim[0] . '&amp;height=' . $resizeDim[1];
-            echo '<td><a href="'.$image_class_show_url.'"><img src="'.$image_class_show_url.'" alt="" class="thumbnail"></a><br>';
-            echo 'Extension: '. $saveExt . '</td>' . "\n";
-            echo '</tr>' . "\n";
-            unset($saveExt);
+                echo '<div class="text-error">Current version of PHP does not support this kind of image.</div>' . "\n";
+            }// endif; image supported.
+            echo '        </td>' . "\n";
+            echo '    </tr>' . "\n";
+            echo '    <tr>' . "\n";
+            echo '        <td>Use <code>show()</code> method</td>' . "\n";
+            $image_class_show_url = 'rdimage-imagick-show-image.php?source_image_file=' . $item['source_image_path'] . '&amp;show_ext=' . $file_ext . '&amp;act=resizenoratio&amp;width=' . $resizeDim[0] . '&amp;height=' . $resizeDim[1];
+            echo '        <td><a href="' . $image_class_show_url .'"><img src="' . $image_class_show_url . '" alt="" class="thumbnail"></a><br>';
+            echo 'Extension: ' . $file_ext . '</td>' . "\n";
+            echo '    </tr>' . "\n";
 
             echo '</tbody></table>' . "\n";
+            unset($file_ext, $Image, $isSupported);
         }
         echo "\n\n";
     }// endforeach;
@@ -89,7 +84,7 @@ function displayTestResizeNotRatio(array $test_data_set)
         ?>
         <hr>
         <?php
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

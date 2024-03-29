@@ -4,7 +4,8 @@ $watermarkImageFile = '../source-images/watermark.png';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
-require_once __DIR__.'/include-imagick-functions.php';
+include_once 'includes/include-functions.php';
+require_once 'includes/include-imagick-functions.php';
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,41 +15,57 @@ require_once __DIR__.'/include-imagick-functions.php';
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <p>Original image <a href="<?=$sourceImageFile; ?>"><img class="thumbnail" src="<?=$sourceImageFile; ?>" alt=""></a></p>
-        <p>Watermark image <a href="<?=$watermarkImageFile; ?>"><img class="thumbnail" src="<?=$watermarkImageFile; ?>" alt=""></a></p>
+        <h1>Native PHP Imagick class</h1>
         <hr>
-        <?php
-        list($width, $height) = getimagesize($sourceImageFile);
+        <table>
+            <tbody>
+                <tr>
+                    <th>
+                        Source image
+                    </th>
+                    <td>
+                        <?php
+                        debugImage($sourceImageFile);
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Watermark
+                    </th>
+                    <td>
+                        <?php
+                        debugImage($watermarkImageFile);
+                        $ImagickWatermark = new \Imagick(realpath($watermarkImageFile));
+                        $wmPosition = [180, 200];
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Result
+                    </th>
+                    <td>
+                        <?php
+                        $Imagick->compositeImage($ImagickWatermark, \Imagick::COMPOSITE_DEFAULT, $wmPosition[0], $wmPosition[1]);
 
+                        $saveImgLink = autoImageFilename() . '.gif';
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink, ['imgClass' => 'img-fluid thumbnail larger']);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
 
-        // watermark png ----------------------------------------------------------------------------
-        list($wm_width, $wm_height) = getimagesize($watermarkImageFile);
-        $ImagickWatermark = new \Imagick(realpath($watermarkImageFile));
-        // -----------------------------------------------------------------------------------------------
-
-
-        $Imagick = new \Imagick(realpath($sourceImageFile));
-
-
-        // copy watermark for source gif image and png watermark -----------------------------
-        $Imagick->compositeImage($ImagickWatermark, \Imagick::COMPOSITE_DEFAULT, 100, 200);
-        // -----------------------------------------------------------------------------------------------
-
-
-        $saveImageLink = 'imagick-source-gif-watermarkimage-png.gif';
-        $saveResult = $Imagick->writeimage($processImagesFullpath . $saveImageLink);
-
-        $Imagick->clear();
-        $ImagickWatermark->clear();
-        unset($Imagick, $ImagickWatermark);
-        ?>
-        Image that applied watermark.
-        <a href="<?=$processImagesFolder . $saveImageLink; ?>"><img class="thumbnail" src="<?=$processImagesFolder . $saveImageLink; ?>" alt=""></a> (position top left)<br>
-        Save result: <?php echo var_export($saveResult, true); ?> 
+                        unset($Imagick, $ImagickWatermark);
+                        ?> 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <hr>
         <?php 
-        unset($sourceImageFile);
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        unset($sourceImageFile, $watermarkImageFile, $processImagesFolder, $processImagesFullpath);
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

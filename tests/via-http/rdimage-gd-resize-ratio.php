@@ -1,7 +1,12 @@
 <?php
-require_once 'include-rundiz-image.php';
+require_once 'includes/include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
+include_once 'includes/include-functions.php';
+
+
+$imgType = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+$imgType = strip_tags($imgType);
 
 
 function displayTestResizeRatio(array $test_data_set)
@@ -26,20 +31,16 @@ function displayTestResizeRatio(array $test_data_set)
             'master_dim' => ['height', 'Master dimension height'], 
         ],
     ];
-    echo '<h1>Resize by aspect ratio (GD)</h1>'."\n";
+    echo '<h1>Resize by aspect ratio (GD)</h1>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
-        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        echo '<h3>' . $img_type_name . '</h3>' . "\n";
         if (is_array($item) && array_key_exists('source_image_path', $item)) {
             echo '<table><tbody>' . "\n";
             echo '<tr>' . "\n";
-            echo '<td style="width: 200px;">Source image</td><td><a href="'.$item['source_image_path'].'"><img src="'.$item['source_image_path'].'" alt="" class="thumbnail"></a><br>';
-            $imgData = getimagesize($item['source_image_path']);
-            if (is_array($imgData)) {
-                echo $imgData[0] . 'x' . $imgData[1] . ' ';
-                echo 'Mime type: ' . $imgData['mime'];
-            }
-            unset($imgData);
-            echo '</td>'."\n";
+            echo '<td style="width: 200px;">Source image</td>' . "\n";
+            echo '<td>' . "\n";
+            debugImage($item['source_image_path']);
+            echo '</td>' . "\n";
             echo '</tr>' . "\n";
 
             foreach ($settings as $eachSettingsSet) {
@@ -58,7 +59,7 @@ function displayTestResizeRatio(array $test_data_set)
                 echo '</td>' . "\n";
 
                 foreach ($resizeDims as $eachDim) {
-                    $file_name = '../processed-images/' . basename(__FILE__, '.php') . 
+                    $file_name = '../processed-images/' . autoImageFilename() . 
                         '_src' . str_replace(' ', '-', strtolower($img_type_name)) .
                         '_' . $eachDim[0] . 'x' . $eachDim[1];
                     $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
@@ -71,21 +72,23 @@ function displayTestResizeRatio(array $test_data_set)
                     unset($settingProp, $settingValueDesc);
                     $Image->resize($eachDim[0], $eachDim[1]);
                     $saveResult = $Image->save($file_name);
-                    $Image->clear();
-                    unset($Image);
-                    echo '<td>';
+                    echo '<td>' . "\n";
                     if ($saveResult === true) {
                         echo '<a href="' . $file_name . '"><img src="' . $file_name . '" alt="" class="thumbnail"></a><br>';
                         $img_data = getimagesize($file_name);
-                        echo  $eachDim[0] . 'x' . $eachDim[1];
+                        echo  '<strong>' . $eachDim[0] . 'x' . $eachDim[1];
                         if (is_array($img_data) && isset($img_data[0]) && isset($img_data[1])) {
                             echo ' =&gt; ';
                             echo $img_data[0] . 'x' . $img_data[1] . ' ';
                         }
+                        echo '</strong>' . "\n";
+                        debugImage($file_name, ['dataOnly' => true]);
                     } else {
-                        echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$Image->status_msg . '</span>' . "\n";
+                        echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
                     }
                     echo '</td>' . "\n";
+                    $Image->clear();
+                    unset($Image);
                     unset($file_name, $saveResult);
                 }// endforeach; dimensions
                 unset($eachDim);
@@ -110,12 +113,26 @@ function displayTestResizeRatio(array $test_data_set)
     </head>
     <body>
         <?php
-        displayTestResizeRatio($test_data_set);
-        unset($test_data_set);
+        // default do test data set.
+        $doTestData = [
+            $imgType => [],
+        ];
+        // set do test data from parameter.
+        if (array_key_exists($imgType, $test_data_set)) {
+            $doTestData = [$imgType => $test_data_set[$imgType]];
+        } else {
+            if (array_key_exists($imgType, $test_data_pngnt)) {
+                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+                $doTestData = [$imgType => $test_data_falsy[$imgType]];
+            }
+        }
+        displayTestResizeRatio($doTestData);
+        unset($doTestData);
         ?>
         <hr>
         <?php
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

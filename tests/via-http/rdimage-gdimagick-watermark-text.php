@@ -1,7 +1,10 @@
 <?php
-require_once 'include-rundiz-image.php';
+require_once 'includes/include-rundiz-image.php';
 
 require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
+include_once 'includes/include-functions.php';
+
+
 $sourceImageSquare = '../source-images/sample-square.jpg';
 $chineseText = '他们';
 $watermarkText = 'Hello สั้น ญ ญู ฎฐ โอ ไอ อำ อ้า bye!';
@@ -15,7 +18,7 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
     global $sourceImageSquare;
     global $watermarkText;
 
-    $saveImage = '../processed-images/' . basename(__FILE__, '.php') . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '-txtc' . $txtColor . '-fillc' . $fillBg . '.jpg';
+    $saveImage = '../processed-images/' . autoImageFilename() . '-use' . strtolower($driver) . 'position' . $positionx . ',' . $positiony . '-txtc' . $txtColor . '-fillc' . $fillBg . '.jpg';
     if (strtolower($driver) === 'imagick') {
         if (!extension_loaded('imagick')) {
             echo 'You don\'t have Imagick extension for PHP installed on this server.<br>';
@@ -132,7 +135,7 @@ function displayWatermarkTextImage($positionx, $positiony, $driver = 'Gd', $txtC
         </table>
         <?php
         // ------------------------------------------------------------------------------------------------------
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?> 
     </body>
 </html>

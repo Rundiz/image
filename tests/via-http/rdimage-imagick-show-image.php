@@ -1,5 +1,11 @@
 <?php
-require_once 'include-rundiz-image.php';
+/**
+ * Process an image and show the result to web browser.
+ * 
+ * WARNING! Do not use this source code in your project because it has no any sanitize. Please use as testing in local or development machine only.
+ */
+
+require_once 'includes/include-rundiz-image.php';
 
 
 $source_image_file = (isset($_GET['source_image_file']) ? $_GET['source_image_file'] : null);
@@ -22,7 +28,7 @@ $Finfo = new finfo();
 $sourceMimetype = $Finfo->file($source_image_file, FILEINFO_MIME_TYPE);
 unset($Finfo);
 if (stripos($sourceMimetype, 'image/') === false) {
-    die('Source image is not an image file.');
+    die('Source image is not an image file. (' . $sourceMimetype . ')');
 }
 
 if (strpos($show_ext, '.') !== false) {

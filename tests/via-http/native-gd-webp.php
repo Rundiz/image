@@ -1,5 +1,49 @@
 <?php
 $sourceImageFile = '../source-images/city-amsterdam.webp';
+
+include_once 'includes/include-functions.php';
+
+
+/**
+ * Create new resource/object (GDImage for PHP 8.0+) from image file.
+ * 
+ * @global string $sourceImageFile
+ * @return \GdImage|false Returns an image object on success, false on errors.
+ */
+function newGdFromFile()
+{
+    global $sourceImageFile;
+    return imagecreatefromwebp($sourceImageFile);
+}// newGdFromFile
+
+
+/**
+ * Make image object (usually for new canvas or `imagecreatetruecolor()`) to be transparent for WEBP.
+ * 
+ * This function is required if loaded image from WEBP and save as PNG while image contain transparency.
+ * 
+ * @param \GdImage $image The Gd image resource or object.
+ */
+function makeTransparent($image) 
+{
+    imagesavealpha($image, true);
+}// makeTransparent
+
+
+/**
+ * Fill transparent-white to image object (usually for new canvas or `imagecreatetruecolor()`).
+ * 
+ * There is no alpha bending mark nor save alpha setting.
+ * 
+ * This may cause transparent becomes white in non-transparency format on save such as jpeg.
+ * 
+ * @param \GdImage $image The Gd image resource or object.
+ */
+function fillTransparentWhite($image)
+{
+    imagefill($image, 0, 0, imagecolorallocatealpha($image, 255, 255, 255, 127));
+    imagecolortransparent($image, imagecolorallocatealpha($image, 255, 255, 255, 127));
+}// fillTransparentWhite
 ?>
 <!DOCTYPE html>
 <html>
@@ -9,230 +53,351 @@ $sourceImageFile = '../source-images/city-amsterdam.webp';
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        Original image <a href="<?=$sourceImageFile; ?>"><img class="thumbnail" src="<?=$sourceImageFile; ?>" alt=""></a>
+        <h1>Native PHP GD functions</h1>
+        <p>
+            <?php if (version_compare(PHP_VERSION, '5.6', '<')) { ?>PHP &lt; 5.6 does not fully supported non-transparent WEBP.<br><?php } ?> 
+            <?php if (version_compare(PHP_VERSION, '7.0', '<')) { ?>PHP &lt; 7.0 does not supported transparent WEBP.<br><?php } ?> 
+            PHP all version (last checked 8.3) does not supported animated WEBP.
+        </p>
         <hr>
         <table>
+            <thead>
+                <tr>
+                    <th>Action</th>
+                    <th>From</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
-                    <th>Resize</th>
-                    <?php
-                    $sizes = [
-                        [900, 600],
-                        [700, 467],
-                    ];
-                    $previousSize = [];
-                    $previousSourceObject = null;
-                    foreach ($sizes as $size) {
-                        if (empty($previousSize)) {
-                            $previousSize = getimagesize($sourceImageFile);
-                        }
-
-                        if (is_null($previousSourceObject)) {
-                            $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
-                            $imgSourceObject = imagecreatefromwebp($sourceImageFile);
-                            // for set source webp image transparency after imagecreatefromwebp() function.
-                            imagealphablending($imgSourceObject, false);// added for transparency webp
-                            imagesavealpha($imgSourceObject, true);// added for transparency webp
-                        } else {
-                            $imgSourceObject = $previousSourceObject;
-                            $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
-                        }
-
-                        // for transparency webp before use imagecopyresampled() function.
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        // resize from previous resized file. if not found, resize from source file.
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $size[0], $size[1], $previousSize[0], $previousSize[1]);
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . (!empty($previousSourceObject) ? '-from-' . $previousSize[0] . 'x' . $previousSize[1] : '') . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
-                        echo '<td>' . PHP_EOL;
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        echo '</td>' . PHP_EOL;
-
-                        // set previous size and object.
-                        $previousSize[0] = $size[0];
-                        $previousSize[1] = $size[1];
-                        $previousSourceObject = $imgDestinationObject;
-
-                        imagedestroy($imgSourceObject);
-                        unset($imgSourceObject, $saveImgLink, $saveResult);
-                    }// endforeach;
-                    //imagedestroy($imgDestinationObject);
-                    unset($imgDestinationObject, $size, $sizes);
-                    ?>
-                </tr>
-                <tr>
-                    <th>Crop</th>
+                    <th>Original image</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        $cropWidth = 460;
-                        $cropHeight = 460;
-
-                        // crop from previous resized image.
-                        $imgSourceObject = $previousSourceObject;
-                        $imgDestinationObject = imagecreatetruecolor($cropWidth, $cropHeight);
-                        // for transparency webp before use imagecopy() function.
-                        $black = imagecolorallocate($imgDestinationObject, 0, 0, 0);// added for transparency webp
-                        $transwhite = imagecolorallocatealpha($imgDestinationObject, 255, 255, 255, 127);// added for transparency webp
-                        imagefill($imgDestinationObject, 0, 0, $transwhite);// added for transparency webp. if not transparency webp just use this fill no any alpha and color transparent function call.
-                        imagecolortransparent($imgDestinationObject, $black);// added for transparency webp
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        // imagecopy (crop)
-                        imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $cropWidth, $cropHeight);
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-' . $previousSize[0] . 'x' . $previousSize[1] . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
-                        unset($imgDestinationObject, $imgSourceObject, $previousSourceObject, $saveImgLink, $saveResult);
-                        unset($previousSize);
+                        debugImage($sourceImageFile);
+                        $imgSourceObject = newGdFromFile();
                         ?> 
                     </td>
+                </tr>
+
+                <!-- resize -->
+                <tr>
+                    <th>Resize</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        // crop from source image.
-                        $imgDestinationObject = imagecreatetruecolor($cropWidth, $cropHeight);
-                        $imgSourceObject = imagecreatefromwebp($sourceImageFile);
-                        // for set source webp image transparency after imagecreatefromwebp() function.
-                        imagealphablending($imgSourceObject, false);// added for transparency webp
-                        imagesavealpha($imgSourceObject, true);// added for transparency webp
-                        // for transparency webp before use imagecopy() function.
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        // imagecopy (crop)
-                        imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $cropWidth, $cropHeight);
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.webp';
+                        $newDimension = [900, 600];
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
                         $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . '<br>' . PHP_EOL;
+                        debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
                         ?> 
                     </td>
                 </tr>
                 <tr>
-                    <th>Rotate</th>
+                    <th>Resize</th>
+                    <td>Previous processed</td>
                     <td>
                         <?php
-                        // rotate from previous cropped.
-                        $deg = 90;
-                        // imagerotate()
-                        $imgDestinationObject = imagerotate($imgDestinationObject, $deg, imagecolorallocate($imgDestinationObject, 255, 255, 255));
-                        // for transparency webp after use imagerotate() function.
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-crop-' . $cropWidth . 'x' . $cropHeight . '-from-source-image.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $cropWidth . 'x' . $cropHeight . ' rotate ' . $deg . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        imagedestroy($imgDestinationObject);
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
                         imagedestroy($imgSourceObject);
-                        unset($imgDestinationObject, $imgSourceObject, $saveImgLink, $saveResult);
-                        unset($cropHeight, $cropWidth);
+                        $imgSourceObject = $imgDestinationObject;
+                        unset($imgDestinationObject, $newDimension);
+
+                        $newDimension = [700, 467];
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
                         ?> 
                     </td>
+                </tr>
+
+                <!-- crop -->
+                <tr>
+                    <th>Crop</th>
+                    <td>Previous processed</td>
                     <td>
                         <?php
-                        // rotate from source image.
-                        $deg = 270;
-                        $imgSourceObject = imagecreatefromwebp($sourceImageFile);
-                        // for set source webp image transparency after imagecreatefromwebp() function.
-                        imagealphablending($imgSourceObject, false);// added for transparency webp
-                        imagesavealpha($imgSourceObject, true);// added for transparency webp
-                        // imagerotate()
-                        $imgDestinationObject = imagerotate($imgSourceObject, $deg, imagecolorallocate($imgSourceObject, 255, 255, 255));
-                        // for transparency webp after use imagerotate() function.
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-rotate-' . $deg . '-from-source-image.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        list($width, $height) = getimagesize($saveImgLink);
-                        echo $width . 'x' . $height . ' rotate ' . $deg . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        imagedestroy($imgDestinationObject);
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
                         imagedestroy($imgSourceObject);
-                        unset($imgDestinationObject, $imgSourceObject, $saveImgLink, $saveResult);
-                        unset($deg, $height, $width);
+                        $imgSourceObject = $imgDestinationObject;
+                        unset($imgDestinationObject, $newDimension);
+
+                        $newDimension = [460, 460];
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1]);
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
                         ?> 
                     </td>
                 </tr>
                 <tr>
-                    <th>Resize &amp; save to extensions</th>
+                    <th>Crop</th>
+                    <td>Source</td>
                     <td>
                         <?php
-                        $size = [900, 600];
-                        list($width, $height) = getimagesize($sourceImageFile);
-                        $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
-                        $imgSourceObject = imagecreatefromwebp($sourceImageFile);
-                        // for set source webp image transparency after imagecreatefromwebp() function.
-                        imagealphablending($imgSourceObject, false);// added for transparency webp
-                        imagesavealpha($imgSourceObject, true);// added for transparency webp
-                        // for transparency webp before use imagecopyresampled() function.
-                        imagealphablending($imgDestinationObject, false);// added for transparency webp
-                        imagesavealpha($imgDestinationObject, true);// added for transparency webp
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $size[0], $size[1], $width, $height);
-                        // for convert transparency webp to white before save to another extension
-                        $tmpImgObject = imagecreatetruecolor($size[0], $size[1]);// added for convert from transparency webp to other
-                        $white = imagecolorallocate($tmpImgObject, 255, 255, 255);// added for convert from transparency webp to other
-                        imagefill($tmpImgObject, 0, 0, $white);// added for convert from transparency webp to other
-                        imagecopy($tmpImgObject, $imgDestinationObject, 0, 0, 0, 0, $size[0], $size[1]);// added for convert from transparency webp to other
-                        $imgDestinationObject = $tmpImgObject;
-                        // save
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-webp.jpg';
-                        $saveResult = imagejpeg($imgDestinationObject, $saveImgLink, 100);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . '<br>' . PHP_EOL;
-                        $Finfo = new finfo();
-                        echo 'Mime type using <code>finfo()</code>: ' . $Finfo->file($saveImgLink, FILEINFO_MIME_TYPE) . '<br>' . PHP_EOL;
-                        imagedestroy($imgDestinationObject);
+                        // clear everything before begins again from source.
                         imagedestroy($imgSourceObject);
-                        unset($Finfo, $imgDestinationObject, $imgSourceObject, $saveImgLink, $saveResult);
-                        unset($height, $width);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+
+                        $imgSourceObject = newGdFromFile();
+
+                        $newDimension = [460, 460];
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1]);
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
                         ?> 
                     </td>
+                </tr>
+
+                <!-- rotate -->
+                <tr>
+                    <th>Rotate</th>
+                    <td>Previous processed</td>
                     <td>
                         <?php
-                        list($width, $height) = getimagesize($sourceImageFile);
-                        $imgDestinationObject = imagecreatetruecolor($size[0], $size[1]);
-                        $imgSourceObject = imagecreatefromwebp($sourceImageFile);
-                        // for set source webp image transparency after imagecreatefromwebp() function.
-                        imagealphablending($imgSourceObject, false);// added for transparency webp
-                        imagesavealpha($imgSourceObject, true);// added for transparency webp
-                        // for convert transparency webp to gif before use imagecopyresampled() function.
-                        $transwhite = imagecolorallocatealpha($imgDestinationObject, 255, 255, 255, 127);// added for convert to transparency gif
-                        imagefill($imgDestinationObject, 0, 0, $transwhite);// added for convert to transparency gif
-                        imagecolortransparent($imgDestinationObject, $transwhite);// added for convert to transparency gif
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $size[0], $size[1], $width, $height);
-                        // save
-                        $saveImgLink = '../processed-images/' . basename(__FILE__, '.php') . '-resize-' . $size[0] . 'x' . $size[1] . '-from-webp.gif';
-                        $saveResult = imagegif($imgDestinationObject, $saveImgLink);
-                        echo '<a href="' . $saveImgLink . '"><img class="thumbnail" src="' . $saveImgLink . '" alt=""></a><br>' . PHP_EOL;
-                        echo $size[0] . 'x' . $size[1] . '<br>' . PHP_EOL;
-                        echo 'Save result: ' . var_export($saveResult, true) . '<br>' . PHP_EOL;
-                        $Finfo = new finfo();
-                        echo 'Mime type using <code>finfo()</code>: ' . $Finfo->file($saveImgLink, FILEINFO_MIME_TYPE) . '<br>' . PHP_EOL;
-                        imagedestroy($imgDestinationObject);
+                        // inherit previous processed.
+                        $previousDimension = $newDimension;
                         imagedestroy($imgSourceObject);
-                        unset($Finfo, $imgDestinationObject, $imgSourceObject, $saveImgLink, $saveResult, $tmpImgObject);
-                        unset($height, $width, $size);
+                        $imgSourceObject = $imgDestinationObject;
+                        unset($imgDestinationObject, $newDimension);
+
+                        $rotate = 90;
+                        $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        unset($rotate);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Rotate</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+
+                        $imgSourceObject = newGdFromFile();
+
+                        $rotate = 270;
+                        $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.webp';
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+                        unset($rotate);
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- flip -->
+                <tr>
+                    <th>Flip</th>
+                    <td>Previous processed</td>
+                    <td>
+                        <?php
+                        if (function_exists('imageflip')) {
+                            $flip = 'horizontal';
+                            imageflip($imgDestinationObject, IMG_FLIP_HORIZONTAL);
+                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.webp';
+                            $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                            debugImage($saveImgLink);
+                            echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                            unset($saveImgLink, $saveResult);
+                            unset($flip);
+                        } else {
+                            echo '<p class="text-error">This version of PHP does not supported <code>imageflip()</code>.</p>' . "\n";
+                        }
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Flip</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        if (function_exists('imageflip')) {
+                            // clear everything before begins again from source.
+                            imagedestroy($imgSourceObject);
+                            imagedestroy($imgDestinationObject);
+                            unset($imgDestinationObject, $imgSourceObject);
+
+                            $imgSourceObject = newGdFromFile();
+
+                            $flip = 'both';
+                            imageflip($imgSourceObject, IMG_FLIP_BOTH);
+                            // create new canvas for be able to use with next process.
+                            $imgDestinationObject = imagecreatetruecolor(imagesx($imgSourceObject), imagesy($imgSourceObject));
+                            fillTransparentWhite($imgDestinationObject);
+                            imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, imagesx($imgSourceObject), imagesy($imgSourceObject));
+                            // end create new canvas for be able to use with next process.
+                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-source' . '.webp';
+                            $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                            debugImage($saveImgLink);
+                            echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                            unset($saveImgLink, $saveResult);
+                            unset($flip);
+                        } else {
+                            echo '<p class="text-error">This version of PHP does not supported <code>imageflip()</code>.</p>' . "\n";
+                        }
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
+
+                <!-- resize & save as -->
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $newDimension = [800, 534];
+                        $saveAs = 'gif';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $saveResult = imagegif($imgDestinationObject, $saveImgLink);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $saveAs = 'jpg';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        makeTransparent($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        // Fix transparent WEBP becomes like transparent GIF+fill white.
+                        // Fix by fill real white to the image.
+                        $newImage = imagecreatetruecolor(imagesx($imgDestinationObject), imagesy($imgDestinationObject));
+                        imagefill($newImage, 0, 0, imagecolorallocate($newImage, 255, 255, 255));
+                        imagecopy($newImage, $imgDestinationObject, 0, 0, 0, 0, imagesx($imgDestinationObject), imagesy($imgDestinationObject));
+                        imagedestroy($imgDestinationObject);
+                        $imgDestinationObject = $newImage;
+                        unset($newImage);
+                        // End fix transparent WEBP becomes like transparent GIF+fill white.
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $saveResult = imagejpeg($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $saveAs = 'png';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        makeTransparent($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $saveResult = imagepng($imgDestinationObject, $saveImgLink, 0);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $saveAs = 'webp';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
                 </tr>
             </tbody>
         </table>
+        <?php
+        // cleanup.
+        unset($imgDestinationObject, $imgSourceObject);
+        unset($newDimension, $previousDimension);
+        unset($saveAs);
+        ?> 
         <hr>
         <?php 
-        unset($black, $transwhite);
         unset($sourceImageFile);
-        include __DIR__.DIRECTORY_SEPARATOR.'include-memory-usage.php';
+        include 'includes/include-page-footer.php';
         ?>
     </body>
 </html>

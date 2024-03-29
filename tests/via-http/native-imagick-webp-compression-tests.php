@@ -19,11 +19,8 @@ for ($compression = 0; $compression <= 100; $compression += 10) {
     $ImagickCloned = clone $Imagick;
     $ImagickCloned->setImageFormat('webp');
     $ImagickCloned->setImageCompressionQuality($compression);
-    //$ImagickCloned->setCompressionQuality($compression);
-    //$ImagickCloned->setOption('webp:method', $compression);
-    //$ImagickCloned->setOption('webp:lossless', 'false');
-    $saveImgLink = basename(__FILE__, '.php') . '-compression' . $compression . '.webp';
-    $ImagickCloned->writeImage('webp:' . $processImagesFullpath . $saveImgLink);
+    $saveImgLink = autoImageFilename() . '-compression' . $compression . '.webp';
+    $ImagickCloned->writeImage($processImagesFullpath . $saveImgLink);
     $ImagickCloned->clear();
     unset($ImagickCloned);
     clearstatcache();
@@ -31,11 +28,6 @@ for ($compression = 0; $compression <= 100; $compression += 10) {
     echo '<a href="' . $processImagesFolder . $saveImgLink . '">File size: </a>' . filesize($processImagesFullpath . $saveImgLink) . ' bytes.<br>' . PHP_EOL;
 }// endfor;
 unset($compression);
-
-//echo '<hr>' . PHP_EOL;
-//echo 'Compress all types tests<br>' . PHP_EOL;
-
-//compressAllTypes($Imagick, $processImagesFullpath . 'compress-all-types-tests');
 
 $Imagick->clear();
 unset($Imagick);

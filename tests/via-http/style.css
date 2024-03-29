@@ -15,6 +15,12 @@ body {
 code {
     color: #ac6710;
 }
+hr {
+    border-bottom: 1px solid #bbb;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
 pre {
     background-color: #eee;
     padding: 5px;
@@ -46,7 +52,7 @@ table td {
 .img-fluid,
 .img-responsive {
     background-color: #0f0;
-    border: 1px solid #0f0;
+    height: auto;
     margin: 5px 3px 0;
     max-width: 100%;
     padding: 3px;
@@ -70,7 +76,15 @@ table td {
 .thumbnail {
     background-color: #0f0;
     margin: 5px 3px 0;
-    max-height: 100px;
+    height: auto;
+    max-height: none;
     max-width: 100px;
     padding: 3px;
+    width: 100%;
+}
+.larger {
+    height: auto;
+    max-height: none;
+    max-width: 500px;
+    width: 100%;
 }

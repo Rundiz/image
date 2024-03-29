@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam-animated.gif';
+$sourceImageFile = '../source-images/city-amsterdam-animated.webp';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -15,6 +15,9 @@ require_once 'includes/include-imagick-functions.php';
     </head>
     <body>
         <h1>Native PHP Imagick class</h1>
+        <?php if (version_compare(PHP_VERSION, '7.3', '<')) { ?><p>
+            PHP &lt; 7.3 does not supported animated WEBP.
+        </p><?php } ?> 
         <hr>
         <table>
             <thead>
@@ -33,9 +36,9 @@ require_once 'includes/include-imagick-functions.php';
                         debugImage($sourceImageFile);
                         $frames = isAnimated($sourceImageFile);
                         if ($frames > 1) {
-                            echo '<p>This is animated GIF.</p>';
+                            echo '<p>This is animated WEBP.</p>';
                         } else {
-                            echo '<p class="alert">This is NOT animated GIF.</p>';
+                            echo '<p class="alert">This is NOT animated WEBP.</p>';
                         }
                         unset($frames);
                         $Imagick = new \Imagick(realpath($sourceImageFile));// Imagick can't read relative path.
@@ -50,7 +53,7 @@ require_once 'includes/include-imagick-functions.php';
                     <td>
                         <?php
                         $newDimension = [900, 600];
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -59,9 +62,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
-                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end resize animated WEBP.
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -78,7 +82,7 @@ require_once 'includes/include-imagick-functions.php';
                         unset($newDimension);
 
                         $newDimension = [700, 467];
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -87,9 +91,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
-                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end resize animated WEBP.
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -108,7 +113,7 @@ require_once 'includes/include-imagick-functions.php';
                         unset($newDimension);
 
                         $newDimension = [460, 460];
-                        // crop on animated GIF needs special step (coalesceImages()).
+                        // crop on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -117,9 +122,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end crop animated GIF
-                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end crop animated WEBP
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -137,7 +143,7 @@ require_once 'includes/include-imagick-functions.php';
                         $Imagick = new \Imagick(realpath($sourceImageFile));
 
                         $newDimension = [460, 460];
-                        // crop on animated GIF needs special step (coalesceImages()).
+                        // crop on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -146,9 +152,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end crop animated GIF
-                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end crop animated WEBP
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -167,7 +174,7 @@ require_once 'includes/include-imagick-functions.php';
                         unset($newDimension);
 
                         $rotate = 90;
-                        // rotate on animated GIF needs special step (coalesceImages()).
+                        // rotate on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -176,9 +183,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end rotate animated GIF
-                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end rotate animated WEBP
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -197,7 +205,7 @@ require_once 'includes/include-imagick-functions.php';
                         $Imagick = new \Imagick(realpath($sourceImageFile));
 
                         $rotate = 270;
-                        // rotate on animated GIF needs special step (coalesceImages()).
+                        // rotate on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -206,9 +214,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end rotate animated GIF
-                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end rotate animated WEBP
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -224,7 +233,7 @@ require_once 'includes/include-imagick-functions.php';
                     <td>
                         <?php
                         $flip = 'horizontal';
-                        // flip on animated GIF needs special step (coalesceImages()).
+                        // flip on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -233,9 +242,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end flip animated GIF
-                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end flip animated WEBP
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -253,7 +263,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $Imagick = new \Imagick(realpath($sourceImageFile));
                         $flip = 'horizontal';
-                        // flip on animated GIF needs special step (coalesceImages()).
+                        // flip on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -263,9 +273,10 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end flip animated GIF
-                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-source' . '.gif';
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        // end flip animated WEBP
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-source' . '.webp';
+                        $Imagick->setImageCompressionQuality(100);
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -287,7 +298,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $newDimension = [800, 534];
                         $saveAs = 'gif';
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -296,9 +307,9 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
-                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated GIF need to use `writeImages()`.
+                        $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -317,7 +328,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $newDimension = [800, 534];
                         $saveAs = 'gif';
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -329,7 +340,7 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         // use first frame as image.
                         if (isset($ImagickFirst)) {
                             $Imagick->clear();
@@ -357,7 +368,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $saveAs = 'jpg';
                         
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -369,7 +380,7 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         // use first frame as image.
                         if (isset($ImagickFirst)) {
                             $Imagick->clear();
@@ -402,7 +413,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $saveAs = 'png';
                         
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -414,7 +425,7 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         // use first frame as image.
                         if (isset($ImagickFirst)) {
                             $Imagick->clear();
@@ -443,7 +454,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $saveAs = 'webp';
                         
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -452,7 +463,7 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
@@ -477,7 +488,7 @@ require_once 'includes/include-imagick-functions.php';
 
                         $saveAs = 'webp';
                         
-                        // resize on animated GIF needs special step (coalesceImages()).
+                        // resize on animated WEBP needs special step (coalesceImages()).
                         $Imagick = $Imagick->coalesceImages();
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
@@ -489,7 +500,7 @@ require_once 'includes/include-imagick-functions.php';
                             }
                         }
                         unset($Frame);
-                        // end resize animated GIF.
+                        // end resize animated WEBP.
                         // use first frame as image.
                         if (isset($ImagickFirst)) {
                             $Imagick->clear();
