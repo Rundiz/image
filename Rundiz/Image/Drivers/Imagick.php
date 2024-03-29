@@ -102,11 +102,17 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        $Imagick = new \Imagick(realpath($source_image_path));
-        $i = $Imagick->getNumberImages();
-        $this->source_image_frames = $i;
-        $this->source_image_data = array_merge($this->source_image_data, ['frames' => $i]);
-        $Imagick->clear();
+        try {
+            $Imagick = new \Imagick(realpath($source_image_path));
+            $i = $Imagick->getNumberImages();
+            $this->source_image_frames = $i;
+            $this->source_image_data = array_merge($this->source_image_data, ['frames' => $i]);
+            $Imagick->clear();
+        } catch (\Error $err) {
+            return false;
+        } catch (\Exception $ex) {
+            return false;
+        }
         unset($i, $Imagick);
 
         return true;
@@ -309,7 +315,10 @@ class Imagick extends AbstractImage
         }
 
         if ($this->Imagick == null || !is_object($this->Imagick)) {
-            $this->Imagick = new \Imagick($this->source_image_path);
+            try {
+                $this->Imagick = new \Imagick($this->source_image_path);
+            } catch (\Exception $ex) {
+            }
 
             if ($this->Imagick != null && is_object($this->Imagick)) {
                 $this->setStatusSuccess();

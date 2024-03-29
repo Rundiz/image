@@ -300,10 +300,15 @@ class Gd extends AbstractImage
                     imagesavealpha($this->source_image_object, true);
                 } elseif ($this->source_image_type === IMAGETYPE_WEBP) {
                     // webp
-                    $this->source_image_object = imagecreatefromwebp($this->source_image_path);
-                    // add alpha, alpha blending to support transparency webp
-                    imagealphablending($this->source_image_object, false);
-                    imagesavealpha($this->source_image_object, true);
+                    $WebP = new \Rundiz\Image\Extensions\WebP($this->source_image_path);
+                    if ($WebP->isGDSupported()) {
+                        // if GD supported this WEBP. If not then it will be in `source_image_object` to be `null` or empty.
+                        $this->source_image_object = imagecreatefromwebp($this->source_image_path);
+                        // add alpha, alpha blending to support transparency webp
+                        imagealphablending($this->source_image_object, false);
+                        imagesavealpha($this->source_image_object, true);
+                    }// endif; GD supported.
+                    unset($WebP);
                 }// endif;
 
                 if ($this->source_image_object != null) {

@@ -104,6 +104,36 @@ class WebP
 
 
     /**
+     * Check if Imagick supported current WEBP file.
+     * 
+     * @since 3.1.4
+     * @return boolean Return `true` if yes, `false` if no.
+     */
+    public function isImagickSupported()
+    {
+        $info = $this->webPInfo();
+        if (!is_array($info)) {
+            // If not WEBP.
+            unset($info);
+            return false;
+        }
+
+        if (is_array($info) && array_key_exists('ANIMATION', $info) && true === $info['ANIMATION']) {
+            // If animated WEBP.
+            try {
+                new \Imagick(realpath($this->file));
+            } catch (\Error $err) {
+                return false;
+            } catch (\Exception $ex) {
+                return false;
+            }
+        }
+
+        return true;
+    }// isImagickSupported
+
+
+    /**
      * Get WebP file info.
      * 
      * @link https://www.php.net/manual/en/function.pack.php unpack format reference.
