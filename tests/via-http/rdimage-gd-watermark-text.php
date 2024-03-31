@@ -82,13 +82,15 @@ function displayTestWatermarkTextPositions($sourceImage)
             $positionXY[1], 
             $fontSize, 
             'transwhitetext',
-            60,
+            20,
             [
                 'fillBackground' => false,
                 'backgroundColor' => 'debug',
             ]
         );
         if ($wmResult !== true) {
+            // if there is watermark errors.
+            // keep in variable before it can be changed via `save()`.
             $wmStatusMsg = $Image->status_msg;
         }
         $saveResult = $Image->save($fileName);
@@ -123,6 +125,110 @@ function displayTestWatermarkTextPositions($sourceImage)
 
     echo '</tbody></table>' . "\n";
 }// displayTestWatermarkTextPositions
+
+
+function displayTestSaveCrossExts(array $test_data_set)
+{
+    global $fontFile, $fontSize;
+    global $watermarkText, $wmTextBottomPadding, $wmTextBoundingBoxYPadding;
+    global $imagickBaseline;
+
+    $saveExts = ['gif', 'jpg', 'png', 'webp'];
+    $positionXY = [430, 350];
+
+    echo '<h2>Watermark text &amp; Save across different extensions.</h2>' . "\n";
+    foreach ($test_data_set as $img_type_name => $item) {
+        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            echo '<table><tbody>' . "\n";
+            echo '    <tr>' . "\n";
+            echo '        <td style="width: 200px;">Source image</td>' . "\n";
+            echo '        <td>' . "\n";
+            $srcImageSize = false;
+            if (is_file($item['source_image_path'])) {
+                $srcImageSize = getimagesize($item['source_image_path']);
+            }
+            debugImage($item['source_image_path']);
+            echo '        </td>' . "\n";
+            echo '        <td>Position ' . $positionXY[0] . ',' . $positionXY[1] . '</td>' . "\n";
+            $Image = new Rundiz\Image\Drivers\Gd($item['source_image_path']);
+            echo '    </tr>' . "\n";
+
+            echo '    <tr>' . "\n";
+            echo '        <td>Save as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $Image->wmTextBottomPadding = $wmTextBottomPadding;
+                $Image->wmTextBoundingBoxYPadding = $wmTextBoundingBoxYPadding;
+                $Image->imagickWatermarkTextBaseline = $imagickBaseline;
+                $wmResult = $Image->watermarkText(
+                    $watermarkText, 
+                    $fontFile, 
+                    $positionXY[0], 
+                    $positionXY[1], 
+                    $fontSize, 
+                    'transwhitetext',
+                    20,
+                    [
+                        'fillBackground' => false,
+                        'backgroundColor' => 'debug',
+                    ]
+                );
+                if ($wmResult !== true) {
+                    // if there is watermark errors.
+                    // keep in variable before it can be changed via `save()`.
+                    $wmStatusMsg = $Image->status_msg;
+                }
+                $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-800x600' .
+                    '-saveas-' . trim($eachExt) . '.' . $eachExt;
+                $saveResult = $Image->save($file_name);
+                $statusMsg = $Image->status_msg;
+                $Image->clear();
+                echo '        <td>' . "\n";
+                debugImage($file_name);
+                if (isset($wmStatusMsg)) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $wmStatusMsg . '</span><br>';
+                }
+                if ($saveResult != true) {
+                    echo ' &nbsp; &nbsp; <span class="text-error">Error: '.$statusMsg.'</span>'."\n";
+                }
+                echo '        </td>' . "\n";
+                unset($wmResult, $wmStatusMsg);
+                unset($file_name, $saveResult, $statusMsg);
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '    </tr>' . "\n";
+            unset($Image);
+
+            echo '    <tr>' . "\n";
+            echo '        <td>Use <code>show()</code> method as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $linkTo = 'rdimage-gd-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
+                    '&amp;show_ext=' . $eachExt .
+                    '&amp;act=watermarktext' .
+                    '&amp;startx=' . $positionXY[0] .
+                    '&amp;starty=' . $positionXY[1] .
+                    '&amp;fontsize=' . $fontSize;
+                echo '        <td>';
+                echo '<a href="' . $linkTo . '"><img class="thumbnail" src="' . $linkTo . '" alt=""></a><br>';
+                echo 'Extension: ' . $eachExt;
+                unset($linkTo);
+                echo '</td>' . "\n";
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '    </tr>' . "\n";
+
+            echo '</tbody></table>' . "\n";
+            
+            unset($srcImageSize);
+        }// endif;
+        echo "\n\n";
+    }// endforeach;
+    unset($img_type_name, $item);
+
+    echo "\n\n";
+    unset($positionXY);
+    unset($saveExts);
+}// displayTestSaveCrossExts
 ?>
 <!DOCTYPE html>
 <html>
@@ -149,6 +255,7 @@ function displayTestWatermarkTextPositions($sourceImage)
             }
         }
         displayTestWatermarkTextPositions($doTestData[$imgType]['source_image_path']);
+        displayTestSaveCrossExts($doTestData);
         unset($doTestData);
         ?>
         <hr>

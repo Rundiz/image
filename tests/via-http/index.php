@@ -10,33 +10,46 @@
         <h1>Rundiz Image manipulation class</h1>
         <h2>Instruction before test</h2>
         <ul>
-            <li>Please verify that your php.ini display the errors and report all error level including strict.</li>
+            <li>Please verify that your php.ini display the errors and report all error level.</li>
             <li>Please make sure that <strong><?php echo realpath('../processed-images'); ?></strong> folder is already exists and has write permission.</li>
             <li>
-                Download and create the photo as named below into <strong><?php echo realpath('../source-images'); ?></strong> folder.
+                All files below must be located in <strong><?php echo realpath('../source-images'); ?></strong> folder.
                 <ul>
                     <li>
-                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920&times;1282 but the actual size should be 1920&times;1281.<br>
-                        (You must convert from JPG to GIF and PNG from photo editor program. Not just rename the file extension.)
+                        Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920&times;1282.<br>
+                        Resize to 1920&times;1281 and save as.
+                        <ul>
+                            <li><strong>city-amsterdam.jpg</strong></li>
+                        </ul>
+                    </li>
+                    <li>
+                        Convert and save as following file name and extension.<br>
+                        (You have to use photo editor program. Not just rename the file extension.)
                         <ul>
                             <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
-                            <li><strong>city-amsterdam.jpg</strong></li>
                             <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam.webp</strong> (must contain transparent in the image)</li>
                             <li><strong>city-amsterdam-non-transparent.png</strong> (must NOT contain transparent in the image)</li>
+                            <li><strong>city-amsterdam-non-transparent.webp</strong> (must NOT contain transparent in the image)</li>
                         </ul>
+                    </li>
+                    <li>
                         Copy one file from JPG and rename to .png.
                         <ul>
                             <li><strong>city-amsterdam-jpg.png</strong> (This file should be jpg but rename file extension to png.)</li>
                         </ul>
+                    </li>
+                    <li>
                         Create TXT file and rename to .jpg.
                         <ul>
                             <li><strong>city-amsterdam-text.jpg</strong> (This is text file with jpg extension.)</li>
                         </ul>
+                    </li>
+                    <li>
                         Use animation program (
                         Example <a href="https://forums.getpaint.net/topic/118869-gif-animations-and-images-filetype-plugin-gif-agif-latest-v15-2021-11-16/" target="paintnet_plugingif">1</a>
                         , <a href="https://forums.getpaint.net/topic/119134-webp-animations-and-images-filetype-plugin-webp-awebp-latest-v14-2022-01-24/" target="paintnet_pluginwebp">2</a>
-                        ) to open JPG file, resize to 1000&times;667, and add some animation (2 - 3 frames is enough) and save as..
+                        ) to open JPG file, resize to 1000&times;667, and add some animation (2 - 3 frames) and save as.
                         <ul>
                             <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image.)</li>
                             <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image.)</li>
@@ -44,25 +57,29 @@
                     </li>
                     <li>
                         Download photo from <a href="https://www.gstatic.com/webp/gallery3/2_webp_ll.webp" target="google-webp">this link</a> 
-                        or from <a href="https://developers.google.com/speed/webp/gallery2" target="google-webp">this page</a> where it is lossless file
+                        or from <a href="https://developers.google.com/speed/webp/gallery2" target="google-webp">this page</a> where it is lossless file and save as.
                         <ul>
-                            <li>Save as <strong>transparent-lossless.webp</strong>.</li>
+                            <li><strong>transparent-lossless.webp</strong>.</li>
                         </ul>
                     </li>
                     <li>
                         Download font from <a href="https://fonts.google.com/specimen/Bai+Jamjuree?subset=thai" target="googlefont">this link</a> 
-                        or <a href="https://thaifonts.net/fonts/chulanarak-regular" target="thaifont">this link</a> or any font that is supported Thai language.
+                        or <a href="https://thaifonts.net/fonts/chulanarak-regular" target="thaifont">this link</a> or any font that is supported Thai language.<br>
+                        Extract true type font (.ttf extension) and rename to.
                         <ul>
                             <li>
-                                Extract <strong>any font name.ttf</strong> and rename it to <strong>font.ttf</strong>.
+                                <strong>font.ttf</strong>.
                             </li>
                         </ul>
                     </li>
                     <li>
-                        Create white empty portrait (tall) image. Dimension is 400&times;800 pixels and save as <strong>sample-portrait.jpg</strong>
+                        Create white empty portrait (tall) image. Dimension is 400&times;800 pixels and save as.
+                        <ul>
+                            <li><strong>sample-portrait.jpg</strong></li>
+                        </ul>
                     </li>
                     <li>
-                        Create watermark image files. Recommended dimension is 200&times;50 pixels.
+                        Create watermark image files. Dimension is 200&times;50 pixels and save as.
                         <ul>
                             <li><strong>watermark.gif</strong> transparent background, write some text.</li>
                             <li><strong>watermark.jpg</strong> filled background with color, write some text.</li>

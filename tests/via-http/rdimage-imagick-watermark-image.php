@@ -108,11 +108,7 @@ function displayTestWatermarkImagePositions($sourceImage)
 
 function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
 {
-    $positions = [
-        ['left', 'top'],
-        ['center', 'top'],
-        ['right', 'top'],
-    ];
+    $positionXY = [530, 320];
     $wmExts = ['jpg', 'gif', 'png'];
 
     foreach ($test_data_set as $img_type_name => $item) {
@@ -128,52 +124,61 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
             $watermarkImage = '../source-images/watermark.' . $eachWmExt;
             echo '<tr>' . "\n";
             echo '<td>Watermark</td>' . "\n";
-            echo '<td colspan="3">' . "\n";
+            echo '<td>' . "\n";
             debugImage($watermarkImage);
             echo '</td>' . "\n";
             echo '</tr>' . "\n";
+
+            $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
+
+            // test save as other extensions. ---------------
             echo '<tr>' . "\n";
             echo '<td></td>' . "\n";
-            $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-            foreach ($positions as $positionXY) {
-                $eachExt = pathinfo($item['source_image_path'], PATHINFO_EXTENSION);// use in stead of save extensions.
+            echo '<td>' . "\n";
+            echo 'Position ' . $positionXY[0] . ',' . $positionXY[1] . '<br>';
+            echo 'Save as' . "\n";
+            echo '<table><tbody>' . "\n";
+            echo '<tr>' . "\n";
+            $saveExts = ['gif', 'jpg', 'png', 'webp'];
+            foreach ($saveExts as $saveExt) {
+                echo '<td>' . "\n";
                 $fileName = '../processed-images/' . autoImageFilename() . '_src' . strtolower(str_replace(' ', '', $img_type_name)) .
                     '_position-' . $positionXY[0] . ',' . $positionXY[1] .
                     '_wmimg-' . $eachWmExt .
-                    '_target' . $eachExt .
-                    '.' . $eachExt;
+                    '_saveas' . $saveExt .
+                    '.' . $saveExt;
                 $wmResult = $Image->watermarkImage($watermarkImage, $positionXY[0], $positionXY[1]);
                 if ($wmResult !== true) {
                     $wmStatusMsg = $Image->status_msg;
                 }
                 $saveResult = $Image->save($fileName);
-                $Image->clear();
-                unset($wmResult);
-
-                echo '<td>';
-                echo '<a href="' . $fileName . '"><img class="thumbnail" src="' . $fileName . '"></a><br>';
-                echo 'Position ' . $positionXY[0] . ',' . $positionXY[1] . '<br>';
-                if (isset($wmStatusMsg)) {
-                    echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $wmStatusMsg . '</span><br>';
+                debugImage($fileName);
+                if (isset($wmStatusMsg) && $wmResult !== true) {
+                    echo '            &nbsp; &nbsp; <span class="text-error">Error: ' . $wmStatusMsg . '</span>'."\n";
                 }
                 if ($saveResult != true) {
-                    echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span><br>';
+                    echo '            &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>'."\n";
                 }
                 echo '</td>' . "\n";
-                unset($saveResult, $wmStatusMsg);
-                unset($fileName, $eachExt);
-            }// endforeach; positions
-            unset($positionXY);
-            unset($Image);
+                $Image->clear();
+                unset($fileName, $saveResult, $wmResult, $wmStatusMsg);
+            }// endforeach;
+            unset($saveExt, $saveExts);
             echo '</tr>' . "\n";
+            echo '</tbody></table>' . "\n";
+            echo '</td>' . "\n";
+            echo '</tr>' . "\n";
+            // end test save as other extensions. ----------
+
             unset($watermarkImage);
+            unset($Image);
         }// endforeach; watermark ext.
         unset($eachWmExt);
         echo '</tbody></table>' . "\n";
     }// endforeach;
     unset($img_type_name, $item);
 
-    unset($positions, $wmExts);
+    unset($positionXY, $wmExts);
 }// displayTestWatermarkImageDifferentWatermarkExts
 ?>
 <!DOCTYPE html>
@@ -203,9 +208,6 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
             }
         }
         displayTestWatermarkImagePositions($doTestData[$imgType]['source_image_path']);
-        ?>
-        <hr>
-        <?php
         displayTestWatermarkImageDifferentWatermarkExts($doTestData);
         unset($doTestData);
         ?>

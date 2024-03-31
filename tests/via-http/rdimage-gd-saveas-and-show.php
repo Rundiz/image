@@ -87,7 +87,7 @@ function displayTestSaveCrossExts(array $test_data_set)
             foreach ($saveExts as $eachExt) {
                 $linkTo = 'rdimage-gd-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
                     '&amp;show_ext=' . $eachExt .
-                    '&amp;act=resize' .
+                    '&amp;act=' .
                     '&amp;width=' . (is_array($srcImageSize) ? $srcImageSize[0] : 1920) .
                     '&amp;height=' . (is_array($srcImageSize) ? $srcImageSize[1] : 1080);
                 echo '        <td>';

@@ -10,7 +10,7 @@ require_once 'includes/include-rundiz-image.php';
 
 $source_image_file = (isset($_GET['source_image_file']) ? $_GET['source_image_file'] : null);
 $show_ext = (isset($_GET['show_ext']) ? $_GET['show_ext'] : '');
-$act = (isset($_GET['act']) ? $_GET['act'] : 'resize');
+$act = (isset($_GET['act']) ? $_GET['act'] : '');
 $width = (isset($_GET['width']) ? intval($_GET['width']) : 100);
 $height = (isset($_GET['height']) ? intval($_GET['height']) : 100);
 $degree = (isset($_GET['degree']) ? $_GET['degree'] : 0);
@@ -91,7 +91,7 @@ switch ($act) {
         $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/font.ttf', $start_x, $start_y, $fontsize);
         break;
     case 'crop':
-        $Image->crop($width, $height);
+        $Image->crop($width, $height, $start_x, $start_y);
         break;
     case 'rotate':
         $Image->rotate($degree);
@@ -100,9 +100,9 @@ switch ($act) {
         $Image->resizeNoRatio($width, $height);
         break;
     case 'resize':
-    default:
         $Image->resize($width, $height);
         break;
+    default:
 }
 
 if ($Image->status === false) {

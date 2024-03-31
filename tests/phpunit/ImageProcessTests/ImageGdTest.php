@@ -40,11 +40,11 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             $resize_width = 400;
             $resize_height = 300;
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
                     $Image->master_dim = 'width';
                     $Image->resize($resize_width, $resize_height);
-                    $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
+                    $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
                     list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -58,7 +58,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                 'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                             ), 
                             $processed_image_data
-                        ))
+                        )),
+                        'Image ' . $source_image . ' has unexpected resized value or image type.'
                     );
                     unset($height, $width, $image_type, $save_file_name);
                 }// endforeach;
@@ -67,11 +68,11 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             unset($source_image);
 
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
                     $Image->master_dim = 'height';
                     $Image->resize($resize_width, $resize_height);
-                    $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
+                    $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
                     list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -85,7 +86,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                 'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                             ), 
                             $processed_image_data
-                        ))
+                        )),
+                        'Image ' . $source_image . ' has unexpected resized value or image type.'
                     );
                     unset($height, $width, $image_type, $save_file_name);
                 }// endforeach;
@@ -108,12 +110,12 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             $resize_height = 300;
             $rotate = 270;
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
                     $Image->master_dim = 'auto';
                     $Image->resizeNoRatio($resize_width, $resize_height);
                     $Image->rotate($rotate);
-                    $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-rotate['.$rotate.']'.'.'.$save_extension;
+                    $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-rotate['.$rotate.']'.'.'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
                     list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -127,7 +129,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                 'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                             ), 
                             $processed_image_data
-                        ))
+                        )),
+                        'Image ' . $source_image . ' has unexpected processed dimension or image type.'
                     );
                     unset($height, $width, $image_type, $save_file_name);
                 }// endforeach;
@@ -153,12 +156,12 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             $crop_x = 'center';
             $crop_y = 'middle';
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
                     $Image->master_dim = 'auto';
                     $Image->resizeNoRatio($resize_width, $resize_height);
                     $Image->crop($crop_width, $crop_height, $crop_x, $crop_y);
-                    $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-crop['.$crop_width.'x'.$crop_height.'-'.$crop_x.','.$crop_y.']'.'.'.$save_extension;
+                    $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-crop['.$crop_width.'x'.$crop_height.'-'.$crop_x.','.$crop_y.']'.'.'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
                     list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -172,7 +175,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                 'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                             ), 
                             $processed_image_data
-                        ))
+                        )),
+                        'Image ' . $source_image . ' has unexpected processed dimension or image type.'
                     );
                     unset($height, $width, $image_type, $save_file_name);
                 }// endforeach;
@@ -196,13 +200,13 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             $watermark_x = 'center';
             $watermark_y = 'middle';
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
-                    foreach (self::$source_watermark_images_set as $watermark_image) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
+                    foreach (static::$source_watermark_images_set as $watermark_image) {
                         $Image->master_dim = 'auto';
                         $Image->resizeNoRatio($resize_width, $resize_height);
-                        $Image->watermarkImage(self::$source_images_dir.$watermark_image, $watermark_x, $watermark_y);
-                        $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkImage['.$this->getExtensionFromName($watermark_image).'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
+                        $Image->watermarkImage(static::$source_images_dir.$watermark_image, $watermark_x, $watermark_y);
+                        $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkImage['.$this->getExtensionFromName($watermark_image).'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
                         $Image->save($save_file_name);
                         $Image->clear();
                         list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -216,7 +220,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                     'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                                 ), 
                                 $processed_image_data
-                            ))
+                            )),
+                            'Source image ' . $source_image . ' and watermark image ' . $watermark_image . ' has unexpected processed dimension or image type.'
                         );
                         unset($height, $width, $image_type, $save_file_name);
                     }// endforeach;
@@ -242,13 +247,13 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
             $watermark_x = 'center';
             $watermark_y = 'middle';
             foreach ($source_images_set as $source_image) {
-                $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir.$source_image);
-                foreach (self::$processed_extensions as $save_extension) {
-                    foreach (self::$source_watermark_fonts_set as $watermark_font) {
+                $Image = new \Rundiz\Image\Drivers\Gd(static::$source_images_dir.$source_image);
+                foreach (static::$processed_extensions as $save_extension) {
+                    foreach (static::$source_watermark_fonts_set as $watermark_font) {
                         $Image->master_dim = 'auto';
                         $Image->resizeNoRatio($resize_width, $resize_height);
-                        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', self::$source_images_dir.$watermark_font, $watermark_x, $watermark_y, 18);
-                        $save_file_name = self::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkText['.$watermark_font.'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
+                        $Image->watermarkText(static::$watermark_text, static::$source_images_dir.$watermark_font, $watermark_x, $watermark_y, 18);
+                        $save_file_name = static::$processed_images_dir.'rundiz-gd-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkText['.$watermark_font.'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
                         $Image->save($save_file_name);
                         $Image->clear();
                         list($width, $height, $image_type) = getimagesize($save_file_name);
@@ -262,7 +267,8 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
                                     'image_type' => $this->getProcessedExtensionTypeNumber($save_extension)
                                 ), 
                                 $processed_image_data
-                            ))
+                            )),
+                            'Source image ' . $source_image . ' and watermark font ' . $watermark_font . ' has unexpected processed dimension or image type.'
                         );
                         unset($height, $width, $image_type, $save_file_name);
                     }// endforeach;

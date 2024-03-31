@@ -13,7 +13,6 @@ function displayTestResizeRatio(array $test_data_set)
 {
     $resizeDims = [
         [300, 300],
-        [900, 400],
         [400, 700],
         [2100, 1500],
     ];
@@ -103,6 +102,77 @@ function displayTestResizeRatio(array $test_data_set)
     }
     unset($resizeDims, $settings);
 }// displayTestResizeRatio
+
+
+function displayTestSaveCrossExts(array $test_data_set)
+{
+    $saveExts = ['gif', 'jpg', 'png', 'webp'];
+    echo '<h2>Resize &amp; Save across different extensions.</h2>' . "\n";
+    foreach ($test_data_set as $img_type_name => $item) {
+        echo '<h3>'.$img_type_name.'</h3>'."\n";
+        if (is_array($item) && array_key_exists('source_image_path', $item)) {
+            echo '<table><tbody>' . "\n";
+            echo '    <tr>' . "\n";
+            echo '        <td style="width: 200px;">Source image</td>' . "\n";
+            echo '        <td>' . "\n";
+            $srcImageSize = false;
+            if (is_file($item['source_image_path'])) {
+                $srcImageSize = getimagesize($item['source_image_path']);
+            }
+            debugImage($item['source_image_path']);
+            echo '        </td>'."\n";
+            $Image = new Rundiz\Image\Drivers\Gd($item['source_image_path']);
+            echo '    </tr>' . "\n";
+
+            echo '    <tr>' . "\n";
+            echo '        <td>Save as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $Image->resize(800, 600);
+                $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-800x600' .
+                    '-saveas-' . trim($eachExt) . '.' . $eachExt;
+                $saveResult = $Image->save($file_name);
+                $statusMsg = $Image->status_msg;
+                $Image->clear();
+                echo '        <td>' . "\n";
+                debugImage($file_name);
+                if ($saveResult != true) {
+                    echo '            &nbsp; &nbsp; <span class="text-error">Error: '.$statusMsg.'</span>'."\n";
+                }
+                echo '        </td>' . "\n";
+                unset($file_name, $saveResult, $statusMsg);
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '    </tr>' . "\n";
+            unset($Image);
+
+            echo '    <tr>' . "\n";
+            echo '        <td>Use <code>show()</code> method as</td>' . "\n";
+            foreach ($saveExts as $eachExt) {
+                $linkTo = 'rdimage-gd-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
+                    '&amp;show_ext=' . $eachExt .
+                    '&amp;act=resize' .
+                    '&amp;width=' . 800 .
+                    '&amp;height=' . 600;
+                echo '        <td>';
+                echo '<a href="' . $linkTo . '"><img class="thumbnail" src="' . $linkTo . '" alt=""></a><br>';
+                echo 'Extension: ' . $eachExt;
+                unset($linkTo);
+                echo '</td>' . "\n";
+            }// endforeach; save extensions
+            unset($eachExt);
+            echo '    </tr>' . "\n";
+
+            echo '</tbody></table>' . "\n";
+            
+            unset($srcImageSize);
+        }// endif;
+        echo "\n\n";
+    }// endforeach;
+    unset($img_type_name, $item);
+
+    unset($saveExts);
+    echo "\n\n";
+}// displayTestSaveCrossExts
 ?>
 <!DOCTYPE html>
 <html>
@@ -128,6 +198,7 @@ function displayTestResizeRatio(array $test_data_set)
             }
         }
         displayTestResizeRatio($doTestData);
+        displayTestSaveCrossExts($doTestData);
         unset($doTestData);
         ?>
         <hr>
