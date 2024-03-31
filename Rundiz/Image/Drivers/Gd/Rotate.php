@@ -22,53 +22,35 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
     use \Rundiz\Image\Traits\ImageTrait;
 
 
+    /**
+     * Execute the command.
+     * 
+     * @return bool
+     */
     public function execute($degree = 90)
     {
+        // get and set source (or last modified) image width and height
+        $source_image_width = $this->Gd->source_image_width;
+        if ($this->Gd->last_modified_image_width > 0) {
+            $source_image_width = $this->Gd->last_modified_image_width;
+        }
+        $source_image_height = $this->Gd->source_image_height;
+        if ($this->Gd->last_modified_image_height > 0) {
+            $source_image_height = $this->Gd->last_modified_image_height;
+        }
 
         $degree = $this->normalizeDegree($degree);
+        // set color
+        $transparent = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
 
         // begins rotate.
         if (is_int($degree)) {
-            // rotate by degree
-            switch ($this->Gd->source_image_type) {
-                case IMAGETYPE_GIF:
-                    // set source image width and height
-                    $source_image_width = imagesx($this->Gd->source_image_object);
-                    $source_image_height = imagesy($this->Gd->source_image_object);
-
-                    $this->Gd->destination_image_object = imagecreatetruecolor($source_image_width, $source_image_height);
-                    $transwhite = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
-                    imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-                    imagecolortransparent($this->Gd->destination_image_object, $transwhite);
-                    imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $source_image_width, $source_image_height);
-                    $this->Gd->destination_image_object = imagerotate($this->Gd->destination_image_object, $degree, $transwhite);
-                    unset($source_image_height, $source_image_width, $transwhite);
-                    break;
-                case IMAGETYPE_JPEG:
-                    $white = imagecolorallocate($this->Gd->source_image_object, 255, 255, 255);
-                    $this->Gd->destination_image_object = imagerotate($this->Gd->source_image_object, $degree, $white);
-                    unset($white);
-                    break;
-                case IMAGETYPE_PNG:
-                case IMAGETYPE_WEBP:
-                    $transwhite = imageColorAllocateAlpha($this->Gd->source_image_object, 0, 0, 0, 127);
-                    $this->Gd->destination_image_object = imagerotate($this->Gd->source_image_object, $degree, $transwhite);
-                    imagealphablending($this->Gd->destination_image_object, false);
-                    imagesavealpha($this->Gd->destination_image_object, true);
-                    unset($transwhite);
-                    break;
-                default:
-                    $Gds = $this->Gd->getStatic();
-                    $this->setErrorMessage('Unable to rotate this kind of image.', $Gds::RDIERROR_ROTATE_UNKNOWIMG);
-                    unset($Gds);
-                    return false;
-            }
-
-            $this->Gd->destination_image_height = imagesy($this->Gd->destination_image_object);
-            $this->Gd->destination_image_width = imagesx($this->Gd->destination_image_object);
-
-            $this->Gd->source_image_height = $this->Gd->destination_image_height;
-            $this->Gd->source_image_width = $this->Gd->destination_image_width;
+            // if rotate by degree
+            // copy source image to destination.
+            imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $source_image_width, $source_image_height);
+            // rotate
+            $this->Gd->destination_image_object = imagerotate($this->Gd->destination_image_object, $degree, $transparent);
+            imagesavealpha($this->Gd->destination_image_object, true);
         } else {
             // flip image
             if (version_compare(phpversion(), '5.5', '<')) {
@@ -86,26 +68,35 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
                 $mode = IMG_FLIP_BOTH;
             }
 
+            // copy source image to destination.
+            imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $source_image_width, $source_image_height);
             // flip image.
-            imageflip($this->Gd->source_image_object, $mode);
+            imageflip($this->Gd->destination_image_object, $mode);
             unset($mode);
+        }// endif; check degree
 
-            $this->Gd->destination_image_object = $this->Gd->source_image_object;
-            $this->Gd->destination_image_height = imagesy($this->Gd->source_image_object);
-            $this->Gd->destination_image_width = imagesx($this->Gd->source_image_object);
+        $this->Gd->destination_image_height = imagesy($this->Gd->destination_image_object);
+        $this->Gd->destination_image_width = imagesx($this->Gd->destination_image_object);
 
-            $this->Gd->source_image_height = $this->Gd->destination_image_height;
-            $this->Gd->source_image_width = $this->Gd->destination_image_width;
-        }
+        $this->Gd->last_modified_image_height = $this->Gd->destination_image_height;
+        $this->Gd->last_modified_image_width = $this->Gd->destination_image_width;
+        $this->Gd->source_image_height = $this->Gd->destination_image_height;
+        $this->Gd->source_image_width = $this->Gd->destination_image_width;
+
+        unset($transparent);
 
         // clear unused variable
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {
+            // if there is source image object.
             if ($this->Gd->source_image_object != $this->Gd->destination_image_object) {
+                // if source image object is not the same as destination.
+                // this is for prevent when chaining it will be destroy both variables.
                 imagedestroy($this->Gd->source_image_object);
             }
             $this->Gd->source_image_object = null;
         }
 
+        unset($source_image_height, $source_image_width);
         return true;
     }// execute
 

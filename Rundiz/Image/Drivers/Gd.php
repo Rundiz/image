@@ -28,16 +28,16 @@ class Gd extends AbstractImage
 
 
     /**
-     * @var mixed Image resource identifier
+     * @var resource|\GdImage|null|false Image resource identifier
      */
     protected $destination_image_object = null;
     /**
-     * @var mixed Image resource identifier
+     * @var resource|\GdImage|null|false Image resource identifier
      */
     protected $source_image_object = null;
 
     /**
-     * @var mixed Image resource identifier for watermark image.
+     * @var resource|\GdImage|null|false Image resource identifier for watermark image.
      */
     protected $watermark_image_object = null;
 
@@ -133,6 +133,50 @@ class Gd extends AbstractImage
 
 
     /**
+     * No operation.
+     * 
+     * This will be create new image object that has transparency and copy source image to it.
+     * 
+     * @since 3.1.4
+     */
+    private function noOp()
+    {
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        // setup source and destination image objects
+        if (false === $this->setupSourceImageObject()) {
+            return false;
+        }
+        if (false === $this->setupDestinationImageObjectWithSize($this->source_image_width, $this->source_image_height)) {
+            return false;
+        }
+
+        // check previous step contain errors?
+        if ($this->isPreviousError() === true) {
+            return false;
+        }
+
+        $NoOp = new Gd\NoOp($this);
+        $result = $NoOp->execute();
+        unset($NoOp);
+        if (false === $result) {
+            return false;
+        }
+        unset($result);
+
+        // set new value to properties
+        $this->last_modified_image_height = $this->source_image_height;
+        $this->last_modified_image_width = $this->source_image_width;
+        $this->destination_image_height = $this->source_image_height;
+        $this->destination_image_width = $this->source_image_width;
+
+        return true;
+    }// noOp
+
+
+    /**
      * {@inheritDoc}
      */
     public function resizeNoRatio($width, $height)
@@ -189,6 +233,20 @@ class Gd extends AbstractImage
             return false;
         }
 
+        $source_image_width = $this->source_image_width;
+        if ($this->last_modified_image_width > 0) {
+            $source_image_width = $this->last_modified_image_width;
+        }
+        $source_image_height = $this->source_image_height;
+        if ($this->last_modified_image_height > 0) {
+            $source_image_height = $this->last_modified_image_height;
+        }
+
+        if (false === $this->setupDestinationImageObjectWithSize($source_image_width, $source_image_height)) {
+            return false;
+        }
+        unset($source_image_height, $source_image_width);
+
         // check previous step contain errors?
         if ($this->isPreviousError() === true) {
             return false;
@@ -219,8 +277,8 @@ class Gd extends AbstractImage
         }
 
         // in case that it was called new Gd object and then save without any modification.
-        if ($this->destination_image_object == null && $this->source_image_object == null) {
-            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+        if (!$this->isResourceOrGDObject($this->destination_image_object)) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -234,11 +292,13 @@ class Gd extends AbstractImage
 
 
     /**
-     * Setup destination image object that must have size in width and height for use with resize, crop.
+     * Setup new canvas or "destination image object".
+     * 
+     * Set in width and height for use with resize, crop.
      * 
      * @param int $width Destination image object width.
      * @param int $height Destination image object height.
-     * @return bool Return true on success, false on failed.
+     * @return bool Return `true` on success, `false` on failure.
      */
     private function setupDestinationImageObjectWithSize($width, $height)
     {
@@ -252,6 +312,8 @@ class Gd extends AbstractImage
 
         if (!$this->isResourceOrGDObject($this->destination_image_object)) {
             $this->destination_image_object = imagecreatetruecolor($width, $height);
+            imagesavealpha($this->destination_image_object, true);
+            $this->fillTransparentOnObject($this->destination_image_object);
         }
 
         // come to this means destination image object is already set.
@@ -262,9 +324,11 @@ class Gd extends AbstractImage
 
     /**
      * Setup source image object.
-     * After calling this the source_image_object will get new image resource by chaining from previous destination or from image file.
      * 
-     * @return bool Return true on success, false on failed.
+     * In case that this is first process, it will be create image object (or resource in older version of PHP) from image file.<br>
+     * Otherwise, it will be chaining image object from previous destination (or previous process).
+     * 
+     * @return bool Return `true` on success, `false` on failure.
      */
     private function setupSourceImageObject()
     {
@@ -277,39 +341,23 @@ class Gd extends AbstractImage
         }
 
         if (!$this->isResourceOrGDObject($this->source_image_object)) {
+            // if there is no source image object.
             if ($this->isResourceOrGDObject($this->destination_image_object)) {
+                // if there is previous "destination image object".
+                // chain to be source image object.
                 $this->source_image_object = $this->destination_image_object;
                 $this->destination_image_object = null;
 
                 $this->setStatusSuccess();
                 return true;
             } else {
-                if ($this->source_image_type === IMAGETYPE_GIF) {
-                    // gif
-                    $this->source_image_object = imagecreatefromgif($this->source_image_path);
-                    // add alpha to support transparency gif
-                    imagesavealpha($this->source_image_object, true);
-                } elseif ($this->source_image_type === IMAGETYPE_JPEG) {
-                    // jpg
-                    $this->source_image_object = imagecreatefromjpeg($this->source_image_path);
-                } elseif ($this->source_image_type === IMAGETYPE_PNG) {
-                    // png
-                    $this->source_image_object = imagecreatefrompng($this->source_image_path);
-                    // add alpha, alpha blending to support transparency png
-                    imagealphablending($this->source_image_object, false);
-                    imagesavealpha($this->source_image_object, true);
-                } elseif ($this->source_image_type === IMAGETYPE_WEBP) {
-                    // webp
-                    $WebP = new \Rundiz\Image\Extensions\WebP($this->source_image_path);
-                    if ($WebP->isGDSupported()) {
-                        // if GD supported this WEBP. If not then it will be in `source_image_object` to be `null` or empty.
-                        $this->source_image_object = imagecreatefromwebp($this->source_image_path);
-                        // add alpha, alpha blending to support transparency webp
-                        imagealphablending($this->source_image_object, false);
-                        imagesavealpha($this->source_image_object, true);
-                    }// endif; GD supported.
-                    unset($WebP);
-                }// endif;
+                // if there is no previous "destination image object".
+                // create new one from image file.
+                $srcObject = $this->setupSourceFromFile($this->source_image_path, $this->source_image_type);
+                if ($this->isResourceOrGDObject($srcObject)) {
+                    $this->source_image_object = $srcObject;
+                }
+                unset($srcObject);
 
                 if ($this->source_image_object != null) {
                     $this->setStatusSuccess();
@@ -336,9 +384,9 @@ class Gd extends AbstractImage
             return false;
         }
 
-        // in case that it was called new Gd object and then save without any modification.
-        if ($this->destination_image_object == null && $this->source_image_object == null) {
-            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+        // in case that it was called new Gd object and then show without any modification.
+        if (!$this->isResourceOrGDObject($this->destination_image_object)) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -366,9 +414,9 @@ class Gd extends AbstractImage
             return false;
         }
 
-        // setup source image object
-        if (false === $this->setupSourceImageObject()) {
-            return false;
+        // in case that it was called new Gd object and then save without any modification.
+        if (!$this->isResourceOrGDObject($this->destination_image_object)) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -376,56 +424,9 @@ class Gd extends AbstractImage
             return false;
         }
 
-        // if start x or y is number, convert to integer value
-        if (is_numeric($wm_img_start_x)) {
-            $wm_img_start_x = intval($wm_img_start_x);
-        }
-        if (is_numeric($wm_img_start_y)) {
-            $wm_img_start_y = intval($wm_img_start_y);
-        }
-
         // setup watermark object for use later.
         $Watermark = new Gd\Watermark($this);
-        $Watermark->setupWatermarkImageObject($wm_img_path);
-        unset($Watermark);
-
-        // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
-        if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
-            if ($this->isPreviousError()) {
-                return false;
-            }
-
-            list($wm_img_start_x, $wm_img_start_y) = $this->calculateWatermarkImageStartXY(
-                $wm_img_start_x,
-                $wm_img_start_y,
-                imagesx($this->source_image_object),
-                imagesy($this->source_image_object),
-                $this->watermark_image_width,
-                $this->watermark_image_height,
-                $options
-            );
-        }
-
-        return $this->watermarkImageProcess($wm_img_path, $wm_img_start_x, $wm_img_start_y);
-    }// watermarkImage
-
-
-    /**
-     * Process watermark image to the main image.
-     * 
-     * @param string $wm_img_path Path to watermark image.
-     * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
-     * @param int $wm_img_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
-     * @return bool Return true on success, false on failed.
-     */
-    private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
-    {
-        if ($this->isPreviousError()) {
-            return false;
-        }
-
-        $Watermark = new Gd\Watermark($this);
-        $result = $Watermark->applyImage($wm_img_start_x, $wm_img_start_y);
+        $result = $Watermark->applyImage($wm_img_path, $wm_img_start_x, $wm_img_start_y, $options);
         unset($Watermark);
         if (false === $result) {
             return false;
@@ -433,8 +434,9 @@ class Gd extends AbstractImage
         unset($result);
 
         $this->setStatusSuccess();
+
         return true;
-    }// watermarkImageProcess
+    }// watermarkImage
 
 
     /**
@@ -454,18 +456,19 @@ class Gd extends AbstractImage
             return false;
         }
 
-        // setup source image object
-        if (false === $this->setupSourceImageObject()) {
+        // check watermark font path exists
+        if (!is_file($wm_txt_font_path)) {
+            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
             return false;
+        }
+
+        // in case that it was called new Gd object and then save without any modification.
+        if (!$this->isResourceOrGDObject($this->destination_image_object)) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
         if ($this->isPreviousError() === true) {
-            return false;
-        }
-
-        if (!is_file($wm_txt_font_path)) {
-            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
             return false;
         }
         

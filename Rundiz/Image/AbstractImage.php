@@ -77,7 +77,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      * Build source image data
      * 
      * @param string $source_image_path Path to source image file.
-     * @return bool Return true on success, false on failed. Call to `statusCode` or `status_msg` property to see the details on failure.
+     * @return bool Return `true` on success, `false` on failure. Call to `statusCode` or `status_msg` property to see the details on failure.
      */
     protected function buildSourceImageData($source_image_path)
     {
@@ -205,7 +205,7 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      */
     protected function isPreviousError()
     {
-        if ($this->status == false && ($this->statusCode != null || $this->status_msg != null)) {
+        if ($this->status === false && ($this->statusCode != null || $this->status_msg != null)) {
             return true;
         }
         return false;

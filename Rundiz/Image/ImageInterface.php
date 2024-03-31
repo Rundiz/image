@@ -3,7 +3,7 @@
  * PHP Image manipulation class.
  * 
  * @package Image
- * @version 3.1.4dev-20240327
+ * @version 3.1.4dev-20240331
  * @author Vee W.
  * @license http://opensource.org/licenses/MIT
  */
@@ -35,7 +35,7 @@ interface ImageInterface
      * @param int $height Image height of cropping image. Size in pixels.
      * @param mixed $start_x Position to begin in x axis. The value is integer or 'center' for automatically find center.
      * @param mixed $start_y Position to begin in y axis. The value is integer or 'middle' for automatically find middle.
-     * @param string $fill Color of background that will be filled in case that image has transparent in it. The value is transparent, white, black (for gif and png).
+     * @param string $fill Color of background that will be filled in case that image has transparent in it. The value is transparent, white, black (for gif, png, webp).
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */
     public function crop($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent');
@@ -104,7 +104,7 @@ interface ImageInterface
      * @param int|string $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param array $options The watermark options. (Since v3.1.3)<br>
      *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return `true` on success, `false` on failure. Call to `status_msg` property to see the details on failure.
      */
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = []);
 
@@ -123,7 +123,7 @@ interface ImageInterface
      *              `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
      *              `backgroundColor` (string) The background color to fill for text bounding box. Available values are 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'debug'.<br>
      *              `padding` (int) (Since v3.1.3) Padding around watermark text. Use with left, right, bottom, top but not middle, center.<br>
-     * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
+     * @return bool Return `true` on success, `false` on failed. Call to `status_msg` property to see the details on failure.
      */
     public function watermarkText(
         $wm_txt_text, 

@@ -22,6 +22,11 @@ class Crop extends \Rundiz\Image\Drivers\AbstractGdCommand
     use \Rundiz\Image\Drivers\Traits\GdTrait;
 
 
+    /**
+     * Execute the command.
+     * 
+     * @return bool
+     */
     public function execute($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent')
     {
         // calculate start x while $start_x was set as 'center'.
@@ -51,77 +56,27 @@ class Crop extends \Rundiz\Image\Drivers\AbstractGdCommand
         // set color
         $black = imagecolorallocate($this->Gd->destination_image_object, 0, 0, 0);
         $white = imagecolorallocate($this->Gd->destination_image_object, 255, 255, 255);
-        $transwhite = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);// set color transparent white
+        $transparent = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
 
         if ($fill != 'transparent' && $fill != 'white' && $fill != 'black') {
             $fill = 'transparent';
         }
 
-        // begins crop
-        switch ($this->Gd->source_image_type) {
-            case IMAGETYPE_GIF:
-                // fill first time to prevent transparency become black.
-                if ($fill == 'transparent') {
-                    imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-                    imagecolortransparent($this->Gd->destination_image_object, $transwhite);
-                } else {
-                    imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
-                }
-                // do crop.
-                imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
-                // fill "again" in case that cropping image is larger than source image.
-                if ($width > imagesx($this->Gd->source_image_object) || $height > imagesy($this->Gd->source_image_object)) {
-                    if ($fill == 'transparent') {
-                        imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-                        imagecolortransparent($this->Gd->destination_image_object, $transwhite);
-                    } else {
-                        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
-                    }
-                }
-                break;
-            case IMAGETYPE_JPEG:
-                // do crop.
-                imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
-                // do fill.
-                if ($fill != 'transparent') {
-                    imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
-                }
-                break;
-            case IMAGETYPE_PNG:
-            case IMAGETYPE_WEBP:
-                // fill first time to prevent transparency become black.
-                if ($fill == 'transparent') {
-                    imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-                    imagecolortransparent($this->Gd->destination_image_object, $black);
-                    imagealphablending($this->Gd->destination_image_object, false);
-                    imagesavealpha($this->Gd->destination_image_object, true);
-                } else {
-                    imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
-                }
-                // do crop.
-                imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
-                // fill "again" in case that cropping image is larger than source image.
-                if ($width > imagesx($this->Gd->source_image_object) || $height > imagesy($this->Gd->source_image_object)) {
-                    if ($fill == 'transparent') {
-                        imagefill($this->Gd->destination_image_object, 0, 0, $transwhite);
-                        imagecolortransparent($this->Gd->destination_image_object, $black);
-                        imagealphablending($this->Gd->destination_image_object, false);
-                        imagesavealpha($this->Gd->destination_image_object, true);
-                    } else {
-                        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
-                    }
-                }
-                break;
-            default:
-                $Gds = $this->Gd->getStatic();
-                $this->setErrorMessage('Unable to crop this kind of image.', $Gds::RDIERROR_CROP_UNKNOWNIMG);
-                unset($Gds);
-                return false;
-        }// endswitch;
+        // fill destination image object (this should be empty canvas).
+        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
+        // crop
+        imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
+        // fill again in case cropping size is larger than source image.
+        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
 
         // clear unused variables
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {
-            imagedestroy($this->Gd->source_image_object);
+            // if there is source image object.
+            if ($this->Gd->source_image_object != $this->Gd->destination_image_object) {
+                // if source image object is not the same as destination.
+                // this is for prevent when chaining it will be destroy both variables.
+                imagedestroy($this->Gd->source_image_object);
+            }
             $this->Gd->source_image_object = null;
         }
 

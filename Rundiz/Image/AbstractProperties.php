@@ -109,7 +109,8 @@ abstract class AbstractProperties
      */
     protected $source_image_ext;
     /**
-     * @var array Source image data from getimagesize() function. See more at http://php.net/manual/en/function.getimagesize.php
+     * @var array Source image data.
+     * @see Rundiz\Image\Traits\ImageTrait::getImageFileData()
      */
     public $source_image_data;
 

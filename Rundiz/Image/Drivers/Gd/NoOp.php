@@ -8,11 +8,13 @@ namespace Rundiz\Image\Drivers\Gd;
 
 
 /**
- * Resize (not aspect ratio).
+ * No operation.
  * 
- * @since 3.1.0
+ * Usually use for open source image and save as.
+ * 
+ * @since 3.1.4
  */
-class Resize extends \Rundiz\Image\Drivers\AbstractGdCommand
+class NoOp extends \Rundiz\Image\Drivers\AbstractGdCommand
 {
 
 
@@ -24,7 +26,7 @@ class Resize extends \Rundiz\Image\Drivers\AbstractGdCommand
      * 
      * @return bool
      */
-    public function execute($width, $height)
+    public function execute()
     {
         // get and set source (or last modified) image width and height
         $source_image_width = $this->Gd->source_image_width;
@@ -36,8 +38,8 @@ class Resize extends \Rundiz\Image\Drivers\AbstractGdCommand
             $source_image_height = $this->Gd->last_modified_image_height;
         }
 
-        // resize
-        imagecopyresampled($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $width, $height, $source_image_width, $source_image_height);
+        // copy source image to destination.
+        imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, 0, 0, $source_image_width, $source_image_height);
 
         // clear unused variable
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {

@@ -3,4 +3,5 @@
 .phpunit.result.cache
 .phpdoc/
 .wiki/
+tests/via-http/dev.php
 vendor/
