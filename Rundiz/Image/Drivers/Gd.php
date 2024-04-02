@@ -252,6 +252,8 @@ class Gd extends AbstractImage
             return false;
         }
 
+        $degree = $this->normalizeDegree($degree);
+
         $Rotate = new Gd\Rotate($this);
         $result = $Rotate->execute($degree);
         unset($Rotate);

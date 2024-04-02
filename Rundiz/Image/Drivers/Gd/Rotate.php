@@ -39,7 +39,6 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
             $source_image_height = $this->Gd->last_modified_image_height;
         }
 
-        $degree = $this->normalizeDegree($degree);
         // set color
         $transparent = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
 
