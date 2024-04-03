@@ -85,6 +85,7 @@ if (!is_numeric($fontsize)) {
 
 
 $Image = new \Rundiz\Image\Drivers\Imagick($source_image_file);
+$Image->save_animate_gif = true;
 
 switch ($act) {
     case 'watermarktext':

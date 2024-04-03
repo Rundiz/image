@@ -172,7 +172,6 @@ require_once 'includes/include-imagick-functions.php';
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
                                 $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
-                                $Frame->setImagePage(0, 0, 0, 0);
                             }
                         }
                         unset($Frame);
@@ -202,7 +201,6 @@ require_once 'includes/include-imagick-functions.php';
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
                                 $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
-                                $Frame->setImagePage(0, 0, 0, 0);
                             }
                         }
                         unset($Frame);
@@ -229,7 +227,6 @@ require_once 'includes/include-imagick-functions.php';
                         if (is_object($Imagick)) {
                             foreach ($Imagick as $Frame) {
                                 $Imagick->flopImage();
-                                $Frame->setImagePage(0, 0, 0, 0);
                             }
                         }
                         unset($Frame);
@@ -259,7 +256,6 @@ require_once 'includes/include-imagick-functions.php';
                             foreach ($Imagick as $Frame) {
                                 $Imagick->flopImage();
                                 $Imagick->flipImage();
-                                $Frame->setImagePage(0, 0, 0, 0);
                             }
                         }
                         unset($Frame);

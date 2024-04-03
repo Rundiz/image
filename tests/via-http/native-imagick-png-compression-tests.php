@@ -4,6 +4,8 @@ $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
 
+include_once 'includes/include-functions.php';
+
 echo '<p>';
 echo 'Original <a href="' . $sourceImageFile . '">image</a><br>';
 clearstatcache();

@@ -77,6 +77,10 @@ function displayTestResizeNotRatio(array $test_data_set)
             ['GIF Animation' => [
                 'source_image_path' => $source_image_animated_gif,
             ]] +
+            array_slice($test_data_set, 0, 4, true) +
+            ['WEBP Animation' => [
+                'source_image_path' => $source_image_animated_webp,
+            ]] +
         array_slice($test_data_set, 3, NULL, true);
         // display test
         displayTestResizeNotRatio($test_data_set);

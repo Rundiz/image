@@ -60,6 +60,7 @@ function displayTestSaveCrossExts(array $test_data_set)
             debugImage($item['source_image_path']);
             echo '        </td>'."\n";
             $Image = new Rundiz\Image\Drivers\Imagick($item['source_image_path']);
+            $Image->save_animate_gif = true;
             echo '    </tr>' . "\n";
 
             echo '    <tr>' . "\n";

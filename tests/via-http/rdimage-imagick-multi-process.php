@@ -17,7 +17,7 @@ function displayStandardMultiProcess(array $test_data_set)
 {
     global $base_save_file_name;
     global $rotate, $resize_h, $resize_w, $crop_height, $crop_width;
-    $test_exts = ['gif', 'jpg', 'png'];
+    $test_exts = ['gif', 'jpg', 'png', 'webp'];
 
     if (is_array($test_data_set)) {
         foreach ($test_data_set as $img_type_name => $item) {
@@ -96,7 +96,7 @@ function displayStandardMultiProcess(array $test_data_set)
                     </td>
                 </tr>
                 <tr>
-                    <td>resize &rarr; crop &rarr; watermark image &rarr; rotate</td>
+                    <td>resize &rarr; crop &rarr; add watermark image &rarr; rotate</td>
                     <td colspan="2">
                         <?php
                         $file_name = '../processed-images/' . autoImageFilename() . '-resize-' . $resize_w . 'x' . $resize_h . '-crop-' . $crop_width . 'x' . $crop_height . '-watermarkimage-right,bottom-rotate-' . $rotate 

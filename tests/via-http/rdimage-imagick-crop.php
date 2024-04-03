@@ -35,6 +35,7 @@ function displayTestCrop(array $test_data_set)
                     echo '            <a href="' . $file_name . $file_ext . '"><img src="' . $file_name . $file_ext . '" alt="" class="thumbnail"></a><br>';
                     echo 'Cropping ' . $cropSize[0] . '&times;' . $cropSize[1] . ' ';
                     echo 'at ' . $crop_xy[0] . ',' . $crop_xy[1] . ' fill ' . $crop_xy[2] . "\n";
+                    debugImage($file_name . $file_ext, ['dataOnly' => true]);
                     if ($save_result != true) {
                         echo '<br>' . "\n";
                         echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
@@ -53,6 +54,7 @@ function displayTestCrop(array $test_data_set)
             echo 'Cropping ' . $cropSizeLarger[0] . '&times;' . $cropSizeLarger[1] . ' ';
             echo 'at ' . $cropPoseLarger[0] . ',' . $cropPoseLarger[1] . ' fill white'."\n";
             echo ' (Crop larger)' . "\n";
+            debugImage($file_name . $file_ext, ['dataOnly' => true]);
             if ($save_result != true) {
                 echo '<br>' . "\n";
                 echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
