@@ -101,7 +101,7 @@ trait ImageTrait
 
                     if ($isAnimated) {
                         // if animated WEBP.
-                        throw new \DomainException('Current version of PHP does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                        throw new \DomainException('Current version of PHP and Imagick does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
                     }
 
                     $output = [];

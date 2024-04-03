@@ -19,6 +19,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
     use \Rundiz\Image\Drivers\Traits\ImagickTrait;
 
 
+    /**
+     * Execute the command.
+     * 
+     * @return bool
+     */
     public function execute($file_ext = '')
     {
         if ($file_ext == null) {
@@ -29,135 +34,64 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         $check_file_ext = strtolower($file_ext);
 
-        // show image to browser.
-        // http://php.net/manual/en/imagick.getimageblob.php for single frame of image or non-animated picture.
-        // http://php.net/manual/en/imagick.getimagesblob.php for animated gif.
-        if ($check_file_ext === 'gif') {
-            // if save to gif
-            // in case that source image is PNG and have transparency, then this is no problem. just keep transparent.
-
-            if ($this->ImagickD->source_image_type === IMAGETYPE_GIF && $this->ImagickD->save_animate_gif === true) {
-                // if source file is gif and allow to show animated
-                $show_result = $this->ImagickD->Imagick->getImagesBlob();
-            } else {
-                if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
-                    // if source image is animated gif and save to non-animated gif
-                    // get the first frame.
-                    $this->getFirstFrame();
-                }
-
-                if ($this->ImagickD->source_image_type !== IMAGETYPE_GIF) {
-                    // if source image is other than gif, it is required to set image page.
-                    $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
-                }
-
-                $this->ImagickD->Imagick->setImageFormat('gif');
-                $show_result = $this->ImagickD->Imagick->getImageBlob();
+        // set compression. -----------------------------
+        if ($check_file_ext === 'jpg' || $check_file_ext === 'webp') {
+            // if show as JPG or WEBP.
+            if ($check_file_ext === 'jpg') {
+                $this->fillWhiteToImage();
             }
-        } elseif ($check_file_ext === 'jpg') {
-            // if save to jpg
-            if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
-                // if source file is gif
-                if ($this->ImagickD->source_image_frames > 1) {
-                    // if source image is animated gif.
-                    if (is_object($this->ImagickD->ImagickFirstFrame)) {
-                        // if there is first frame object.
-                        // get the first frame.
-                        $this->getFirstFrame();
-                    }
-                }
-
-                // covnert from transparent to white before save
-                $this->fillWhiteToImage();
-            } elseif (
-                $this->ImagickD->source_image_type === IMAGETYPE_PNG || 
-                $this->ImagickD->source_image_type === IMAGETYPE_WEBP
-            ) {
-                // if source file is png or webp
-                // convert from transparent to white before save
-                $this->fillWhiteToImage();
-            }// endif;
-
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
-            if ($this->ImagickD->jpg_quality < 1) {
-                // if quality is less than 1.
-                // `setImageCompressionQuality()` support minimum 1, not 0.
-                $this->ImagickD->jpg_quality = 1;
-            }
-            if ($this->ImagickD->jpg_quality > 100) {
+            if ($this->ImagickD->jpg_quality < 1 || $this->ImagickD->jpg_quality > 100) {
                 $this->ImagickD->jpg_quality = 100;
             }
-
-            $this->ImagickD->Imagick->setImageFormat('jpg');
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
-
-            $show_result = $this->ImagickD->Imagick->getImageBlob();
         } elseif ($check_file_ext === 'png') {
-            // if save to png
-            if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
-                // if source file is gif
-                if ($this->ImagickD->source_image_frames > 1) {
-                    // if source image is animated gif and first frame object is set.
-                    if (is_object($this->ImagickD->ImagickFirstFrame)) {
-                        // if there is first frame object.
-                        // get the first frame.
-                        $this->getFirstFrame();
-                    }
-
-                    // set first frame to prevent Imagick retrieve from last frame and have different dimension.
-                    // read more about this here ( https://stackoverflow.com/questions/55176565/imagick-gives-wrong-width-and-height-of-gif )
-                    $this->ImagickD->Imagick->setFirstIterator();
-                }// endif;
-
-                // keep transparency from gif without any modification.
-            }
-
-            // png compression
+            // if show as PNG.
             $this->ImagickD->png_quality = intval($this->ImagickD->png_quality);
             if ($this->ImagickD->png_quality < 0 || $this->ImagickD->png_quality > 9) {
                 $this->ImagickD->png_quality = 0;
             }
-
-            $this->ImagickD->Imagick->setImageFormat('png');
             $this->ImagickD->Imagick->setCompressionQuality(intval($this->ImagickD->png_quality . 5));
+        }// endif;
+        // end set compression. ------------------------
 
-            $show_result = $this->ImagickD->Imagick->getImageBlob();
-        } elseif ($check_file_ext === 'webp') {
-            // if save to webp
-            if ($this->ImagickD->source_image_type === IMAGETYPE_GIF) {
-                // if source file is gif
-                if ($this->ImagickD->source_image_frames > 1) {
-                    // if animated gif. set first frame to prevent Imagick retrieve from last frame and have different dimension.
-                    // read more about this here ( https://stackoverflow.com/questions/55176565/imagick-gives-wrong-width-and-height-of-gif )
-                    $this->ImagickD->Imagick->setFirstIterator();
-                }
-            }// endif;
+        // show image to browser.
+        // http://php.net/manual/en/imagick.getimageblob.php for single frame of image or non-animated picture.
+        // http://php.net/manual/en/imagick.getimagesblob.php for animated gif, webp.
+        if (
+            ($check_file_ext === 'gif' || $check_file_ext === 'webp') 
+            && $this->ImagickD->save_animate_gif === true
+        ) {
+            // if show as gif or webp and allow to save (show) animated
+            $this->ImagickD->Imagick->setFirstIterator();// Fix animated GIF show as animated WEBP but save as still be GIF.
+            $this->ImagickD->Imagick->setImageFormat($check_file_ext);
+            $show_result = $this->ImagickD->Imagick->getImagesBlob();
 
-            $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
-            if ($this->ImagickD->jpg_quality < 1) {
-                // if quality is less than 1.
-                // `setImageCompressionQuality()` support minimum 1, not 0.
-                $this->ImagickD->jpg_quality = 1;
+            if (
+                $check_file_ext === 'webp' 
+                && $this->ImagickD->source_image_frames > 1
+                && version_compare(PHP_VERSION, '7.3', '<')
+            ) {
+                // if show as webp but php does not met requirement.
+                $Ims = $this->ImagickD->getStatic();
+                $this->setErrorMessage('Current version of PHP and Imagick does not support animated WebP.', $Ims::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                unset($Ims);
+                return false;
             }
-            if ($this->ImagickD->jpg_quality > 100) {
-                $this->ImagickD->jpg_quality = 100;
-            }
-
-            $this->ImagickD->Imagick->setImageFormat('webp');
-            $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
-
-            $show_result = $this->ImagickD->Imagick->getImageBlob();
         } else {
-            $Ims = $this->ImagickD->getStatic();
-            $this->setErrorMessage('Unable to show this kind of image.', $Ims::RDIERROR_SHOW_UNSUPPORT);
-            unset($Ims);
-            return false;
-        }
+            // if everything else.
+            if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
+                // if source image is animated.
+                $this->getFirstFrame();
+            }
+            $this->ImagickD->Imagick->setImageFormat($check_file_ext);
+            $show_result = $this->ImagickD->Imagick->getImageBlob();
+        }// endif;
 
         // clear
         unset($check_file_ext, $file_ext);
 
-        if ($show_result !== false) {
+        if (isset($show_result) && $show_result !== false) {
             $this->setStatusSuccess();
             // Because in PHP GD it is automatically show the image content by omit the file name in `imagexxx()` function without echo command.
             // But in PHP Imagick must echo content that have got from getImageBlob() of Imagick class, then we have to echo it here to make this image class work in the same way.

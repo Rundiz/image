@@ -33,8 +33,8 @@ interface ImageInterface
      * 
      * @param int $width Image width of cropping image. Size in pixels.
      * @param int $height Image height of cropping image. Size in pixels.
-     * @param mixed $start_x Position to begin in x axis. The value is integer or 'center' for automatically find center.
-     * @param mixed $start_y Position to begin in y axis. The value is integer or 'middle' for automatically find middle.
+     * @param mixed $start_x Position to begin in x axis. The value is integer or 'center' for automatically calculate center.
+     * @param mixed $start_y Position to begin in y axis. The value is integer or 'middle' for automatically calculate middle.
      * @param string $fill Color of background that will be filled in case that image has transparent in it. The value is transparent, white, black (for gif, png, webp).
      * @return bool Return true on success, false on failed. Call to status_msg property to see the details on failure.
      */

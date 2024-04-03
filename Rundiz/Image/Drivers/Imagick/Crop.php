@@ -19,8 +19,15 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
     use \Rundiz\Image\Traits\CalculationTrait;
 
 
+    /**
+     * Execute the command.
+     * 
+     * @return bool
+     */
     public function execute($width, $height, $start_x = '0', $start_y = '0', $fill = 'transparent')
     {
+        $this->ImagickD->Imagick->setFirstIterator();
+
         // calculate start x while $start_x was set as 'center'.
         if ($start_x === 'center') {
             $canvas_width = $this->ImagickD->Imagick->getImageWidth();
@@ -55,75 +62,55 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $fill = 'transparent';
         }
 
-        // begins crop
-        switch ($this->ImagickD->source_image_type) {
-            case IMAGETYPE_GIF:
-                if ($this->ImagickD->source_image_frames > 1) {
-                    $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();
-                    if (is_object($this->ImagickD->Imagick)) {
-                        $i = 1;
-                        foreach ($this->ImagickD->Imagick as $Frame) {
-                            if ($fill != 'transparent') {
-                                $Frame->setImageBackgroundColor($$fill);
-                                $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                            } else {
-                                $Frame->setImageBackgroundColor($transparent);
-                            }
-                            $Frame->cropImage($width, $height, $start_x, $start_y);
-                            $Frame->extentImage(
-                                $width, 
-                                $height, 
-                                $this->calculateStartXOfCenter($width, $this->ImagickD->Imagick->getImageWidth()), 
-                                $this->calculateStartXOfCenter($height, $this->ImagickD->Imagick->getImageHeight())
-                            );
-                            $Frame->setImagePage($width, $height, 0, 0);
-                            if ($i == 1) {
-                                $this->ImagickD->ImagickFirstFrame = $Frame->getImage();
-                            }
-                            $i++;
-                        }
-                        unset($Frame, $i);
-                    }
-                } else {
+        if ($this->ImagickD->source_image_frames > 1) {
+            // if animated.
+            $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();
+            if (is_object($this->ImagickD->Imagick)) {
+                $i = 1;
+                foreach ($this->ImagickD->Imagick as $Frame) {
+                    // fill background color.
                     if ($fill != 'transparent') {
-                        $this->ImagickD->Imagick->setImageBackgroundColor($$fill);
-                        $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+                        $Frame->setImageBackgroundColor($$fill);
+                        $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                     } else {
-                        $this->ImagickD->Imagick->setImageBackgroundColor($transparent);
+                        $Frame->setImageBackgroundColor($transparent);
                     }
+                    // crop an image.
                     $this->ImagickD->Imagick->cropImage($width, $height, $start_x, $start_y);
-                    $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
-                    $this->ImagickD->Imagick->extentImage(
+                    $Frame->extentImage(
                         $width, 
                         $height, 
                         $this->calculateStartXOfCenter($width, $this->ImagickD->Imagick->getImageWidth()), 
                         $this->calculateStartXOfCenter($height, $this->ImagickD->Imagick->getImageHeight())
-                    );
-                    $this->ImagickD->ImagickFirstFrame = null;
-                }
-                break;
-            case IMAGETYPE_JPEG:
-            case IMAGETYPE_PNG:
-            case IMAGETYPE_WEBP:
-                $this->ImagickD->Imagick->cropImage($width, $height, $start_x, $start_y);
-                $this->ImagickD->Imagick->setImageBackgroundColor($transwhite);// for transparent png and allow to fill other bg color than black in jpg.
-                $this->ImagickD->Imagick->extentImage(
-                    $width, 
-                    $height, 
-                    $this->calculateStartXOfCenter($width, $this->ImagickD->Imagick->getImageWidth()), 
-                    $this->calculateStartXOfCenter($height, $this->ImagickD->Imagick->getImageHeight())
-                );
-                if ($fill != 'transparent') {
-                    $this->ImagickD->Imagick->setImageBackgroundColor($$fill);
-                    $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-                }
-                break;
-            default:
-                $Ims = $this->ImagickD->getStatic();
-                $this->setErrorMessage('Unable to crop this kind of image.', $Ims::RDIERROR_CROP_UNKNOWNIMG);
-                unset($Ims);
-                return false;
-        }// endswitch;
+                    );// this make crop larger correctly.
+                    $this->ImagickD->Imagick->setImagePage($width, $height, 0, 0);
+                    if ($i == 1) {
+                        $this->ImagickD->ImagickFirstFrame = $Frame->getImage();
+                    }
+                    $i++;
+                }// endforeach;
+                unset($Frame, $i);
+            }
+        } else {
+            // if non-animated.
+            // fill background color.
+            if ($fill != 'transparent') {
+                $this->ImagickD->Imagick->setImageBackgroundColor($$fill);
+                $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+            } else {
+                $this->ImagickD->Imagick->setImageBackgroundColor($transparent);
+            }
+            // crop an image.
+            $this->ImagickD->Imagick->cropImage($width, $height, $start_x, $start_y);
+            $this->ImagickD->Imagick->extentImage(
+                $width, 
+                $height, 
+                $this->calculateStartXOfCenter($width, $this->ImagickD->Imagick->getImageWidth()), 
+                $this->calculateStartXOfCenter($height, $this->ImagickD->Imagick->getImageHeight())
+            );// this make crop larger correctly.
+            $this->ImagickD->Imagick->setImagePage($width, $height, 0, 0);// this make non-animated GIF has correct dimension.
+            $this->ImagickD->ImagickFirstFrame = null;
+        }// endif;
 
         $black->destroy();
         $white->destroy();

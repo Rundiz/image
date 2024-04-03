@@ -8,11 +8,13 @@ namespace Rundiz\Image\Drivers\Imagick;
 
 
 /**
- * Resize (not aspect ratio).
+ * No operation.
  * 
- * @since 3.1.0
+ * Usually use for open source image and save as.
+ * 
+ * @since 3.1.4
  */
-class Resize extends \Rundiz\Image\Drivers\AbstractImagickCommand
+class NoOp extends \Rundiz\Image\Drivers\AbstractImagickCommand
 {
 
 
@@ -21,24 +23,23 @@ class Resize extends \Rundiz\Image\Drivers\AbstractImagickCommand
      * 
      * @return bool
      */
-    public function execute($width, $height)
+    public function execute()
     {
-        // begins resize
         if ($this->ImagickD->source_image_frames > 1) {
             $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();
             if (is_object($this->ImagickD->Imagick)) {
                 $i = 1;
                 foreach ($this->ImagickD->Imagick as $Frame) {
-                    $Frame->resizeImage($width, $height, $this->ImagickD->imagick_filter, 1);
+                    $Frame->setImagePage(0, 0, 0, 0);
                     if ($i == 1) {
                         $this->ImagickD->ImagickFirstFrame = $Frame->getImage();
                     }
                     $i++;
-                }// endforeach;
+                }
                 unset($Frame, $i);
             }
         } else {
-            $this->ImagickD->Imagick->resizeImage($width, $height, $this->ImagickD->imagick_filter, 1);
+            $this->ImagickD->Imagick->setImagePage(0, 0, 0, 0);
             $this->ImagickD->ImagickFirstFrame = null;
         }
 

@@ -77,7 +77,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
             $show_result = imagewebp($this->Gd->destination_image_object, null, $this->Gd->jpg_quality);
         } else {
             $Gds = $this->Gd->getStatic();
-            $this->setErrorMessage(sprintf('Unable to save this kind of image. (%s)', $check_file_ext), $Gds::RDIERROR_SHOW_UNSUPPORT);
+            $this->setErrorMessage(sprintf('Unable to show this kind of image. (%s)', $check_file_ext), $Gds::RDIERROR_SHOW_UNSUPPORT);
             unset($Gds);
             return false;
         }

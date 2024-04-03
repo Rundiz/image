@@ -146,42 +146,10 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
 
 
     /**
-     * Apply watermark (text or image) object to GIF image object.
-     * 
-     * The `source_image_object` property must contain GIF image object.
-     * 
-     * @param resource|object $wmObject The watermark object, can be image or text.
-     * @param int $wmWidth Watermark width
-     * @param int $wmHeight Watermark height
-     * @param int $wmStartX Watermark start X position.
-     * @param int $wmStartY Watermark start Y position.
-     */
-    private function applyWatermarkToGifImage($wmObject, $wmWidth, $wmHeight, $wmStartX, $wmStartY)
-    {
-        // create temp canvas.
-        $tempCanvas = imagecreatetruecolor($wmWidth, $wmHeight);
-
-        // set temp canvas to be transparent. ---------
-        imagesavealpha($tempCanvas, true);
-        $this->fillTransparentOnObject($tempCanvas);
-        // end set temp canvas transparent. -----------
-
-        // copy part of source image to temp canvas where the size is same as watermark canvas.
-        imagecopy($tempCanvas, $this->Gd->source_image_object, 0, 0, $wmStartX, $wmStartY, $wmWidth, $wmHeight);
-        // copy the whole watermark canvas to temp canvas.
-        imagecopy($tempCanvas, $wmObject, 0, 0, 0, 0, $wmWidth, $wmHeight);
-        // copy merge temp canvas to image object.
-        imagecopymerge($this->Gd->source_image_object, $tempCanvas, $wmStartX, $wmStartY, 0, 0, $wmWidth, $wmHeight, 100);
-        // destroy temp canvas.
-        imagedestroy($tempCanvas);
-        unset($tempCanvas);
-    }// applyWatermarkToGifImage
-
-
-    /**
      * Create watermark text object.
      * 
      * @see Rundiz\Image\ImageInterface::watermarkText() for more details.
+     * @since 3.1.4
      * @param int $wm_txt_width
      * @param int $wm_txt_height
      * @param string $wm_txt_font_color
@@ -279,7 +247,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
             $watermark_height = $this->Gd->watermark_image_height;
         }
 
-        // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
+        // if start x or y is NOT number, calculate the real position of start x or y from word left, center, right, top, middle, bottom
         if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
             list($wm_img_start_x, $wm_img_start_y) = $this->calculateWatermarkImageStartXY(
                 $wm_img_start_x,

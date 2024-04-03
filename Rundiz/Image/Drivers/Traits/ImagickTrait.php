@@ -23,7 +23,6 @@ trait ImagickTrait
     {
         $this->ImagickD->Imagick->setImageBackgroundColor('white');
         $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
-        $this->ImagickD->Imagick = $this->ImagickD->Imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
     }// fillWhiteToImage
 
 

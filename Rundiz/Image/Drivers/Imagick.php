@@ -201,6 +201,47 @@ class Imagick extends AbstractImage
 
 
     /**
+     * No operation.
+     * 
+     * This will be setup source image object, set first frame of an image of source image is GIF.
+     * 
+     * @since 3.1.4
+     */
+    private function noOp()
+    {
+        if (false === $this->isClassSetup()) {
+            return false;
+        }
+
+        // setup source image object (Imagick object)
+        if (false === $this->setupSourceImageObject()) {
+            return false;
+        }
+
+        // check previous step contain errors?
+        if ($this->isPreviousError() === true) {
+            return false;
+        }
+
+        $NoOp = new Imagick\NoOp($this);
+        $result = $NoOp->execute();
+        unset($NoOp);
+        if (false === $result) {
+            return false;
+        }
+        unset($result);
+
+        // set new value to properties
+        $this->last_modified_image_height = $this->source_image_height;
+        $this->last_modified_image_width = $this->source_image_width;
+        $this->destination_image_height = $this->source_image_height;
+        $this->destination_image_width = $this->source_image_width;
+
+        return true;
+    }// noOp
+
+
+    /**
      * {@inheritDoc}
      */
     public function resizeNoRatio($width, $height)
@@ -285,7 +326,7 @@ class Imagick extends AbstractImage
 
         // setup source object in case that it was not set.
         if ($this->Imagick == null) {
-            $this->setupSourceImageObject();
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -344,10 +385,9 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        // in case that it was called new Imagick object and then save without any modification.
+        // setup source object in case that it was not set.
         if ($this->Imagick == null) {
-            // use resizeNoRatio instead of setupSourceImageObject in case that source file is animated gif it can setup first frame object.
-            $this->resizeNoRatio($this->source_image_width, $this->source_image_height);
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -367,7 +407,7 @@ class Imagick extends AbstractImage
      */
     private function verifyImagickVersion()
     {
-        if (extension_loaded('imagick') !== true) {
+        if (!extension_loaded('imagick') || !class_exists('\Imagick')) {
             // imagick extension was not loaded.
             $this->setErrorMessage('The PHP Imagick extension was not loaded.', static::RDIERROR_IMAGICK_NOTLOAD);
             return false;
@@ -391,7 +431,7 @@ class Imagick extends AbstractImage
             unset($immVA);
             return false;
         } else {
-            // know Image Magick version.
+            // known Image Magick version.
             // verify Image Magick version.
             preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
             unset($immVA);
@@ -435,8 +475,8 @@ class Imagick extends AbstractImage
         }
 
         // setup source image object
-        if (false === $this->setupSourceImageObject()) {
-            return false;
+        if ($this->Imagick == null) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -444,56 +484,9 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        // if start x or y is number, convert to integer value
-        if (is_numeric($wm_img_start_x)) {
-            $wm_img_start_x = intval($wm_img_start_x);
-        }
-        if (is_numeric($wm_img_start_y)) {
-            $wm_img_start_y = intval($wm_img_start_y);
-        }
-
         // setup watermark object for use later.
         $Watermark = new Imagick\Watermark($this);
-        $Watermark->setupWatermarkImageObject($wm_img_path);
-        unset($Watermark);
-
-        // if start x or y is NOT number, find the real position of start x or y from word left, center, right, top, middle, bottom
-        if (!is_numeric($wm_img_start_x) || !is_numeric($wm_img_start_y)) {
-            if ($this->isPreviousError()) {
-                return false;
-            }
-
-            list($wm_img_start_x, $wm_img_start_y) = $this->calculateWatermarkImageStartXY(
-                $wm_img_start_x,
-                $wm_img_start_y,
-                $this->Imagick->getImageWidth(),
-                $this->Imagick->getImageHeight(),
-                $this->watermark_image_width,
-                $this->watermark_image_height,
-                $options
-            );
-        }
-
-        return $this->watermarkImageProcess($wm_img_path, $wm_img_start_x, $wm_img_start_y);
-    }// watermarkImage
-
-
-    /**
-     * Process watermark image to the main image.
-     * 
-     * @param string $wm_img_path Path to watermark image.
-     * @param int $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
-     * @param int $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
-     * @return bool Return true on success, false on failed.
-     */
-    private function watermarkImageProcess($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0)
-    {
-        if ($this->isPreviousError()) {
-            return false;
-        }
-
-        $Watermark = new Imagick\Watermark($this);
-        $result = $Watermark->applyImage($wm_img_start_x, $wm_img_start_y);
+        $result = $Watermark->applyImage($wm_img_path, $wm_img_start_x, $wm_img_start_y, $options);
         unset($Watermark);
         if (false === $result) {
             return false;
@@ -501,8 +494,9 @@ class Imagick extends AbstractImage
         unset($result);
 
         $this->setStatusSuccess();
+
         return true;
-    }// watermarkImageProcess
+    }// watermarkImage
 
 
     /**
@@ -522,9 +516,15 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        // setup source image object
-        if (false === $this->setupSourceImageObject()) {
+        // check watermark font path exists
+        if (!is_file($wm_txt_font_path)) {
+            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
             return false;
+        }
+
+        // setup source image object
+        if ($this->Imagick == null) {
+            $this->noOp();
         }
 
         // check previous step contain errors?
@@ -532,11 +532,6 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        if (!is_file($wm_txt_font_path)) {
-            $this->setErrorMessage('Unable to load font file.', static::RDIERROR_WMT_FONT_NOTEXISTS);
-            return false;
-        }
-        
         $Watermark = new Imagick\Watermark($this);
         $result = $Watermark->applyText($wm_txt_text, $wm_txt_font_path, $wm_txt_start_x, $wm_txt_start_y, $wm_txt_font_size, $wm_txt_font_color, $wm_txt_font_alpha, $options);
         unset($Watermark);

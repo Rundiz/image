@@ -181,7 +181,7 @@ trait CalculationTrait
     /**
      * Calculate startX position of center.
      * 
-     * With this method, you can find the start x position of center (horizontal) or middle (vertical).
+     * With this method, you can calculate the start x position of center (horizontal) or middle (vertical).
      * 
      * Formular: round((half of canvas) - (half of object))
      * 
@@ -319,10 +319,10 @@ trait CalculationTrait
             $number = 127;
         }
 
-        $find_percent = ($alpha_max - $number) / ($alpha_max / 100);
+        $alpha_percent = ($alpha_max - $number) / ($alpha_max / 100);
 
         unset($alpha_max, $alpha_min);
-        return number_format(($find_percent / 100), 2);
+        return number_format(($alpha_percent / 100), 2);
     }// convertAlpha127ToRgba
 
 
