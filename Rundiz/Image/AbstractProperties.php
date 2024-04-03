@@ -107,7 +107,8 @@ abstract class AbstractProperties
     protected $source_image_height;
 
     /**
-     * @var string Source image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp
+     * @var string Source image type. Use with PHP predefined constants `IMAGETYPE_XXX` only.
+     * @link https://www.php.net/manual/en/image.constants.php PHP predefined constants reference.
      */
     protected $source_image_type;
 

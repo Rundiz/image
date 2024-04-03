@@ -109,7 +109,7 @@ function displayTestWatermarkImagePositions($sourceImage)
 function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
 {
     $positionXY = [530, 320];
-    $wmExts = ['jpg', 'gif', 'png'];
+    $wmExts = ['jpg', 'gif', 'png', 'webp'];
 
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h4>' . $img_type_name . '</h4>' . "\n";

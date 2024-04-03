@@ -84,6 +84,7 @@
                             <li><strong>watermark.gif</strong> transparent background, write some text.</li>
                             <li><strong>watermark.jpg</strong> filled background with color, write some text.</li>
                             <li><strong>watermark.png</strong> transparent background, write some text.</li>
+                            <li><strong>watermark.webp</strong> transparent background, write some text.</li>
                         </ul>
                     </li>
                 </ul>

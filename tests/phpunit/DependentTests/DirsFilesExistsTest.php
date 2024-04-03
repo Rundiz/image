@@ -47,6 +47,7 @@ class DirsFilesExistsTest extends \Rundiz\Image\Tests\RDICommonTestCase
             'watermark.gif',
             'watermark.jpg',
             'watermark.png',
+            'watermark.webp',
         ];
 
         foreach ($files as $file) {
