@@ -1,6 +1,6 @@
 # Image manipulation
 
-Image manipulation use GD or Imagick as drivers. 
+Simple image manipulation that use GD or Imagick as drivers. 
 
 ## Features:
 ### File extensions supported
@@ -8,7 +8,7 @@ Image manipulation use GD or Imagick as drivers.
 * GIF
 * JPG (JPEG)
 * PNG
-* WEBP `*`
+* WEBP`*`
 
 ### Functional
 
@@ -19,7 +19,7 @@ Image manipulation use GD or Imagick as drivers.
 * Watermark image (including alpha transparency.)
 * Watermark text (including alpha transparency.)
 * Supported transparent GIF, PNG, WEBP.
-* Supported animated GIF (Imagick only).
+* Supported animated GIF, WEBP`*` (Imagick only).
 
 [![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
 [![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
@@ -31,15 +31,11 @@ Image manipulation use GD or Imagick as drivers.
 
 ```php
 $Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
-$Image->resize(900, 600);
-$Image->save('/path/to/new-file-name.jpg');
 ```
 #### Imagick driver
 
 ```php
 $Image = new \Rundiz\Image\Drivers\Imagick('/path/to/source-image.jpg');
-$Image->resize(900, 600);
-$Image->save('/path/to/new-file-name.jpg');
 ```
 
 #### Fallback drivers
@@ -51,35 +47,34 @@ if (extension_loaded('imagick') === true) {
 } else {
     $Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
 }
-$Image->rotate('hor');
-$Image->crop(500, 500, 'center', 'middle');
-$Image->save('/path/to/new-file-name.jpg');
 ```
 
 ### Image manipulation methods
 ```php
-// crop an image.
+// Crop an image
 $Image->crop(400, 400, 'center', 'middle');// crop start from center of X and Y
 $Image->crop(400, 400, 20, 90);// crop start from X 20 and Y 90
 
-// resize
+// Resize
 $Image->resize(600, 400);
-// resize without aspect ratio
+// Resize without aspect ratio
 $Image->resizeNoRatio(500, 300);
 
-// rotate
+// Rotate
 $Image->rotate();// 90 degree
 $Image->rotate(180);
 $Image->rotate(270);
-$Image->rotate('hor');// flip horizontal
-$Image->rotate('vrt');// flip vertical
-$Image->rotate('horvrt');// flip horizontal and vertical
 
-// watermark image
+// Flip
+$Image->rotate('hor');// horizontal
+$Image->rotate('vrt');//  vertical
+$Image->rotate('horvrt');// both horizontal and vertical
+
+// Watermark image
 $Image->watermarkImage('/var/www/image/watermark.png', 'center', 'middle');
 $Image->watermarkImage('/var/www/image/watermark.png', 50, 90);// watermark start from X 50 and Y 90
 
-// watermark text
+// Watermark text
 $Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 'center', 'middle', 16);
 $Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 50, 90, 16);// watermark start from X 50 and Y 90
 ```
@@ -89,7 +84,8 @@ $Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 50, 90, 16);//
 $Image = new \Rundiz\Image\Drivers\Gd('/path/to/source-image.jpg');
 $Image->resize(900, 600);
 $Image->save('/path/to/new-file-name-900x600.jpg');
-// use method clear() to clear all processed data and start new image process with the same image source.
+// Use method clear() to clear all processed data 
+// and start new image process with the same image source.
 $Image->clear();
 $Image->resize(300, 100);
 $Image->save('/path/to/new-file-name-300x100.jpg');
