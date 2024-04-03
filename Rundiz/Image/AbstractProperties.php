@@ -149,8 +149,8 @@ abstract class AbstractProperties
     protected $destination_image_height;
 
     /**
-     * @var string Watermark image type. The numbers of these extensions are: 1=gif, 2=jpg, 3=png, 18=webp or image type constant.<br>
-     * See more at https://www.php.net/manual/en/image.constants.php
+     * @var string Watermark image type. Use with PHP predefined constants `IMAGETYPE_XXX` only.
+     * @link https://www.php.net/manual/en/image.constants.php PHP predefined constants reference.
      */
     protected $watermark_image_type;
 
