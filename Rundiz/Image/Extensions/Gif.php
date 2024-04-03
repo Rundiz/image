@@ -51,13 +51,21 @@ class Gif
         $header = unpack($header_format, $data);
         unset($data, $header_format);
 
+        rewind($fp);
         // check is animated gif. 
         // known problem: this couldn't detected all animated GIF files.
         // https://stackoverflow.com/a/415942/128761 Original source code.
         $count = 0;
+        $chunk = false;
         while(!feof($fp) && $count < 2) {
-            $chunk = fread($fp, 1024 * 100); //read 100kb at a time
-            $count += preg_match_all('#\x00\x21\xF9\x04.{4}\x00[\x2C\x21]#s', $chunk, $matches);
+            $chunk = ($chunk ? substr($chunk, -20) : "") . fread($fp, 1024 * 100); //read 100kb at a time
+            // \x21 = An Extension Block
+            // xF9 = Graphic Control Extension for frame #1
+            // \x04 = Number of bytes (4) in the current sub-block
+            // .{4} = any 4 byte
+            // \x2C = An Image Descriptor
+            // \x21 = An Extension Block
+            $count += preg_match_all('#\x00?\x21\xF9\x04.{4}\x00[\x2C\x21]#s', $chunk, $matches);
         }// endwhile;
         // end check animated gif.
 
