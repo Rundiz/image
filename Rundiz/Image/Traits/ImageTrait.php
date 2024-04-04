@@ -19,7 +19,7 @@ trait ImageTrait
 
 
     /**
-     * Get image file data such as width, height, mime type.
+     * Get image file data such as width, height, mime type, extension.
      * 
      * This will be use `getimagesize()` function if supported, use Imagick, GD functions as backup.
      * 
@@ -31,7 +31,8 @@ trait ImageTrait
      *              index 2 Image type constant. See more at https://www.php.net/manual/en/image.constants.php <br>
      *              `mime` key is mime type.<br> 
      *              `ext` key is file extension with dot (.ext).<br>
-     *              Return `false` on failure.
+     *              Other array keys are optional, it can be omit.<br>
+     *              Return `false` on failure.<br>
      * @throws \DomainException Throw the errors if it is an image but current PHP version is not supported.
      */
     public function getImageFileData($imagePath)
@@ -60,64 +61,34 @@ trait ImageTrait
                 // if it is WEBP.
                 $WebP = new \Rundiz\Image\Extensions\WebP($imagePath);
                 $webpInfo = $WebP->webPInfo();
-                $isAnimated = (is_array($webpInfo) && isset($webpInfo['ANIMATION']) && true === $webpInfo['ANIMATION']);
-                $isTransparent = (is_array($webpInfo) && isset($webpInfo['ALPHA']) && true === $webpInfo['ALPHA']);
+
+                if (
+                    is_array($webpInfo) 
+                    && array_key_exists('HEIGHT', $webpInfo)
+                    && is_numeric($webpInfo['HEIGHT'])
+                    && array_key_exists('WIDTH', $webpInfo)
+                    && is_numeric($webpInfo['WIDTH'])
+                ) {
+                    $output[0] = $webpInfo['WIDTH'];
+                    $output[1] = $webpInfo['HEIGHT'];
+                    $output[2] = IMAGETYPE_WEBP;
+                    $output['mime'] = 'image/webp';
+                    $output['ext'] = '.webp';
+                    unset($webpInfo);
+                    return $output;
+                }
+
+                // come to this means, it can't get any data from file header and chunk.
+                if ($WebP->isAnimated()) {
+                    // if animated WEBP.
+                    throw new \DomainException('Current version of PHP does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                }
+
+                if (isset($webpInfo['ALPHA']) && true === $webpInfo['ALPHA']) {
+                    // if transparency WEBP.
+                    throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
+                }
                 unset($WebP, $webpInfo);
-
-                if (extension_loaded('imagick') === true && class_exists('imagick')) {
-                    // if imagick is installed.
-                    if (!$isAnimated || ($isAnimated && version_compare(PHP_VERSION, '7.3', '>='))) {
-                        // if it is not animated or it is animated WEBP but PHP version is supported.
-                        $Imagick = new \imagick($imagePath);
-                        $imgGeo = $Imagick->getImageGeometry();
-                        if (
-                            isset($imgGeo['width']) 
-                            && is_numeric($imgGeo['width'])
-                            && isset($imgGeo['height']) 
-                            && is_numeric($imgGeo['height'])
-                        ) {
-                            // if imagick can get image data.
-                            $output[0] = $imgGeo['width'];
-                            $output[1] = $imgGeo['height'];
-                            $output[2] = IMAGETYPE_WEBP;
-                            $output['mime'] = 'image/webp';
-                            $output['ext'] = '.webp';
-                            unset($Imagick);
-                            return $output;
-                        }// endif; imagick can get image data.
-                        unset($Imagick, $imgGeo);
-                    }// endif; version supported.
-                }// endif; imagick is installed.
-
-                if (function_exists('imagecreatefromwebp')) {
-                    // if there is a GD function supported.
-                    if (
-                        version_compare(PHP_VERSION, '7.0', '<') 
-                        && $isTransparent
-                    ) {
-                        // if current PHP version is not supported for transparent webp.
-                        throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
-                    }
-
-                    if ($isAnimated) {
-                        // if animated WEBP.
-                        throw new \DomainException('Current version of PHP and Imagick does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
-                    }
-
-                    $output = [];
-                    $GD = imagecreatefromwebp($imagePath);
-                    if (false !== $GD) {
-                        $output[0] = imagesx($GD);
-                        $output[1] = imagesy($GD);
-                        $output[2] = IMAGETYPE_WEBP;
-                        $output['mime'] = 'image/webp';
-                        $output['ext'] = '.webp';
-                        unset($GD);
-                        return $output;
-                    }
-                    unset($GD, $output);
-
-                }// endif; there is a GD function supported
             }// endif; it is WEBP.
         }// endif; file exists.
 

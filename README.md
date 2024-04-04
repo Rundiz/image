@@ -98,7 +98,7 @@ Remark:
 
 * `*` WEBP<br>
     * PHP all version ([last checked 8.3][animatedwebpbug]) with GD doesn't support animated WEBP.
-    * PHP prior 7.3 with Imagick doesn't supported open or save animated WEBP.
+    * PHP and Imagick that compiled against [ImageMatick prior 7.0.8.68][imagematickanimatedwebp] doesn't supported open or save animated WEBP.
     * PHP prior 7.0 with GD ([1][oldgdwebpbug], [2][oldgdwebpbug2]) doesn't supported open or save transparent WEBP.
     * PHP prior 5.6 with GD doesn't fully supported WEBP and may cause image becomes green. Tested with PHP on Windows.
 
@@ -106,3 +106,4 @@ Remark:
 [oldgdwebpbug]: https://github.com/rosell-dk/webp-convert/issues/238#issuecomment-545928597
 [oldgdwebpbug2]: https://stackoverflow.com/a/58543717/128761
 [animatedwebpbug]: https://www.php.net/manual/en/function.imagecreatefromwebp.php
+[imagematickanimatedwebp]: https://github.com/ImageMagick/ImageMagick/pull/1708

@@ -270,12 +270,12 @@ abstract class AbstractProperties
     const RDIERROR_IMAGICK_VERSIONUNKNOW = 20;
 
     /**
-     * Image Magick version does not meet requirement.
+     * ImageMagick version does not meet requirement.
      */
     const RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT = 21;
 
     /**
-     * Not support animated WebP for current PHP version.
+     * Not support animated WebP for current PHP version (or current ImageMatick version).
      * @since 3.1.4
      */
     const RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED = 22;

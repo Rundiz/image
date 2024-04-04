@@ -291,7 +291,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
     /**
      * Setup watermark image object.
-     * After calling this the ImagickWatermark will get new Image Magick object if it does not set before.
+     * After calling this the ImagickWatermark will get new ImageMagick object if it does not set before.
      * 
      * @param string $wm_img_path Path to watermark image.
      * @return bool Return true on success, false on failed. Call to `status_msg` property to see the details on failure.

@@ -87,7 +87,7 @@ class Imagick extends AbstractImage
 
 
     /**
-     * Build source image data (special for Image Magick).
+     * Build source image data (special for ImageMagick).
      * 
      * @param string $source_image_path Path to source image.
      * @return bool Return true on success, false on failed.
@@ -341,7 +341,7 @@ class Imagick extends AbstractImage
 
     /**
      * Setup source image object.
-     * After calling this the Imagick property will get new Image Magick object if it does not set before.
+     * After calling this the `Imagick` property will get new ImageMagick object if it does not set before.
      * 
      * @return bool Return true on success, false on failed.
      */
@@ -355,13 +355,29 @@ class Imagick extends AbstractImage
             return false;
         }
 
-        if ($this->Imagick == null || !is_object($this->Imagick)) {
+        if (!is_object($this->Imagick)) {
+            if ($this->source_image_type === IMAGETYPE_WEBP) {
+                // if WEBP.
+                // check and showing more specific that is it supported or not, if not then why.
+                $WebP = new \Rundiz\Image\Extensions\WebP($this->source_image_path);
+                $webPInfo = $WebP->webPInfo();
+                if (
+                    $WebP->isAnimated()
+                    && !$WebP->isImagickSupportedAnimated()
+                ) {
+                    // if animated WEBP but not supported.
+                    $this->setErrorMessage('Current version of ImageMagick does not support animated WebP.', static::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                    return false;
+                }
+                unset($WebP, $webPInfo);
+            }// endif;
+
             try {
                 $this->Imagick = new \Imagick($this->source_image_path);
             } catch (\Exception $ex) {
             }
 
-            if ($this->Imagick != null && is_object($this->Imagick)) {
+            if (is_object($this->Imagick)) {
                 $this->setStatusSuccess();
                 return true;
             } else {
@@ -401,7 +417,7 @@ class Imagick extends AbstractImage
 
 
     /**
-     * Verify PHP Imagick extension and Image Magick version.
+     * Verify PHP Imagick extension and ImageMagick version.
      * 
      * @return bool Return true on success, false on failed.
      */
@@ -424,31 +440,31 @@ class Imagick extends AbstractImage
         }
         unset($imagickVersion);
 
-        $immVA = \Imagick::getVersion();// get Image Magick version array.
+        $immVA = \Imagick::getVersion();// get ImageMagick version array.
         if (!is_array($immVA) || !array_key_exists('versionString', $immVA)) {
-            // don't know Image Magick version.
-            $this->setErrorMessage('Unable to verify Image Magick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
+            // don't know ImageMagick version.
+            $this->setErrorMessage('Unable to verify ImageMagick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
             unset($immVA);
             return false;
         } else {
-            // known Image Magick version.
-            // verify Image Magick version.
+            // known ImageMagick version.
+            // verify ImageMagick version.
             preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
             unset($immVA);
             if (!is_array($matches) || !array_key_exists(1, $matches)) {
                 // if not found version number.
-                $this->setErrorMessage('Unable to verify Image Magick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
+                $this->setErrorMessage('Unable to verify ImageMagick version.', static::RDIERROR_IMAGICK_VERSIONUNKNOW);
                 unset($matches);
                 return false;
             } else {
                 if (version_compare($matches[1], '6.2.4', '<')) {
-                    // if Image Magick version is lower than requirement in PHP page.
-                    $this->setErrorMessage('Require at least Image Magick 6.2.4.', static::RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT);
+                    // if ImageMagick version is lower than requirement in PHP page.
+                    $this->setErrorMessage('Require at least ImageMagick 6.2.4.', static::RDIERROR_IMAGEMAGICK_NOTMEETREQUIREMENT);
                     unset($matches);
                     return false;
                 }
             }
-        }// endif; Image Magick version
+        }// endif; ImageMagick version
         // end verify basic requirements. -------------------------------------------------------------------
 
         unset($imagick_extension_version);

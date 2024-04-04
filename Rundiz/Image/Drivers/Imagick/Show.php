@@ -70,13 +70,16 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
             if (
                 $check_file_ext === 'webp' 
                 && $this->ImagickD->source_image_frames > 1
-                && version_compare(PHP_VERSION, '7.3', '<')
             ) {
-                // if show as webp but php does not met requirement.
-                $Ims = $this->ImagickD->getStatic();
-                $this->setErrorMessage('Current version of PHP and Imagick does not support animated WebP.', $Ims::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
-                unset($Ims);
-                return false;
+                // if show as webp and maybe animated
+                $WebP = new \Rundiz\Image\Extensions\WebP($this->ImagickD->source_image_path);
+                if (!$WebP->isImagickSupportedAnimated()) {
+                    $Ims = $this->ImagickD->getStatic();
+                    $this->setErrorMessage('Current version of ImageMagick does not support animated WebP.', $Ims::RDIERROR_SRC_WEBP_ANIMATED_NOTSUPPORTED);
+                    unset($Ims, $WebP);
+                    return false;
+                }// endif;
+                unset($WebP);
             }
         } else {
             // if everything else.

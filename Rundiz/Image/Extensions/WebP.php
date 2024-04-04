@@ -53,6 +53,25 @@ class WebP
 
 
     /**
+     * Check if WEBP file that was specified is animated or not.
+     * 
+     * @since 3.1.4
+     * @return bool Return `true` if yes, `false` if something else.
+     */
+    public function isAnimated()
+    {
+        $info = $this->webPInfo();
+        if (!is_array($info)) {
+            // If not WEBP.
+            unset($info);
+            return false;
+        }
+
+        return (is_array($info) && array_key_exists('ANIMATION', $info) && true === $info['ANIMATION']);
+    }// isAnimated
+
+
+    /**
      * Check if GD supported current WEBP file.
      *
      * @since 3.1.4
@@ -67,7 +86,7 @@ class WebP
             return false;
         }
 
-        if (is_array($info) && array_key_exists('ANIMATION', $info) && true === $info['ANIMATION']) {
+        if ($this->isAnimated()) {
             // If animated WEBP.
             // Currently there is no supported for animated WEBP (last checked PHP 8.3).
             // @link https://www.php.net/manual/en/function.imagecreatefromwebp.php Reference for can't read animated WEBP.
@@ -104,33 +123,29 @@ class WebP
 
 
     /**
-     * Check if Imagick supported current WEBP file.
+     * Check if Imagick (and ImageMagick) supported animated WEBP.
+     * 
+     * This test is not depend on WEBP file specified.
      * 
      * @since 3.1.4
-     * @return boolean Return `true` if yes, `false` if no.
+     * @return bool Return `true` if it is already supported. Return `false` for otherwise.
      */
-    public function isImagickSupported()
+    public function isImagickSupportedAnimated()
     {
-        $info = $this->webPInfo();
-        if (!is_array($info)) {
-            // If not WEBP.
-            unset($info);
-            return false;
-        }
-
-        if (is_array($info) && array_key_exists('ANIMATION', $info) && true === $info['ANIMATION']) {
-            // If animated WEBP.
-            try {
-                new \Imagick(realpath($this->file));
-            } catch (\Error $err) {
+        $immVA = \Imagick::getVersion();// get ImageMagick version array.
+        if (array_key_exists('versionString', $immVA)) {
+            preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
+            if (isset($matches[1]) && version_compare($matches[1], '7.0.8.68', '<')) {
+                // if using older version of ImageMagick that doesn't supported animated WEBP.
+                unset($immVA, $matches);
                 return false;
-            } catch (\Exception $ex) {
-                return false;
+            } else {
+                unset($immVA, $matches);
+                return true;
             }
         }
-
-        return true;
-    }// isImagickSupported
+        unset($immVA);
+    }// isImagickSupportedAnimated
 
 
     /**
@@ -163,16 +178,13 @@ class WebP
 
         $data = fread($fp, 90);
 
-        fclose($fp);
-        unset($fp);
-
         $header_format = 'A4RIFF/' . // get n string
             'I1FILESIZE/' . // get integer (file size but not actual size)
             'A4WEBP/' . // get n string
             'A4VP/' . // get n string
             'A74chunk';
         $header = unpack($header_format, $data);
-        unset($data, $header_format);
+        unset($header_format);
 
         // the conditions below means this file is not webp image.
         if (!isset($header['RIFF']) || strtoupper($header['RIFF']) !== 'RIFF') {
@@ -200,15 +212,40 @@ class WebP
             $header['ALPHA'] = true;
         } else {
             if (strpos(strtoupper($header['VP']), 'VP8L') !== false) {
-                // if it is VP8L, I assume that this image will be transparency
-                // as described in https://developers.google.com/speed/webp/docs/riff_container#simple_file_format_lossless
-                $header['ALPHA'] = true;
+                // if it is VP8L.
+                // @link https://developers.google.com/speed/webp/docs/riff_container#simple_file_format_lossless Reference.
+                $header['ALPHA'] = (bool) (!!(ord($data[24]) & 0x00000010));
+            } elseif (strpos(strtoupper($header['VP']), 'VP8X') !== false) {
+                // if it is VP8X.
+                // @link https://developers.google.com/speed/webp/docs/riff_container#extended_file_format Reference.
+                $header['ALPHA'] = (bool) (!!(ord($data[20]) & 0x00000010));
             } else {
                 $header['ALPHA'] = false;
             }
         }
 
-        unset($header['chunk']);
+        // get width & height.
+        // @link https://developer.wordpress.org/reference/functions/wp_get_webp_info/ Original source code.
+        if (strtoupper($header['VP']) === 'VP8') {
+            $parts = unpack('v2', substr($data, 26, 4));
+            $header['WIDTH'] = (int) ($parts[1] & 0x3FFF);
+            $header['HEIGHT'] = (int) ($parts[2] & 0x3FFF);
+        } elseif (strtoupper($header['VP']) === 'VP8L') {
+            $parts = unpack('C4', substr($data, 21, 4));
+            $header['WIDTH'] = (int) (($parts[1] | (($parts[2] & 0x3F) << 8)) + 1);
+            $header['HEIGHT'] = (int) (((($parts[2] & 0xC0) >> 6) | ($parts[3] << 2) | (($parts[4] & 0x03) << 10)) + 1);
+        } elseif (strtoupper($header['VP']) === 'VP8X') {
+            // Pad 24-bit int.
+            $width = unpack('V', substr($data, 24, 3) . "\x00");
+            $header['WIDTH'] = (int) ($width[1] & 0xFFFFFF) + 1;
+            // Pad 24-bit int.
+            $height = unpack('V', substr($data, 27, 3) . "\x00");
+            $header['HEIGHT'] = (int) ($height[1] & 0xFFFFFF) + 1;
+        }
+        unset($height, $parts, $width);
+
+        fclose($fp);
+        unset($data, $fp, $header['chunk']);
         return $header;
     }// webPInfo
 
