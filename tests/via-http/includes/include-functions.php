@@ -68,24 +68,28 @@ function debugImage($file, $options = [])
             || !is_numeric($height) 
         )
     ) {
-        // If older version of PHP can't get image width or height. 
+        // If older version of PHP can't get image width or height 
+        // It's possible that this is not an image file.
         // Tested but PHP <= 7.0.x still doesn't support `getimagesize()` with WEBP.
         $isWebP = strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'webp';
-        include_once 'include-rundiz-image.php';
-        $WebP = new Rundiz\Image\Extensions\WebP($file);
-        $webpInfo = $WebP->webPInfo();
-        if (
-            is_array($webpInfo) 
-            && array_key_exists('HEIGHT', $webpInfo)
-            && is_numeric($webpInfo['HEIGHT'])
-            && array_key_exists('WIDTH', $webpInfo)
-            && is_numeric($webpInfo['WIDTH'])
-        ) {
-            $height = $webpInfo['HEIGHT'];
-            $width = $webpInfo['WIDTH'];
-        }
-
-        unset($isWebP, $WebP, $webpInfo);
+        if (true === $isWebP) {
+            include_once 'include-rundiz-image.php';
+            $WebP = new Rundiz\Image\Extensions\WebP($file);
+            $webpInfo = $WebP->webPInfo();
+            unset($WebP);
+            if (
+                is_array($webpInfo) 
+                && array_key_exists('HEIGHT', $webpInfo)
+                && is_numeric($webpInfo['HEIGHT'])
+                && array_key_exists('WIDTH', $webpInfo)
+                && is_numeric($webpInfo['WIDTH'])
+            ) {
+                $height = $webpInfo['HEIGHT'];
+                $width = $webpInfo['WIDTH'];
+            }
+            unset($webpInfo);
+        }// endif; is WEBP.
+        unset($isWebP);
 
         if (!is_numeric($height)) {
             $height = 'UNKNOWN';

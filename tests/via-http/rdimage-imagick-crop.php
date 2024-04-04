@@ -5,6 +5,10 @@ require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 include_once 'includes/include-functions.php';
 
 
+$imgType = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+$imgType = strip_tags($imgType);
+
+
 function displayTestCrop(array $test_data_set)
 {
     $cropPoses = [[0, 0, 'transparent'], [90, 90, 'black'], ['center', 'middle', 'white']];
@@ -99,6 +103,11 @@ function displayTestSaveCrossExts(array $test_data_set)
                 $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-crop-800x800-start-center,middle' .
                     '-saveas-' . trim($eachExt) . '.' . $eachExt;
                 $saveResult = $Image->save($file_name);
+                if ($eachExt === 'jpg') {
+                    echo 'also save as png<br>';
+                    $Image->save('../processed-images/' . autoImageFilename() . '-testing.png');
+                    debugImage('../processed-images/' . autoImageFilename() . '-testing.png');
+                }
                 $statusMsg = $Image->status_msg;
                 $Image->clear();
                 echo '        <td>' . "\n";
@@ -153,20 +162,25 @@ function displayTestSaveCrossExts(array $test_data_set)
     </head>
     <body>
         <?php
-        // add animated GIF after GIF.
-        $test_data_set = array_slice($test_data_set, 0, 3, true) +
-            ['GIF Animation' => [
-                'source_image_path' => $source_image_animated_gif,
-            ]] +
-            array_slice($test_data_set, 0, 4, true) +
-            ['WEBP Animation' => [
-                'source_image_path' => $source_image_animated_webp,
-            ]] +
-        array_slice($test_data_set, 3, NULL, true);
-        // display test
-        displayTestCrop($test_data_set);
-        displayTestSaveCrossExts($test_data_set);
-        unset($test_data_set);
+        // default do test data set.
+        $doTestData = [
+            $imgType => [],
+        ];
+        // set do test data from parameter.
+        if (array_key_exists($imgType, $test_data_set)) {
+            $doTestData = [$imgType => $test_data_set[$imgType]];
+        } else {
+            if (array_key_exists($imgType, $test_data_pngnt)) {
+                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+                $doTestData = [$imgType => $test_data_falsy[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_anim)) {
+                $doTestData = [$imgType => $test_data_anim[$imgType]];
+            }
+        }
+        displayTestCrop($doTestData);
+        displayTestSaveCrossExts($doTestData);
+        unset($doTestData);
         ?>
         <hr>
         <?php

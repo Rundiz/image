@@ -5,6 +5,10 @@ require __DIR__.DIRECTORY_SEPARATOR.'include-image-source.php';
 include_once 'includes/include-functions.php';
 
 
+$imgType = (isset($_GET['imgType']) ? $_GET['imgType'] : 'JPG');
+$imgType = strip_tags($imgType);
+
+
 function displayTestCrop(array $test_data_set)
 {
     $cropPoses = [[0, 0, 'transparent'], [90, 90, 'black'], ['center', 'middle', 'white']];
@@ -153,9 +157,23 @@ function displayTestSaveCrossExts(array $test_data_set)
     </head>
     <body>
         <?php
-        displayTestCrop($test_data_set);
-        displayTestSaveCrossExts($test_data_set);
-        unset($test_data_set);
+        // default do test data set.
+        $doTestData = [
+            $imgType => [],
+        ];
+        // set do test data from parameter.
+        if (array_key_exists($imgType, $test_data_set)) {
+            $doTestData = [$imgType => $test_data_set[$imgType]];
+        } else {
+            if (array_key_exists($imgType, $test_data_pngnt)) {
+                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
+            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+                $doTestData = [$imgType => $test_data_falsy[$imgType]];
+            }
+        }
+        displayTestCrop($doTestData);
+        displayTestSaveCrossExts($doTestData);
+        unset($doTestData);
         ?>
         <hr>
         <?php

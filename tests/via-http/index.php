@@ -147,13 +147,24 @@
                     ?> 
                 </ul>
             </li>
-            <li><a href="rdimage-gd-crop.php">crop</a></li>
-            <li><a href="rdimage-gd-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
-            <li>resize by aspect ratio
+            <li>crop
                 <ul>
                     <?php
                     $test_valid_images = $test_data_set2;
                     array_splice($test_valid_images, 5, 3, null);
+                    foreach ($test_valid_images as $imgType => $imgItem) {
+                        ?> 
+                    <li><a href="rdimage-gd-crop.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
+                        <?php
+                    }// endforeach;
+                    unset($imgItem, $imgType);
+                    ?> 
+                </ul>
+            </li>
+            <li><a href="rdimage-gd-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
+            <li>resize by aspect ratio
+                <ul>
+                    <?php
                     foreach ($test_valid_images as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-gd-resize-ratio.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
@@ -229,13 +240,24 @@
                     ?> 
                 </ul>
             </li>
-            <li><a href="rdimage-imagick-crop.php">crop</a></li>
-            <li><a href="rdimage-imagick-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
-            <li>resize by aspect ratio
+            <li>crop
                 <ul>
                     <?php
                     $test_valid_images = $test_data_set2;
                     array_splice($test_valid_images, 7, 3, null);
+                    foreach ($test_valid_images as $imgType => $imgItem) {
+                        ?> 
+                    <li><a href="rdimage-imagick-crop.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
+                        <?php
+                    }// endforeach;
+                    unset($imgItem, $imgType);
+                    ?> 
+                </ul>
+            </li>
+            <li><a href="rdimage-imagick-resize-not-aspectratio.php">resize by NOT aspect ratio</a></li>
+            <li>resize by aspect ratio
+                <ul>
+                    <?php
                     foreach ($test_valid_images as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-imagick-resize-ratio.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
