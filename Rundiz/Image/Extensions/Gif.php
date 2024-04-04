@@ -53,7 +53,7 @@ class Gif
 
         rewind($fp);
         // check is animated gif. 
-        // known problem: this couldn't detected all animated GIF files.
+        // known problem: this maybe not detected all animated GIF files.
         // https://stackoverflow.com/a/415942/128761 Original source code.
         $count = 0;
         $chunk = false;

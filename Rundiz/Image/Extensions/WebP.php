@@ -154,6 +154,7 @@ class WebP
      * @link https://www.php.net/manual/en/function.pack.php unpack format reference.
      * @link https://developers.google.com/speed/webp/docs/riff_container WebP document.
      * @link https://stackoverflow.com/q/61221874/128761 Original question.
+     * @link https://developer.wordpress.org/reference/functions/wp_get_webp_info/ Original source code for get WEBP width and height (in case `getimagesize()` did not work on old PHP). By WordPress.
      * @param string $file Full path to image file. You can omit this argument and use one in class constructor instead.
      * @return array|false Return associative array if success, return `false` for otherwise.
      */
@@ -218,6 +219,8 @@ class WebP
             } elseif (strpos(strtoupper($header['VP']), 'VP8X') !== false) {
                 // if it is VP8X.
                 // @link https://developers.google.com/speed/webp/docs/riff_container#extended_file_format Reference.
+                // Some animated file may seems to not having any alpha transparency part but in fact, it is in some frame(s) of that animation. 
+                // You can test by extract each animation frame to files with `$Imagick->writeImages('name.webp', false);`.
                 $header['ALPHA'] = (bool) (!!(ord($data[20]) & 0x00000010));
             } else {
                 $header['ALPHA'] = false;

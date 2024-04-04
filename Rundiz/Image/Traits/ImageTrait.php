@@ -21,7 +21,7 @@ trait ImageTrait
     /**
      * Get image file data such as width, height, mime type, extension.
      * 
-     * This will be use `getimagesize()` function if supported, use Imagick, GD functions as backup.
+     * This will be use `getimagesize()` function if supported, something else as backup.
      * 
      * @since 3.1.0
      * @param string $imagePath Full path to image file.
@@ -109,6 +109,10 @@ trait ImageTrait
         $allowed_flip = ['hor', 'vrt', 'horvrt'];
         if (is_numeric($degree)) {
             $degree = intval($degree);
+
+            if ($degree < 0 || $degree > 360) {
+                $degree = 90;
+            }
         } elseif (!is_numeric($degree) && !in_array($degree, $allowed_flip)) {
             $degree = 90;
         }

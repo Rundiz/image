@@ -35,12 +35,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
 
         $check_file_ext = strtolower($file_ext);
 
-        // show image to browser.
         if ($check_file_ext === 'gif') {
-            // if save to gif
+            // if show as gif
             $show_result = imagegif($this->Gd->destination_image_object);
         } elseif ($check_file_ext === 'jpg') {
-            // if save to jpg
+            // if show as jpg
             $this->fillWhiteBgOnDestination();
             $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
             if ($this->Gd->jpg_quality < 0 || $this->Gd->jpg_quality > 100) {
@@ -49,7 +48,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
 
             $show_result = imagejpeg($this->Gd->destination_image_object, null, $this->Gd->jpg_quality);
         } elseif ($check_file_ext === 'png') {
-            // if save to png
+            // if show as png
             $this->Gd->png_quality = intval($this->Gd->png_quality);
             if ($this->Gd->png_quality < 0 || $this->Gd->png_quality > 9) {
                 $this->Gd->png_quality = 0;
@@ -57,7 +56,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractGdCommand
 
             $show_result = imagepng($this->Gd->destination_image_object, null, $this->Gd->png_quality);
         } elseif ($check_file_ext === 'webp') {
-            // if save to webp
+            // if show as webp
             if ($this->Gd->source_image_type === IMAGETYPE_PNG) {
                 // if source image is PNG file.
                 if (version_compare(PHP_VERSION, '7.0', '<')) {

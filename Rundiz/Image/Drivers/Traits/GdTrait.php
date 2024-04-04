@@ -89,7 +89,7 @@ trait GdTrait
             return imagecreatefromjpeg($file);
         } elseif (IMAGETYPE_PNG === $imageType) {
             return imagecreatefrompng($file);
-        } elseif (IMAGETYPE_WEBP) {
+        } elseif (IMAGETYPE_WEBP === $imageType) {
             $WebP = new \Rundiz\Image\Extensions\WebP($file);
             if ($WebP->isGDSupported()) {
                 // if GD supported this WEBP.

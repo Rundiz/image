@@ -275,14 +275,15 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
 
 
     /**
-     * Verify master dimension value must be correctly.<br>
-     * This method called by calculateImageSizeRatio().
+     * Verify master dimension value must be correctly.
+     * 
+     * This method was called by `calculateImageSizeRatio()`.
      */
     protected function verifyMasterDimension() 
     {
        $this->master_dim = strtolower($this->master_dim);
 
-       if ($this->master_dim != 'auto' && $this->master_dim != 'width' && $this->master_dim != 'height') {
+       if ($this->master_dim !== 'auto' && $this->master_dim !== 'width' && $this->master_dim !== 'height') {
            $this->master_dim = 'auto';
        }
     }// verifyMasterDimension

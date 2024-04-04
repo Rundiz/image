@@ -31,12 +31,11 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
         $check_file_ext = strtolower($FS->getFileExtension($file_name));
         unset($FS);
 
-        // save to file. each image types use different ways to save.
         if ($check_file_ext === 'gif') {
-            // if save to gif
+            // if save as gif
             $save_result = imagegif($this->Gd->destination_image_object, $file_name);
         } elseif ($check_file_ext === 'jpg') {
-            // if save to jpg
+            // if save as jpg
             $this->fillWhiteBgOnDestination();
             $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
             if ($this->Gd->jpg_quality < 0 || $this->Gd->jpg_quality > 100) {
@@ -45,7 +44,7 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
 
             $save_result = imagejpeg($this->Gd->destination_image_object, $file_name, $this->Gd->jpg_quality);
         } elseif ($check_file_ext === 'png') {
-            // if save to png
+            // if save as png
             $this->Gd->png_quality = intval($this->Gd->png_quality);
             if ($this->Gd->png_quality < 0 || $this->Gd->png_quality > 9) {
                 $this->Gd->png_quality = 0;
@@ -53,7 +52,7 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
 
             $save_result = imagepng($this->Gd->destination_image_object, $file_name, $this->Gd->png_quality);
         } elseif ($check_file_ext === 'webp') {
-            // if save to webp
+            // if save as webp
             if ($this->Gd->source_image_type === IMAGETYPE_PNG) {
                 // if source image is PNG file.
                 if (version_compare(PHP_VERSION, '7.0', '<')) {
