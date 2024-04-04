@@ -11,6 +11,34 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
+    public function testIsAnimated()
+    {
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-non-transparent.webp');
+        $this->assertFalse($WebP->isAnimated());
+
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam.webp');
+        $this->assertFalse($WebP->isAnimated());
+
+        // not WEBP.
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam.jpg');
+        $this->assertFalse($WebP->isAnimated());
+
+        // not exists.
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-' . date('YmdHis') . '.jpg');
+        $this->assertFalse($WebP->isAnimated());
+
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-animated.webp');
+        $this->assertTrue($WebP->isAnimated());
+        unset($WebP);
+    }// testIsAnimated
+
+
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
     public function testIsGDSupported()
     {
         // non-transparent webp must be supported in all PHP version (>= 5.4) but in fact, it is not fully supported prior PHP 5.6.
@@ -41,33 +69,21 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testIsGDSupported
 
 
-    public function testIsImagickSupported()
+    /**
+     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
+     */
+    public function testIsImagickSupportedAnimated()
     {
-        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-non-transparent.webp');
-        $this->assertTrue($WebP->isImagickSupported());
-        unset($WebP);
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-animated.webp');
+        $this->assertTrue(is_bool($WebP->isImagickSupportedAnimated()));
 
-        // not webp.
-        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam.jpg');
-        $this->assertFalse($WebP->isImagickSupported());
-        unset($WebP);
-
-        // transparent.
         $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam.webp');
-        $this->assertTrue($WebP->isImagickSupported());
-        unset($WebP);
+        $this->assertFalse($WebP->isAnimated() && $WebP->isImagickSupportedAnimated());// not animated WEBP.
 
-        // animated.
-        if (version_compare(PHP_VERSION, '7.3', '>=')) {
-            $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-animated.webp');
-            $this->assertTrue($WebP->isImagickSupported());
-            unset($WebP);
-        } else {
-            $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam-animated.webp');
-            $this->assertFalse($WebP->isImagickSupported());
-            unset($WebP);
-        }
-    }// testIsImagickSupported
+        $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'city-amsterdam.jpg');
+        $this->assertFalse($WebP->isAnimated() && $WebP->isImagickSupportedAnimated());// not WEBP.
+        unset($WebP);
+    }// testIsImagickSupportedAnimated
 
 
     /**
@@ -79,15 +95,27 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
         $webpInfo = $Webp->webPInfo(static::$source_images_dir . 'city-amsterdam.webp');
         $this->assertFalse($webpInfo['ANIMATION']);
         $this->assertTrue($webpInfo['ALPHA']);
+        $this->assertTrue(is_int($webpInfo['HEIGHT']));
+        $this->assertTrue(is_int($webpInfo['WIDTH']));
+
         $webpInfo = $Webp->webPInfo(static::$source_images_dir . 'city-amsterdam-non-transparent.webp');
         $this->assertFalse($webpInfo['ANIMATION']);
         $this->assertFalse($webpInfo['ALPHA']);
+        $this->assertTrue(is_int($webpInfo['HEIGHT']));
+        $this->assertTrue(is_int($webpInfo['WIDTH']));
+
         $webpInfo = $Webp->webPInfo(static::$source_images_dir . 'city-amsterdam-animated.webp');
         $this->assertTrue($webpInfo['ANIMATION']);
-        $this->assertFalse($webpInfo['ALPHA']);
+        // do not test alpha for animated 
+        // because some program export an animated image with alpha on some frames but some program is not.
+        $this->assertTrue(is_int($webpInfo['HEIGHT']));
+        $this->assertTrue(is_int($webpInfo['WIDTH']));
+
         $webpInfo = $Webp->webPInfo(static::$source_images_dir . 'transparent-lossless.webp');
         $this->assertFalse($webpInfo['ANIMATION']);
         $this->assertTrue($webpInfo['ALPHA']);
+        $this->assertTrue(is_int($webpInfo['HEIGHT']));
+        $this->assertTrue(is_int($webpInfo['WIDTH']));
         unset($Webp);
     }// testWebPInfo
 

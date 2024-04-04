@@ -13,12 +13,6 @@ function displayTestResizeNotRatio(array $test_data_set)
         echo '<h3>' . $img_type_name . '</h3>' ."\n";
         if (is_array($item) && array_key_exists('source_image_path', $item)) {
             $file_ext = '.' . pathinfo($item['source_image_path'], PATHINFO_EXTENSION);
-            $isSupported = true;
-            if (strtolower($file_ext) === '.webp') {
-                $WebP = new Rundiz\Image\Extensions\WebP($item['source_image_path']);
-                $isSupported = $WebP->isImagickSupported();
-                unset($WebP);
-            }// endif check webp extension.
             echo '<table><tbody>' . "\n";
             echo '    <tr>' . "\n";
             echo '        <td>Source image</td>' . "\n";
@@ -26,25 +20,19 @@ function displayTestResizeNotRatio(array $test_data_set)
             debugImage($item['source_image_path']);
             echo '        </td>' . "\n";
             echo '    </tr>' . "\n";
-            if (true === $isSupported) {
-                $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
-            }
+            $Image = new \Rundiz\Image\Drivers\Imagick($item['source_image_path']);
             echo '    <tr>' . "\n";
             echo '        <td>Use <code>save()</code> method</td>' . "\n";
             echo '        <td>' . "\n";
-            if (true === $isSupported) {
-                $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '_' . $resizeDim[0] . 'x' . $resizeDim[1];
-                $Image->resizeNoRatio($resizeDim[0], $resizeDim[1]);
-                $save_result = $Image->save($file_name . $file_ext);
-                debugImage($file_name . $file_ext);
-                if ($save_result != true) {
-                    echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
-                }
-                unset($file_name, $save_result);
-                $Image->clear();
-            } else {
-                echo '<div class="text-error">Current version of PHP does not support this kind of image.</div>' . "\n";
-            }// endif; image supported.
+            $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '_' . $resizeDim[0] . 'x' . $resizeDim[1];
+            $Image->resizeNoRatio($resizeDim[0], $resizeDim[1]);
+            $save_result = $Image->save($file_name . $file_ext);
+            debugImage($file_name . $file_ext);
+            if ($save_result != true) {
+                echo ' &nbsp; &nbsp; <span class="text-error">Error: ' . $Image->status_msg . '</span>' . "\n";
+            }
+            unset($file_name, $save_result);
+            $Image->clear();
             echo '        </td>' . "\n";
             echo '    </tr>' . "\n";
             echo '    <tr>' . "\n";
@@ -55,7 +43,7 @@ function displayTestResizeNotRatio(array $test_data_set)
             echo '    </tr>' . "\n";
 
             echo '</tbody></table>' . "\n";
-            unset($file_ext, $Image, $isSupported);
+            unset($file_ext, $Image);
         }
         echo "\n\n";
     }// endforeach;

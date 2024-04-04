@@ -71,60 +71,21 @@ function debugImage($file, $options = [])
         // If older version of PHP can't get image width or height. 
         // Tested but PHP <= 7.0.x still doesn't support `getimagesize()` with WEBP.
         $isWebP = strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'webp';
-        $isSupported = true;
         include_once 'include-rundiz-image.php';
         $WebP = new Rundiz\Image\Extensions\WebP($file);
-
+        $webpInfo = $WebP->webPInfo();
         if (
-            extension_loaded('imagick') === true 
-            && class_exists('imagick')
+            is_array($webpInfo) 
+            && array_key_exists('HEIGHT', $webpInfo)
+            && is_numeric($webpInfo['HEIGHT'])
+            && array_key_exists('WIDTH', $webpInfo)
+            && is_numeric($webpInfo['WIDTH'])
         ) {
-            if (true === $isWebP) {
-                $isSupported = $WebP->isImagickSupported();
-            }
+            $height = $webpInfo['HEIGHT'];
+            $width = $webpInfo['WIDTH'];
+        }
 
-            if (true === $isSupported) {
-                try {
-                    $Imagick = new \imagick(realpath($file));
-                    $imgGeo = $Imagick->getImageGeometry();
-                    if (
-                        isset($imgGeo['width']) 
-                        && is_numeric($imgGeo['width'])
-                        && isset($imgGeo['height']) 
-                        && is_numeric($imgGeo['height'])
-                    ) {
-                        $height = $imgGeo['height'];
-                        $width = $imgGeo['width'];
-                    }// endif;
-                    unset($Imagick, $imgGeo);
-                } catch (\Error $err) {
-                    echo '<!-- Imagick error: ' . $ex->getMessage() . ' -->' . "\n";
-                } catch (\Exception $ex) {
-                    echo '<!-- Imagick error: ' . $ex->getMessage() . ' -->' . "\n";
-                }
-            }// endif; is supported.
-        }// endif; Imagick installed.
-
-        if (
-            (
-                !is_numeric($height) || !is_numeric($width)
-            ) 
-            && $isWebP
-            && $WebP->isGDSupported()
-        ) {
-            // If file is WEBP and there is a function supported.
-            $image = imagecreatefromwebp($file);
-            if (is_resource($image) || is_object($image)) {
-                $width = imagesx($image);
-                $height = imagesy($image);
-                imagedestroy($image);
-            }
-            unset($image);
-        } else {
-            // If file is something else (unknown file type or maybe there is no function enabled).
-        }// endif;
-
-        unset($isSupported, $isWebP, $WebP);
+        unset($isWebP, $WebP, $webpInfo);
 
         if (!is_numeric($height)) {
             $height = 'UNKNOWN';

@@ -111,4 +111,8 @@ if ($Image->status === false) {
 
 header('Content-type: ' . $mimetype);
 $Image->show($show_ext);
+if ($Image->status === false) {
+    header('Content-type: text/plain');
+    die($Image->status_msg);
+}
 $Image->clear();

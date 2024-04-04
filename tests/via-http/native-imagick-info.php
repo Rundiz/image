@@ -20,5 +20,5 @@ if (!is_array($imgmgVA) || (is_array($imgmgVA) && !array_key_exists('versionStri
     }
     unset($matches);
 }
-echo '<strong>Image Magick</strong> version: ' . $imageMagickVersion . '<br>' . PHP_EOL;
+echo '<strong>ImageMagick</strong> version: ' . $imageMagickVersion . '<br>' . PHP_EOL;
 echo '<!-- ' . print_r($imgmgVA, true) . ' -->' . PHP_EOL;

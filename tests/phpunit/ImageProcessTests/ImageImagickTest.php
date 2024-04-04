@@ -15,7 +15,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     {
         if (extension_loaded('imagick') === true) {
             $Image = new \Rundiz\Image\Drivers\Imagick(static::$source_images_dir.static::$source_images_set[0]);
-            $this->assertTrue($Image->status === true && $Image->status_msg == null, sprintf('The required Imagick version, Image Magick version are not met. "%s"', $Image->status_msg));
+            $this->assertTrue($Image->status === true && $Image->status_msg == null, sprintf('The required Imagick version, ImageMagick version are not met. "%s"', $Image->status_msg));
             unset($Image);
         } else {
             $this->markTestIncomplete('You did not have Imagick extension for PHP installed. This test is incomplete or you can just skip it.');
