@@ -21,7 +21,7 @@ trait ImagickTrait
      */
     protected function fillWhiteToImage()
     {
-        $this->ImagickD->Imagick->setImageBackgroundColor('white');
+        $this->ImagickD->Imagick->setImageBackgroundColor(new \ImagickPixel('white'));
         $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
     }// fillWhiteToImage
 

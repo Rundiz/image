@@ -33,17 +33,14 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         // set compression. -----------------------------
         if ($check_file_ext === 'jpg' || $check_file_ext === 'webp') {
-            // if save to JPG or WEBP.
-            if ($check_file_ext === 'jpg') {
-                $this->fillWhiteToImage();
-            }
+            // if save as JPG or WEBP.
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
             if ($this->ImagickD->jpg_quality < 1 || $this->ImagickD->jpg_quality > 100) {
                 $this->ImagickD->jpg_quality = 100;
             }
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
         } elseif ($check_file_ext === 'png') {
-            // if save to PNG.
+            // if save as PNG.
             $this->ImagickD->png_quality = intval($this->ImagickD->png_quality);
             if ($this->ImagickD->png_quality < 0 || $this->ImagickD->png_quality > 9) {
                 $this->ImagickD->png_quality = 0;
@@ -78,6 +75,11 @@ class Save extends \Rundiz\Image\Drivers\AbstractImagickCommand
             if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
                 // if source image is animated.
                 $this->getFirstFrame();
+            }
+
+            if ($check_file_ext === 'jpg') {
+                // if save as JPG.
+                $this->fillWhiteToImage();
             }
             $save_result = $this->ImagickD->Imagick->writeImage($file_name);
         }// endif;

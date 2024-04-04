@@ -37,9 +37,6 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
         // set compression. -----------------------------
         if ($check_file_ext === 'jpg' || $check_file_ext === 'webp') {
             // if show as JPG or WEBP.
-            if ($check_file_ext === 'jpg') {
-                $this->fillWhiteToImage();
-            }
             $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
             if ($this->ImagickD->jpg_quality < 1 || $this->ImagickD->jpg_quality > 100) {
                 $this->ImagickD->jpg_quality = 100;
@@ -86,6 +83,11 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
             if ($this->ImagickD->source_image_frames > 1 && is_object($this->ImagickD->ImagickFirstFrame)) {
                 // if source image is animated.
                 $this->getFirstFrame();
+            }
+
+            if ($check_file_ext === 'jpg') {
+                // if show as JPG.
+                $this->fillWhiteToImage();
             }
             $this->ImagickD->Imagick->setImageFormat($check_file_ext);
             $show_result = $this->ImagickD->Imagick->getImageBlob();
