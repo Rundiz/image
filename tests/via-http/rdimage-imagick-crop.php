@@ -103,11 +103,6 @@ function displayTestSaveCrossExts(array $test_data_set)
                 $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-crop-800x800-start-center,middle' .
                     '-saveas-' . trim($eachExt) . '.' . $eachExt;
                 $saveResult = $Image->save($file_name);
-                if ($eachExt === 'jpg') {
-                    echo 'also save as png<br>';
-                    $Image->save('../processed-images/' . autoImageFilename() . '-testing.png');
-                    debugImage('../processed-images/' . autoImageFilename() . '-testing.png');
-                }
                 $statusMsg = $Image->status_msg;
                 $Image->clear();
                 echo '        <td>' . "\n";
