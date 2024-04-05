@@ -13,34 +13,34 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testCalculateCounterClockwise()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedCalculation();
-        $this->assertSame(270, $ImgAc->calculateCounterClockwise(-1));// less than 0, set to 90 and calculate
-        $this->assertSame(270, $ImgAc->calculateCounterClockwise(361));// more than 360, set to 90 and calculate
-        $this->assertSame(0, $ImgAc->calculateCounterClockwise(0));
-        $this->assertSame(270, $ImgAc->calculateCounterClockwise(90));
-        $this->assertSame(180, $ImgAc->calculateCounterClockwise(180));
-        $this->assertSame(90, $ImgAc->calculateCounterClockwise(270));
-        $this->assertSame(0, $ImgAc->calculateCounterClockwise(360));
-        $this->assertSame(359, $ImgAc->calculateCounterClockwise(1));// non 90 degrees
-        $this->assertSame(358, $ImgAc->calculateCounterClockwise(2));// non 90 degrees
-        $this->assertSame(357, $ImgAc->calculateCounterClockwise(3));// non 90 degrees
-        $this->assertSame(355, $ImgAc->calculateCounterClockwise(5));// non 90 degrees
-        $this->assertSame(354, $ImgAc->calculateCounterClockwise(6));// non 90 degrees
-        $this->assertSame(350, $ImgAc->calculateCounterClockwise(10));// non 90 degrees
-        $this->assertSame(315, $ImgAc->calculateCounterClockwise(45));// non 90 degrees
-        $this->assertSame(237, $ImgAc->calculateCounterClockwise(123));// non 90 degrees
-        unset($ImgAc);
+        $Calculation = new \Rundiz\Image\Tests\ExtendedCalculation();
+        $this->assertSame(270, $Calculation->calculateCounterClockwise(-1));// less than 0, set to 90 and calculate
+        $this->assertSame(270, $Calculation->calculateCounterClockwise(361));// more than 360, set to 90 and calculate
+        $this->assertSame(0, $Calculation->calculateCounterClockwise(0));
+        $this->assertSame(270, $Calculation->calculateCounterClockwise(90));
+        $this->assertSame(180, $Calculation->calculateCounterClockwise(180));
+        $this->assertSame(90, $Calculation->calculateCounterClockwise(270));
+        $this->assertSame(0, $Calculation->calculateCounterClockwise(360));
+        $this->assertSame(359, $Calculation->calculateCounterClockwise(1));// non 90 degrees
+        $this->assertSame(358, $Calculation->calculateCounterClockwise(2));// non 90 degrees
+        $this->assertSame(357, $Calculation->calculateCounterClockwise(3));// non 90 degrees
+        $this->assertSame(355, $Calculation->calculateCounterClockwise(5));// non 90 degrees
+        $this->assertSame(354, $Calculation->calculateCounterClockwise(6));// non 90 degrees
+        $this->assertSame(350, $Calculation->calculateCounterClockwise(10));// non 90 degrees
+        $this->assertSame(315, $Calculation->calculateCounterClockwise(45));// non 90 degrees
+        $this->assertSame(237, $Calculation->calculateCounterClockwise(123));// non 90 degrees
+        unset($Calculation);
     }// testCalculateCounterClockwise
     
     
     public function testCalculateStartXOfCenter()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
-        $this->assertSame(150, $ImgAc->calculateStartXOfCenter(200, 500));
-        $this->assertSame(150, $ImgAc->calculateStartXOfCenter(200.10, 500.50));
-        $this->assertSame(151, $ImgAc->calculateStartXOfCenter(202.91, 503.91));
-        $this->assertSame(550, $ImgAc->calculateStartXOfCenter(400, 1500));
-        unset($ImgAc);
+        $Calculation = new \Rundiz\Image\Tests\ExtendedCalculation();
+        $this->assertSame(150, $Calculation->calculateStartXOfCenter(200, 500));
+        $this->assertSame(150, $Calculation->calculateStartXOfCenter(200.10, 500.50));
+        $this->assertSame(151, $Calculation->calculateStartXOfCenter(202.91, 503.91));
+        $this->assertSame(550, $Calculation->calculateStartXOfCenter(400, 1500));
+        unset($Calculation);
     }// testCalculateStartXOfCenter
 
 

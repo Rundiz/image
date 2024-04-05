@@ -11,32 +11,11 @@ namespace Rundiz\Image\Tests\Tests;
  * Test on `Calculation` class.
  * 
  * Most methods that `Calculation` class uses are already have tests in `CalculationTraitTest` class.
+ * 
+ * The methods that are in trait should be test with `TraitTest` class, not here.
  */
 class CalculationTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
-
-
-    public function testCalculateCounterClockwise()
-    {
-        // this test call `Calculation` class directly, not extended one in tests folder.
-        $Calculation = new \Rundiz\Image\Calculation();
-        $this->assertSame(270, $Calculation->calculateCounterClockwise(-1));// less than 0, set to 90 and calculate
-        $this->assertSame(270, $Calculation->calculateCounterClockwise(361));// more than 360, set to 90 and calculate
-        $this->assertSame(0, $Calculation->calculateCounterClockwise(0));
-        $this->assertSame(270, $Calculation->calculateCounterClockwise(90));
-        $this->assertSame(180, $Calculation->calculateCounterClockwise(180));
-        $this->assertSame(90, $Calculation->calculateCounterClockwise(270));
-        $this->assertSame(0, $Calculation->calculateCounterClockwise(360));
-        $this->assertSame(359, $Calculation->calculateCounterClockwise(1));// non 90 degrees
-        $this->assertSame(358, $Calculation->calculateCounterClockwise(2));// non 90 degrees
-        $this->assertSame(357, $Calculation->calculateCounterClockwise(3));// non 90 degrees
-        $this->assertSame(355, $Calculation->calculateCounterClockwise(5));// non 90 degrees
-        $this->assertSame(354, $Calculation->calculateCounterClockwise(6));// non 90 degrees
-        $this->assertSame(350, $Calculation->calculateCounterClockwise(10));// non 90 degrees
-        $this->assertSame(315, $Calculation->calculateCounterClockwise(45));// non 90 degrees
-        $this->assertSame(237, $Calculation->calculateCounterClockwise(123));// non 90 degrees
-        unset($Calculation);
-    }// testCalculateCounterClockwise
 
 
     public function testCalculateNewDimensionByRatio()
@@ -207,29 +186,6 @@ class CalculationTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testCalculateNewDimensionByRatio
 
 
-    public function testCalculateStartXOfCenter()
-    {
-        $Calculation = new \Rundiz\Image\Calculation();
-        $this->assertSame(150, $Calculation->calculateStartXOfCenter(200, 500));
-        $this->assertSame(150, $Calculation->calculateStartXOfCenter(200.10, 500.50));
-        $this->assertSame(151, $Calculation->calculateStartXOfCenter(202.91, 503.91));
-        $this->assertSame(550, $Calculation->calculateStartXOfCenter(400, 1500));
-        unset($Calculation);
-    }// testCalculateStartXOfCenter
-
-
-    public function testCalculateWatermarkImageStartXY()
-    {
-        $Calculation = new \Rundiz\Image\Calculation();
-        $this->assertSame([10, 10], $Calculation->calculateWatermarkImageStartXY('left', 'top', 800, 600, 200, 100));
-        $this->assertSame([10, 490], $Calculation->calculateWatermarkImageStartXY('left', 'bottom', 800, 600, 200, 100));// (600-100)-10 that is padding = 490
-        $this->assertSame([590, 490], $Calculation->calculateWatermarkImageStartXY('right', 'bottom', 800, 600, 200, 100));// (800-(200+10 that is padding)) = 590
-        $this->assertSame([590, 10], $Calculation->calculateWatermarkImageStartXY('right', 'top', 800, 600, 200, 100));
-        $this->assertSame([300, 250], $Calculation->calculateWatermarkImageStartXY('center', 'middle', 800, 600, 200, 100));
-        unset($Calculation);
-    }// testCalculateWatermarkImageStartXY
-
-
     public function testCalculateWidthHeightIndependent()
     {
         $Calculation = new \Rundiz\Image\Calculation();
@@ -237,19 +193,6 @@ class CalculationTest extends \Rundiz\Image\Tests\RDICommonTestCase
         $this->assertSame([1067, 338], $Calculation->calculateWidthHeightIndependent(1920, 1080, 600, 600));
         unset($Calculation);
     }// testCalculateWidthHeightIndependent
-
-
-    public function testConvertAlpha127ToRgba()
-    {
-        $Calculation = new \Rundiz\Image\Calculation();
-        $this->assertSame('1.00', $Calculation->convertAlpha127ToRgba(-1));// less than 0, set to 0 and calculate
-        $this->assertSame('1.00', $Calculation->convertAlpha127ToRgba(0));
-        $this->assertSame('0.69', $Calculation->convertAlpha127ToRgba(40));
-        $this->assertSame('0.29', $Calculation->convertAlpha127ToRgba(90));
-        $this->assertSame('0.00', $Calculation->convertAlpha127ToRgba(127));
-        $this->assertSame('0.00', $Calculation->convertAlpha127ToRgba(128));// over max, reduced to 127 and calculate
-        unset($Calculation);
-    }// testConvertAlpha127ToRgba
 
 
     public function testGetSourceImageOrientation()
