@@ -181,7 +181,8 @@ trait CalculationTrait
     /**
      * Calculate startX position of center.
      * 
-     * With this method, you can calculate the start x position of center (horizontal) or middle (vertical).
+     * With this method, you can calculate the start x position of center (horizontal) or middle (vertical).<br>
+     * The purpose of this method is for internal use, do not call this method from image's driver class directly due to it can be changed in the future.
      * 
      * Formular: round((half of canvas) - (half of object))
      * 
@@ -239,6 +240,8 @@ trait CalculationTrait
 
     /**
      * Calculate watermark start X and Y from specified text position (left, right, bottom, top, middle, center).
+     * 
+     * The purpose of this method is for internal use, do not call this method from image's driver class directly due to it can be changed in the future.
      * 
      * @param string $wmStartX Position to begin in x axis. The value is 'left', 'center', 'right'.
      * @param string $wmStartY Position to begin in y axis. The value is 'top', 'middle', 'bottom'.
@@ -304,6 +307,8 @@ trait CalculationTrait
 
     /**
      * Convert alpha number (0 - 127) to rgba value (1.00 - 0.00).
+     * 
+     * The purpose of this method is for internal use, do not call this method from image's driver class directly due to it can be changed in the future.
      * 
      * @param int $number Alpha number (0 to 127). 127 is completely transparent.
      * @return string Return RGBA value (1.00 to 0.00). 0.00 is completely transparent.
