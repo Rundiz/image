@@ -56,6 +56,10 @@ trait CalculationTrait
     /**
      * Calculate image size by aspect ratio.
      * 
+     * Recommend change to use `\Rundiz\Image\Calculation::calculateNewDimensionByRatio()` instead.
+     * 
+     * @todo Remove this method in v3.2.
+     * @deprecated since v3.1.5. Will be removed in v3.2.
      * @param int $width New width set to calculate.
      * @param int $height New height set to calculate.
      * @return array Return array with 'height' and 'width' in array key and the values are calculated sizes.
@@ -176,8 +180,8 @@ trait CalculationTrait
             'width' => $new_width
         ];
     }// calculateImageSizeRatio
-	
-	
+
+
     /**
      * Calculate startX position of center.
      * 
@@ -186,6 +190,7 @@ trait CalculationTrait
      * 
      * Formular: round((half of canvas) - (half of object))
      * 
+     * @todo Revert this method to be `protected` in v3.2.
      * @param int $objWidth Destination image object size.
      * @param int $canvasWidth Canvas size.
      * @return int Calculated size.
@@ -243,6 +248,7 @@ trait CalculationTrait
      * 
      * The purpose of this method is for internal use, do not call this method from image's driver class directly due to it can be changed in the future.
      * 
+     * @todo Revert this method to be `protected` in v3.2.
      * @param string $wmStartX Position to begin in x axis. The value is 'left', 'center', 'right'.
      * @param string $wmStartY Position to begin in y axis. The value is 'top', 'middle', 'bottom'.
      * @param int $imgWidth Latest image width. Get the dimension from latest modified image only.
@@ -310,6 +316,7 @@ trait CalculationTrait
      * 
      * The purpose of this method is for internal use, do not call this method from image's driver class directly due to it can be changed in the future.
      * 
+     * @todo Revert this method to be `protected` in v3.2.
      * @param int $number Alpha number (0 to 127). 127 is completely transparent.
      * @return string Return RGBA value (1.00 to 0.00). 0.00 is completely transparent.
      */

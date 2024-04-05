@@ -165,6 +165,8 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      * Get source image orientation.<br>
      * This method called by calculateImageSizeRatio().
      * 
+     * @todo Remove in v3.2.
+     * @deprecated since v3.1.5. Will be removed in v3.2.
      * @return string Return S for square, L for landscape, P for portrait.
      */
     protected function getSourceImageOrientation()
@@ -221,7 +223,32 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
             return false;
         }
 
-        $sizes = $this->calculateImageSizeRatio($width, $height);
+        // calculate new width, height depend on master dimension and other settings.---------
+        $Calculation = new Calculation();
+        $options = [
+            'master_dim' => $this->master_dim,
+            'allow_resize_larger' => $this->allow_resize_larger,
+        ];
+        $source_image_width = $this->source_image_width;
+        if ($this->last_modified_image_width != null) {
+            $source_image_width = $this->last_modified_image_width;
+        }
+        $source_image_height = $this->source_image_height;
+        if ($this->last_modified_image_height != null) {
+            $source_image_height = $this->last_modified_image_height;
+        }
+        // calculate new width, height.
+        $sizes = $Calculation->calculateNewDimensionByRatio(
+            $source_image_width, 
+            $source_image_height, 
+            $width, 
+            $height, 
+            $options
+        );
+        // clear.
+        unset($Calculation, $options);
+        unset($source_image_height, $source_image_width);
+        // end calculate new width, height depend on master dimension and other settings.-----
 
         if (
             !is_array($sizes) || 
@@ -277,7 +304,10 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
     /**
      * Verify master dimension value must be correctly.
      * 
-     * This method was called by `calculateImageSizeRatio()`.
+     * This method was called by `CalculationTrait::calculateImageSizeRatio()`.
+     * 
+     * @todo Remove in v3.2.
+     * @deprecated since v3.1.5. Will be removed in v3.2.
      */
     protected function verifyMasterDimension() 
     {

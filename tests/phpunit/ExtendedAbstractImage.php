@@ -20,24 +20,6 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     }// buildSourceImageData
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public function calculateCounterClockwise($value)
-    {
-        return parent::calculateCounterClockwise($value);
-    }// calculateCounterClockwise
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function calculateImageSizeRatio($width, $height)
-    {
-        return parent::calculateImageSizeRatio($width, $height);
-    }// calculateImageSizeRatio
-
-
     public function clear()
     {
     }
@@ -64,15 +46,6 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     {
         return parent::getImageSize();
     }// getImageSize
-
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getSourceImageOrientation()
-    {
-        return parent::getSourceImageOrientation();
-    }// getSourceImageOrientation
 
 
     /**
@@ -107,12 +80,6 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
     public function show($file_ext = '')
     {
     }
-
-
-    public function verifyMasterDimension()
-    {
-        return parent::verifyMasterDimension();
-    }// verifyMasterDimension
 
 
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])

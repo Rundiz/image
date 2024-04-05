@@ -59,18 +59,6 @@ class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testGetImageSize
 
 
-    public function testGetSourceImageOrientation()
-    {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
-        $this->assertSame('L', $ImgAc->getSourceImageOrientation());
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-portrait.jpg');
-        $this->assertSame('P', $ImgAc->getSourceImageOrientation());
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'sample-square.jpg');
-        $this->assertSame('S', $ImgAc->getSourceImageOrientation());
-        unset($ImgAc);
-    }// testGetSourceImageOrientation
-
-
     public function testIsClassSetup()
     {
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
@@ -79,27 +67,6 @@ class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
         $this->assertFalse($ImgAc->isClassSetup());
         unset($ImgAc);
     }// testIsClassSetup
-
-
-    public function testVerifyMasterDimension()
-    {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
-
-        $ImgAc->verifyMasterDimension();
-        $this->assertSame('auto', $ImgAc->master_dim);
-
-        $ImgAc->master_dim = 'width';
-        $ImgAc->verifyMasterDimension();
-        $this->assertSame('width', $ImgAc->master_dim);
-
-        $ImgAc->master_dim = 'height';
-        $ImgAc->verifyMasterDimension();
-        $this->assertSame('height', $ImgAc->master_dim);
-
-        $ImgAc->master_dim = 'invalid';
-        $ImgAc->verifyMasterDimension();
-        $this->assertSame('auto', $ImgAc->master_dim);
-    }// testVerifyMasterDimension
 
 
 }
