@@ -108,8 +108,8 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         // note: Imagick font size in php 5.4 is always smaller, it is about 10. Or maybe it's depend on each font.
         $ImagickDraw->setFontSize($wm_txt_font_size);
         // don't use `setGravity()` because it is for position text on source image. (top left, bottom right, etc.)
-        // use custom position Y that is +baseline +watermark text height instead, this way it is the same as GD.
-        // set new resolution for font due to it is smaller than GD if it was not set.
+        // use custom position Y that is +baseline +watermark text height instead, this way it will be the same result as GD.
+        // set new resolution (DPI) for font due to it is smaller than GD if it was not set.
         $ImagickDraw->setresolution(96, 96);
         $type_space = $this->ImagickD->Imagick->queryFontMetrics($ImagickDraw, $wm_txt_text, false);
         if (is_array($type_space) && array_key_exists('textWidth', $type_space) && array_key_exists('textHeight', $type_space)) {

@@ -37,7 +37,7 @@ function displayWatermarkImage($positionx, $positiony, $driver = 'Gd', $saveExt 
     echo '; ';
     echo 'File size: ' . filesize($saveImage) . ' bytes<br>' . PHP_EOL;
     list($width, $height) = getimagesize($saveImage);
-    echo 'Image resolution: ' . $width . 'x' . $height . '<br>' . PHP_EOL;
+    echo 'Image dimension: ' . $width . 'x' . $height . '<br>' . PHP_EOL;
     unset($height, $width);
 }// displayWatermarkImage
 ?>

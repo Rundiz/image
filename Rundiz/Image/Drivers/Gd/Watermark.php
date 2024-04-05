@@ -167,6 +167,9 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         array $options = []
     ) {
         $wm_txt_object = imagecreatetruecolor($wm_txt_width, $wm_txt_height);
+        if (function_exists('imageresolution')) {
+            imageresolution($wm_txt_object, 96, 96);
+        }
         imagealphablending($wm_txt_object, false);
         imagesavealpha($wm_txt_object, true);
 
