@@ -134,10 +134,9 @@
                     include 'include-image-source.php';
                     $test_data_set2 = array_slice($test_data_set, 0, 2, true) +
                         $test_data_pngnt +
-                    array_slice($test_data_set, 2, null, true);
-                    $test_data_set2 = array_slice($test_data_set2, 0, 5, true) +
-                        $test_data_falsy +
-                    array_slice($test_data_set2, 5, null, true);
+                        $test_data_set;
+                    $test_data_set2 = $test_data_set2 +
+                        $test_data_falsy;
                     foreach ($test_data_set2 as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-gd-saveas-and-show.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
@@ -151,7 +150,7 @@
                 <ul>
                     <?php
                     $test_valid_images = $test_data_set2;
-                    array_splice($test_valid_images, 5, 3, null);
+                    array_splice($test_valid_images, (count($test_data_set2) - count($test_data_falsy)), count($test_data_falsy), null);
                     foreach ($test_valid_images as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-gd-crop.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
@@ -226,11 +225,11 @@
                         ['GIF Animation' => [
                             'source_image_path' => $source_image_animated_gif,
                         ]] +
-                    array_slice($test_data_set2, 0, 5, true) +
+                        array_slice($test_data_set2, 0, 5, true) +
                         ['WEBP Animation' => [
                             'source_image_path' => $source_image_animated_webp,
                         ]] +
-                    array_slice($test_data_set2, 4, NULL, true);
+                        $test_data_falsy;
                     foreach ($test_data_set2 as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-imagick-saveas-and-show.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>
@@ -244,7 +243,7 @@
                 <ul>
                     <?php
                     $test_valid_images = $test_data_set2;
-                    array_splice($test_valid_images, 7, 3, null);
+                    array_splice($test_valid_images, (count($test_data_set2) - count($test_data_falsy)), count($test_data_falsy), null);
                     foreach ($test_valid_images as $imgType => $imgItem) {
                         ?> 
                     <li><a href="rdimage-imagick-crop.php?imgType=<?=rawurlencode($imgType); ?>"><?=$imgType; ?></a></li>

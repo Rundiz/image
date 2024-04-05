@@ -22,7 +22,7 @@ $sourceImageDir = '../source-images';
             </thead>
             <tbody>
                 <?php
-                $supportedExts = ['gif', 'jpeg', 'jpg', 'png', 'webp'];
+                $supportedExts = ['avif', 'bmp', 'gif', 'jpeg', 'jpg', 'png', 'webp', 'xbm'];
                 $RDI = new \RecursiveDirectoryIterator($sourceImageDir, FilesystemIterator::SKIP_DOTS);
                 $RII = new \RecursiveIteratorIterator($RDI);
                 $RII->rewind();
