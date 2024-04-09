@@ -20,10 +20,23 @@ abstract class RDICommonTestCase extends \Yoast\PHPUnitPolyfills\TestCases\TestC
     /**
      * @var array The list of source images that will be use for tests.
      */
-    protected static $source_images_set = ['city-amsterdam.gif', 'city-amsterdam.jpg', 'city-amsterdam.png', 'city-amsterdam.webp', 'city-amsterdam-animated.gif'];
+    protected static $source_images_set = [
+        'source-image.gif', 
+        'source-image.jpg', 
+        'source-image.png', 
+        'source-image.webp', 
+        'source-image-animated.gif',
+        'source-image-animated.webp',
+    ];
 
 
-    protected static $source_watermark_images_set = ['watermark.gif', 'watermark.jpg', 'watermark.png', 'watermark.webp'];
+    protected static $source_watermark_images_set = [
+        'watermark.avif',
+        'watermark.gif', 
+        'watermark.jpg', 
+        'watermark.png', 
+        'watermark.webp',
+    ];
     protected static $source_watermark_fonts_set = ['font.ttf'];
     protected static $watermark_text = 'Rundiz watermark สั้น ญู ให้ ทดสอบสระ.';
 
@@ -33,6 +46,7 @@ abstract class RDICommonTestCase extends \Yoast\PHPUnitPolyfills\TestCases\TestC
     protected static $processed_images_dir;
 
     protected static $processed_extensions = [
+        IMAGETYPE_AVIF => 'avif',
         IMAGETYPE_GIF => 'gif', 
         IMAGETYPE_JPEG => 'jpg', 
         IMAGETYPE_PNG => 'png', 

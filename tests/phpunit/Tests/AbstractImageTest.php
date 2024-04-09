@@ -26,7 +26,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testGetImageSize()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'source-image.jpg');
         $this->assertTrue(
             empty(\Rundiz\Image\Tests\Helpers\Arrays::array_diff_assoc_recursive(
                 array(
@@ -61,7 +61,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testIsClassSetup()
     {
-        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'city-amsterdam.jpg');
+        $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'source-image.jpg');
         $this->assertTrue($ImgAc->isClassSetup());
         $ImgAc = new \Rundiz\Image\Tests\ExtendedAbstractImage(static::$source_images_dir . 'file-not-exists' . date('YmdHis') . '.jpg');
         $this->assertFalse($ImgAc->isClassSetup());

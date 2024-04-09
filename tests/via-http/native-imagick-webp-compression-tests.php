@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.webp';
+$sourceImageFile = '../source-images/source-image.webp';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 

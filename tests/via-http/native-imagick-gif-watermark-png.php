@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.gif';
+$sourceImageFile = '../source-images/source-image.gif';
 $watermarkImageFile = '../source-images/watermark.png';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;

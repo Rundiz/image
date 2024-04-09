@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.png';
+$sourceImageFile = '../source-images/source-image.png';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -23,7 +23,7 @@ for ($compression = 0; $compression <= 9; $compression++) {
     // @link https://stackoverflow.com/questions/9710118/convert-multipage-pdf-to-png-and-back-linux/12046542#12046542 PNG compression quality explain.
     $ImagickCloned->setCompressionQuality(intval($compression . 5));
     $saveImgLink = autoImageFilename() . '-compression' . $compression . '.png';
-    $ImagickCloned->writeImage('png:' . $processImagesFullpath . $saveImgLink);
+    $ImagickCloned->writeImage($processImagesFullpath . $saveImgLink);
     $ImagickCloned->clear();
     unset($ImagickCloned);
     clearstatcache();

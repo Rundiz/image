@@ -67,7 +67,8 @@ function displayTestRotate(array $test_data_set)
 
 function displayTestSaveCrossExts(array $test_data_set)
 {
-    $saveExts = ['gif', 'jpg', 'png', 'webp'];
+    global $saveAsExts;
+
     echo '<h2>Rotate &amp; Save across different extensions.</h2>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h3>'.$img_type_name.'</h3>'."\n";
@@ -87,7 +88,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Rotate &amp; Save as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $Image->rotate(270);
                 $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-rotate-270' .
                     '-saveas-' . trim($eachExt) . '.' . $eachExt;
@@ -107,7 +108,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Rotate &amp; Use <code>show()</code> method as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $linkTo = 'rdimage-imagick-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
                     '&amp;show_ext=' . $eachExt .
                     '&amp;act=rotate' .
@@ -123,7 +124,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Flip &amp; Save as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $Image->rotate('vrt');
                 $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-rotate-vrt' .
                     '-saveas-' . trim($eachExt) . '.' . $eachExt;
@@ -144,7 +145,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Flip &amp; Use <code>show()</code> method as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $linkTo = 'rdimage-imagick-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
                     '&amp;show_ext=' . $eachExt .
                     '&amp;act=rotate' .
@@ -166,7 +167,6 @@ function displayTestSaveCrossExts(array $test_data_set)
     }// endforeach;
     unset($img_type_name, $item);
 
-    unset($saveExts);
     echo "\n\n";
 }// displayTestSaveCrossExts
 ?>
@@ -187,9 +187,7 @@ function displayTestSaveCrossExts(array $test_data_set)
         if (array_key_exists($imgType, $test_data_set)) {
             $doTestData = [$imgType => $test_data_set[$imgType]];
         } else {
-            if (array_key_exists($imgType, $test_data_pngnt)) {
-                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
-            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+            if (array_key_exists($imgType, $test_data_falsy)) {
                 $doTestData = [$imgType => $test_data_falsy[$imgType]];
             } elseif (array_key_exists($imgType, $test_data_anim)) {
                 $doTestData = [$imgType => $test_data_anim[$imgType]];

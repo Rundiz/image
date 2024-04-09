@@ -65,13 +65,16 @@ function debugImage($file, $options = [])
     if (
         (
             !is_numeric($width) 
+            || $width <= 0
             || !is_numeric($height) 
+            || $height <= 0
         )
     ) {
         // If older version of PHP can't get image width or height 
         // It's possible that this is not an image file.
         // Tested but PHP <= 7.0.x still doesn't support `getimagesize()` with WEBP.
         $isWebP = strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'webp';
+        $isAvif = stripos(strtolower(pathinfo($file, PATHINFO_EXTENSION)), 'avif') === 0;
         if (true === $isWebP) {
             include_once 'include-rundiz-image.php';
             $WebP = new Rundiz\Image\Extensions\WebP($file);
@@ -88,8 +91,24 @@ function debugImage($file, $options = [])
                 $width = $webpInfo['WIDTH'];
             }
             unset($webpInfo);
-        }// endif; is WEBP.
-        unset($isWebP);
+        } elseif (true === $isAvif) {
+            include_once 'include-rundiz-image.php';
+            $Avif = new Rundiz\Image\Extensions\Avif($file);
+            $avifInfo = $Avif->avifInfo();
+            unset($Avif);
+            if (
+                is_array($avifInfo) 
+                && array_key_exists('HEIGHT', $avifInfo)
+                && is_numeric($avifInfo['HEIGHT'])
+                && array_key_exists('WIDTH', $avifInfo)
+                && is_numeric($avifInfo['WIDTH'])
+            ) {
+                $height = $avifInfo['HEIGHT'];
+                $width = $avifInfo['WIDTH'];
+            }
+            unset($avifInfo);
+        }// endif; 
+        unset($isAvif, $isWebP);
 
         if (!is_numeric($height)) {
             $height = 'UNKNOWN';

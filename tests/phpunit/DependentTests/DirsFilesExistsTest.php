@@ -30,16 +30,16 @@ class DirsFilesExistsTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
         // generated files while they are all correctly created.
         $files = [
-            'city-amsterdam-animated.gif',
-            'city-amsterdam-animated.webp',
-            'city-amsterdam-jpg.png',
-            'city-amsterdam-non-transparent.png',
-            'city-amsterdam-non-transparent.webp',
-            'city-amsterdam-text.jpg',
-            'city-amsterdam.gif',
-            'city-amsterdam.jpg',
-            'city-amsterdam.png',
-            'city-amsterdam.webp',
+            'source-image-animated.gif',
+            'source-image-animated.webp',
+            'source-image-jpg.png',
+            'source-image-non-transparent.webp',
+            'source-image-text.jpg',
+            'source-image.avif',
+            'source-image.gif',
+            'source-image.jpg',
+            'source-image.png',
+            'source-image.webp',
             'font.ttf',
             'sample-portrait.jpg',
             'sample-square.jpg',
@@ -51,7 +51,10 @@ class DirsFilesExistsTest extends \Rundiz\Image\Tests\RDICommonTestCase
         ];
 
         foreach ($files as $file) {
-            $this->assertTrue(is_file(static::$source_images_dir . DIRECTORY_SEPARATOR . $file));
+            $this->assertTrue(
+                is_file(static::$source_images_dir . DIRECTORY_SEPARATOR . $file),
+                'The source file ' . $file . ' expected to be exists.'
+            );
         }
     }// testImageExists
 

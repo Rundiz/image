@@ -1,14 +1,14 @@
 <?php
-$source_image_jpg = '../source-images/city-amsterdam.jpg';
-$source_image_png = '../source-images/city-amsterdam.png';
-$source_image_pngnt = '../source-images/city-amsterdam-non-transparent.png';
-$source_image_gif = '../source-images/city-amsterdam.gif';
-$source_image_animated_gif = '../source-images/city-amsterdam-animated.gif';
-$source_image_animated_webp = '../source-images/city-amsterdam-animated.webp';
-$source_image_webp = '../source-images/city-amsterdam.webp';
-$source_image_fake = '../source-images/city-amsterdam-jpg.png';
-$source_image_fake2 = '../source-images/city-amsterdam-text.jpg';
-$source_image_404 = '../source-images/city-amsterdam.404';
+$source_image_avif = '../source-images/source-image.avif';
+$source_image_jpg = '../source-images/source-image.jpg';
+$source_image_png = '../source-images/source-image.png';
+$source_image_gif = '../source-images/source-image.gif';
+$source_image_animated_gif = '../source-images/source-image-animated.gif';
+$source_image_animated_webp = '../source-images/source-image-animated.webp';
+$source_image_webp = '../source-images/source-image.webp';
+$source_image_fake = '../source-images/source-image-jpg.png';
+$source_image_fake2 = '../source-images/source-image-text.jpg';
+$source_image_404 = '../source-images/source-image.404';
 
 $test_data_set = [
     'JPG' => [
@@ -17,16 +17,14 @@ $test_data_set = [
     'PNG' => [
         'source_image_path' => $source_image_png,
     ],
+    'AVIF' => [
+        'source_image_path' => $source_image_avif,
+    ],
     'GIF' => [
         'source_image_path' => $source_image_gif,
     ],
     'WEBP' => [
         'source_image_path' => $source_image_webp,
-    ],
-];
-$test_data_pngnt = [
-    'Non transparent PNG' => [
-        'source_image_path' => $source_image_pngnt,
     ],
 ];
 $test_data_falsy = [
@@ -48,3 +46,5 @@ $test_data_anim = [
         'source_image_path' => $source_image_animated_webp,
     ],
 ];
+
+$saveAsExts = ['avif', 'gif', 'jpg', 'png', 'webp'];

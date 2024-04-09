@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.jpg';
+$sourceImageFile = '../source-images/source-image.avif';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -15,6 +15,19 @@ require_once 'includes/include-imagick-functions.php';
     </head>
     <body>
         <h1>Native PHP Imagick class</h1>
+        <?php 
+        $immVA = \Imagick::getVersion();
+        if (array_key_exists('versionString', $immVA)) { 
+            preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
+            if (isset($matches[1]) && version_compare($matches[1], '7.0.10-25', '<')) {
+        ?><p>
+            ImageMagick &lt; 7.0.10-25 does not supported AVIF.
+        </p>
+        <?php 
+            }// endif; version compare
+        }// endif; versionString
+        unset($immVA);
+        ?> 
         <hr>
         <table>
             <thead>
@@ -44,8 +57,8 @@ require_once 'includes/include-imagick-functions.php';
                         <?php
                         $newDimension = [900, 600];
                         $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
-                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -64,8 +77,8 @@ require_once 'includes/include-imagick-functions.php';
 
                         $newDimension = [700, 467];
                         $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
-                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -86,8 +99,8 @@ require_once 'includes/include-imagick-functions.php';
 
                         $newDimension = [460, 460];
                         $Imagick->cropImage($newDimension[0], $newDimension[1], 0, 0);
-                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -107,8 +120,8 @@ require_once 'includes/include-imagick-functions.php';
 
                         $newDimension = [460, 460];
                         $Imagick->cropImage($newDimension[0], $newDimension[1], 0, 0);
-                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -129,8 +142,8 @@ require_once 'includes/include-imagick-functions.php';
 
                         $rotate = 90;
                         $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
-                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -151,8 +164,8 @@ require_once 'includes/include-imagick-functions.php';
 
                         $rotate = 270;
                         $Imagick->rotateImage(new \ImagickPixel('rgba(255, 255, 255, 0)'), calculateCounterClockwise($rotate));
-                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -170,8 +183,8 @@ require_once 'includes/include-imagick-functions.php';
                         <?php
                         $flip = 'horizontal';
                         $Imagick->flopImage();
-                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -192,8 +205,8 @@ require_once 'includes/include-imagick-functions.php';
                         $flip = 'horizontal';
                         $Imagick->flopImage();
                         $Imagick->flipImage();
-                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-source' . '.jpg';
-                        $Imagick->setImageCompressionQuality(100);
+                        $saveImgLink = autoImageFilename() . '-flip-' . $flip . '-from-source' . '.avif';
+                        $Imagick->setCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
@@ -207,6 +220,28 @@ require_once 'includes/include-imagick-functions.php';
                 </tr>
 
                 <!-- resize & save as -->
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $newDimension = [800, 534];
+                        $saveAs = 'avif';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $Imagick->setCompressionQuality(100);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+                        ?> 
+                    </td>
+                </tr>
                 <tr>
                     <th>Resize &amp; save as&hellip;</th>
                     <td>Source</td>
@@ -237,6 +272,10 @@ require_once 'includes/include-imagick-functions.php';
 
                         $saveAs = 'jpg';
                         $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        // Convert transparency WEBP to white before save to another extension. Without this, the transparent part will become black.
+                        $Imagick->setImageBackgroundColor('white');// convert from transparent to white.
+                        $Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);// convert from transparent to white.
+                        // End convert transparency WEBP to white.
                         $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $Imagick->setImageCompressionQuality(100);
                         $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);

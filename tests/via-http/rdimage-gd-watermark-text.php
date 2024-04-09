@@ -132,8 +132,8 @@ function displayTestSaveCrossExts(array $test_data_set)
     global $fontFile, $fontSize;
     global $watermarkText, $wmTextBottomPadding, $wmTextBoundingBoxYPadding;
     global $imagickBaseline;
+    global $saveAsExts;
 
-    $saveExts = ['gif', 'jpg', 'png', 'webp'];
     $positionXY = [430, 350];
 
     echo '<h2>Watermark text &amp; Save across different extensions.</h2>' . "\n";
@@ -156,7 +156,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Save as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $Image->wmTextBottomPadding = $wmTextBottomPadding;
                 $Image->wmTextBoundingBoxYPadding = $wmTextBoundingBoxYPadding;
                 $Image->imagickWatermarkTextBaseline = $imagickBaseline;
@@ -201,7 +201,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Use <code>show()</code> method as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $linkTo = 'rdimage-gd-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
                     '&amp;show_ext=' . $eachExt .
                     '&amp;act=watermarktext' .
@@ -227,7 +227,6 @@ function displayTestSaveCrossExts(array $test_data_set)
 
     echo "\n\n";
     unset($positionXY);
-    unset($saveExts);
 }// displayTestSaveCrossExts
 ?>
 <!DOCTYPE html>
@@ -248,9 +247,7 @@ function displayTestSaveCrossExts(array $test_data_set)
         if (array_key_exists($imgType, $test_data_set)) {
             $doTestData = [$imgType => $test_data_set[$imgType]];
         } else {
-            if (array_key_exists($imgType, $test_data_pngnt)) {
-                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
-            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+            if (array_key_exists($imgType, $test_data_falsy)) {
                 $doTestData = [$imgType => $test_data_falsy[$imgType]];
             }
         }

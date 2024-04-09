@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.jpg';
+$sourceImageFile = '../source-images/source-image.avif';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -19,9 +19,9 @@ $Imagick = new Imagick(realpath($sourceImageFile));
 for ($compression = 0; $compression <= 100; $compression += 10) {
     echo 'Compression: ' . $compression . '.';
     $ImagickCloned = clone $Imagick;
-    $ImagickCloned->setImageFormat('jpg');
-    $ImagickCloned->setImageCompressionQuality($compression);
-    $saveImgLink = autoImageFilename() . '-compression' . $compression . '.jpg';
+    $ImagickCloned->setImageFormat('avif');
+    $ImagickCloned->setCompressionQuality($compression);
+    $saveImgLink = autoImageFilename() . '-compression' . $compression . '.avif';
     $ImagickCloned->writeImage($processImagesFullpath . $saveImgLink);
     $ImagickCloned->clear();
     unset($ImagickCloned);

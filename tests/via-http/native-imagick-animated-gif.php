@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam-animated.gif';
+$sourceImageFile = '../source-images/source-image-animated.gif';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -34,8 +34,10 @@ require_once 'includes/include-imagick-functions.php';
                         $frames = isAnimated($sourceImageFile);
                         if ($frames > 1) {
                             echo '<p>This is animated GIF.</p>';
-                        } else {
+                        } elseif (1 === $frames) {
                             echo '<p class="alert">This is NOT animated GIF.</p>';
+                        } else {
+                            echo '<p class="alert">This file may not supported.</p>';
                         }
                         unset($frames);
                         $Imagick = new \Imagick(realpath($sourceImageFile));// Imagick can't read relative path.
@@ -454,9 +456,14 @@ require_once 'includes/include-imagick-functions.php';
                         $saveResult = $Imagick->writeImages($processImagesFullpath . $saveImgLink, true);// save animated WEBP need to use `writeImages()`.
                         debugImage($processImagesFolder . $saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
-                        if (version_compare(PHP_VERSION, '7.3', '<')) {
-                            echo '<div class="text-error">PHP prior 7.3 and Imagick does not supported create animated WEBP.</div>' . "\n";
+                        $immVA = \Imagick::getVersion();
+                        if (array_key_exists('versionString', $immVA)) {
+                            preg_match('/ImageMagick ([0-9]+\.[0-9]+\.[0-9]+)/', $immVA['versionString'], $matches);
+                            if (isset($matches[1]) && version_compare($matches[1], '7.0.8.68', '<')) {
+                                echo '<div class="text-error">ImageMagick &lt; 7.0.8.68 does not supported animated WEBP.</div>' . "\n";
+                            }
                         }
+                        unset($immVA, $matches);
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.

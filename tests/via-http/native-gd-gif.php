@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.gif';
+$sourceImageFile = '../source-images/source-image.gif';
 
 include_once 'includes/include-functions.php';
 
@@ -267,6 +267,35 @@ function fillTransparentWhite($image)
                 </tr>
 
                 <!-- resize & save as -->
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $newDimension = [800, 534];
+                        $saveAs = 'avif';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        if (function_exists('imageavif')) {
+                            $saveResult = imageavif($imgDestinationObject, $saveImgLink);
+                        } else {
+                            $saveResult = false;
+                        }
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        imagedestroy($imgSourceObject);
+                        imagedestroy($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
                 <tr>
                     <th>Resize &amp; save as&hellip;</th>
                     <td>Source</td>

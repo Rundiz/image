@@ -17,9 +17,9 @@ class GifTest extends \Rundiz\Image\Tests\RDICommonTestCase
     public function testGifInfo()
     {
         $Gif = new \Rundiz\Image\Extensions\Gif();
-        $gifinfo = $Gif->gifInfo(static::$source_images_dir . 'city-amsterdam.gif');
+        $gifinfo = $Gif->gifInfo(static::$source_images_dir . 'source-image.gif');
         $this->assertFalse($gifinfo['ANIMATION']);
-        $gifinfo = $Gif->gifInfo(static::$source_images_dir . 'city-amsterdam-animated.gif');
+        $gifinfo = $Gif->gifInfo(static::$source_images_dir . 'source-image-animated.gif');
         //$this->assertTrue($gifinfo['ANIMATION']);// couldn't detect for some file.
         unset($Gif, $gifinfo);
     }// testGifInfo

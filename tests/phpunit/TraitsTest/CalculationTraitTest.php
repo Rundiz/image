@@ -55,7 +55,7 @@ class CalculationTraitTest extends \Rundiz\Image\Tests\RDICommonTestCase
         unset($Calculation);
 
         // test resizeed with a real image and then calculate again.
-        $sourceImage = static::$source_images_dir . 'city-amsterdam.jpg';
+        $sourceImage = static::$source_images_dir . 'source-image.jpg';
         $Image = new \Rundiz\Image\Drivers\Gd($sourceImage);
         list($origWidth, $origHeight) = getimagesize($sourceImage);
         $imgSizes = $Image->getImageSize();

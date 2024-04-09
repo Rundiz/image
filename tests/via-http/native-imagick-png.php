@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.png';
+$sourceImageFile = '../source-images/source-image.png';
 $processImagesFolder = '../processed-images/';
 $processImagesFullpath = realpath($processImagesFolder) . DIRECTORY_SEPARATOR;
 
@@ -207,6 +207,28 @@ require_once 'includes/include-imagick-functions.php';
                 </tr>
 
                 <!-- resize & save as -->
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $Imagick = new \Imagick(realpath($sourceImageFile));
+
+                        $newDimension = [800, 534];
+                        $saveAs = 'avif';
+                        $Imagick->resizeImage($newDimension[0], $newDimension[1], \Imagick::FILTER_LANCZOS, 1);
+                        $saveImgLink = autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $Imagick->setCompressionQuality(100);
+                        $saveResult = $Imagick->writeImage($processImagesFullpath . $saveImgLink);
+                        debugImage($processImagesFolder . $saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        unset($Imagick, $previousDimension);
+                        ?> 
+                    </td>
+                </tr>
                 <tr>
                     <th>Resize &amp; save as&hellip;</th>
                     <td>Source</td>

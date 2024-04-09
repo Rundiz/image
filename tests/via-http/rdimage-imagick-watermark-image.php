@@ -108,8 +108,10 @@ function displayTestWatermarkImagePositions($sourceImage)
 
 function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
 {
+    global $saveAsExts;
+
     $positionXY = [530, 320];
-    $wmExts = ['jpg', 'gif', 'png', 'webp'];
+    $wmExts = ['jpg', 'avif', 'gif', 'png', 'webp'];
 
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h4>' . $img_type_name . '</h4>' . "\n";
@@ -139,8 +141,7 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
             echo 'Save as' . "\n";
             echo '<table><tbody>' . "\n";
             echo '<tr>' . "\n";
-            $saveExts = ['gif', 'jpg', 'png', 'webp'];
-            foreach ($saveExts as $saveExt) {
+            foreach ($saveAsExts as $saveExt) {
                 echo '<td>' . "\n";
                 $fileName = '../processed-images/' . autoImageFilename() . '_src' . strtolower(str_replace(' ', '', $img_type_name)) .
                     '_position-' . $positionXY[0] . ',' . $positionXY[1] .
@@ -163,7 +164,7 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
                 $Image->clear();
                 unset($fileName, $saveResult, $wmResult, $wmStatusMsg);
             }// endforeach;
-            unset($saveExt, $saveExts);
+            unset($saveExt);
             echo '</tr>' . "\n";
             echo '</tbody></table>' . "\n";
             echo '</td>' . "\n";
@@ -199,9 +200,7 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
         if (array_key_exists($imgType, $test_data_set)) {
             $doTestData = [$imgType => $test_data_set[$imgType]];
         } else {
-            if (array_key_exists($imgType, $test_data_pngnt)) {
-                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
-            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+            if (array_key_exists($imgType, $test_data_falsy)) {
                 $doTestData = [$imgType => $test_data_falsy[$imgType]];
             } elseif (array_key_exists($imgType, $test_data_anim)) {
                 $doTestData = [$imgType => $test_data_anim[$imgType]];

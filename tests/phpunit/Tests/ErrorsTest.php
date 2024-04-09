@@ -17,11 +17,11 @@ class ErrorsTest extends \Rundiz\Image\Tests\RDICommonTestCase
     public function testSourceErrors()
     {
         // normal image, shoud have no errors.
-        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam.jpg');
+        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'source-image.jpg');
         $this->assertTrue($Image->status);
 
         // now errors.
-        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam-text.jpg');
+        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'source-image-text.jpg');
         $this->assertFalse($Image->status);
         $this->assertSame(\Rundiz\Image\Drivers\Gd::RDIERROR_SRC_NOTIMAGE, $Image->statusCode);
         $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'image-not-exists' . date('YmdHis') . '.jpg');
@@ -32,7 +32,7 @@ class ErrorsTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testWatermarkErrors()
     {
-        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam.jpg');
+        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'source-image.jpg');
         $Image->watermarkImage(self::$source_images_dir . 'wm-not-exists' . date('YmdHis') . '.png');
         $this->assertFalse($Image->status);
         $this->assertSame(\Rundiz\Image\Drivers\Gd::RDIERROR_WMI_NOTEXISTS, $Image->statusCode);
@@ -52,7 +52,7 @@ class ErrorsTest extends \Rundiz\Image\Tests\RDICommonTestCase
 
     public function testSaveShowErrors()
     {
-        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'city-amsterdam.jpg');
+        $Image = new \Rundiz\Image\Drivers\Gd(self::$source_images_dir . 'source-image.jpg');
         $Image->save(self::$processed_images_dir . 'processed-image.jpgxxx');
         $this->assertFalse($Image->status);
         $this->assertSame(\Rundiz\Image\Drivers\Gd::RDIERROR_SAVE_UNSUPPORT, $Image->statusCode);

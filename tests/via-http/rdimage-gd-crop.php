@@ -78,7 +78,7 @@ function displayTestCrop(array $test_data_set)
 
 function displayTestSaveCrossExts(array $test_data_set)
 {
-    $saveExts = ['gif', 'jpg', 'png', 'webp'];
+    global $saveAsExts;
     echo '<h2>Crop &amp; Save across different extensions.</h2>' . "\n";
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h3>'.$img_type_name.'</h3>'."\n";
@@ -98,7 +98,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Save as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $Image->crop(800, 800, 'center', 0);
                 $file_name = '../processed-images/' . autoImageFilename() . '-src-' . str_replace(' ', '-', strtolower($img_type_name)) . '-crop-800x800-start-center,middle' .
                     '-saveas-' . trim($eachExt) . '.' . $eachExt;
@@ -119,7 +119,7 @@ function displayTestSaveCrossExts(array $test_data_set)
 
             echo '    <tr>' . "\n";
             echo '        <td>Use <code>show()</code> method as</td>' . "\n";
-            foreach ($saveExts as $eachExt) {
+            foreach ($saveAsExts as $eachExt) {
                 $linkTo = 'rdimage-gd-show-image.php?source_image_file=' . rawurldecode($item['source_image_path']) . 
                     '&amp;show_ext=' . $eachExt .
                     '&amp;act=crop' .
@@ -144,7 +144,6 @@ function displayTestSaveCrossExts(array $test_data_set)
     }// endforeach;
     unset($img_type_name, $item);
 
-    unset($saveExts);
     echo "\n\n";
 }// displayTestSaveCrossExts
 ?>
@@ -165,9 +164,7 @@ function displayTestSaveCrossExts(array $test_data_set)
         if (array_key_exists($imgType, $test_data_set)) {
             $doTestData = [$imgType => $test_data_set[$imgType]];
         } else {
-            if (array_key_exists($imgType, $test_data_pngnt)) {
-                $doTestData = [$imgType => $test_data_pngnt[$imgType]];
-            } elseif (array_key_exists($imgType, $test_data_falsy)) {
+            if (array_key_exists($imgType, $test_data_falsy)) {
                 $doTestData = [$imgType => $test_data_falsy[$imgType]];
             }
         }

@@ -17,7 +17,7 @@ function displayStandardMultiProcess(array $test_data_set)
 {
     global $base_save_file_name;
     global $rotate, $resize_h, $resize_w, $crop_height, $crop_width;
-    $test_exts = ['gif', 'jpg', 'png', 'webp'];
+    global $saveAsExts;
 
     if (is_array($test_data_set)) {
         foreach ($test_data_set as $img_type_name => $item) {
@@ -32,7 +32,7 @@ function displayStandardMultiProcess(array $test_data_set)
                 echo '</tr>' . "\n";
                 echo '<tr>' . "\n";
                 echo '<td></td>' . "\n";
-                foreach ($test_exts as $ext) {
+                foreach ($saveAsExts as $ext) {
                     $Image = new \Rundiz\Image\Drivers\Gd($item['source_image_path']);
                     $source_image_exp = explode('.', $item['source_image_path']);
                     unset($source_image_exp);
@@ -57,8 +57,6 @@ function displayStandardMultiProcess(array $test_data_set)
         }// endforeach;
         unset($img_type_name, $item);
     }// endif;
-
-    unset($test_exts);
 }// displayStandardMultiProcess
 ?>
 <!DOCTYPE html>

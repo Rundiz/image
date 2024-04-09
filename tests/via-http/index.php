@@ -19,30 +19,30 @@
                         Download photo from <a href="https://pixabay.com/photo-1150319/" target="photostock">this link</a> at 1920&times;1282.<br>
                         Resize to 1920&times;1281 and save as.
                         <ul>
-                            <li><strong>city-amsterdam.jpg</strong></li>
+                            <li><strong>source-image.jpg</strong></li>
                         </ul>
                     </li>
                     <li>
                         Convert and save as following file name and extension.<br>
                         (You have to use photo editor program. Not just rename the file extension.)
                         <ul>
-                            <li><strong>city-amsterdam.gif</strong> (must contain transparent in the image)</li>
-                            <li><strong>city-amsterdam.png</strong> (must contain transparent in the image)</li>
-                            <li><strong>city-amsterdam.webp</strong> (must contain transparent in the image)</li>
-                            <li><strong>city-amsterdam-non-transparent.png</strong> (must NOT contain transparent in the image)</li>
-                            <li><strong>city-amsterdam-non-transparent.webp</strong> (must NOT contain transparent in the image)</li>
+                            <li><strong>source-image.avif</strong> (must contain transparent in the image)</li>
+                            <li><strong>source-image.gif</strong> (must contain transparent in the image)</li>
+                            <li><strong>source-image.png</strong> (must contain transparent in the image)</li>
+                            <li><strong>source-image.webp</strong> (must contain transparent in the image)</li>
+                            <li><strong>source-image-non-transparent.webp</strong> (must NOT contain transparent in the image)</li>
                         </ul>
                     </li>
                     <li>
                         Copy one file from JPG and rename to .png.
                         <ul>
-                            <li><strong>city-amsterdam-jpg.png</strong> (This file should be jpg but rename file extension to png.)</li>
+                            <li><strong>source-image-jpg.png</strong> (This file should be jpg but rename file extension to png.)</li>
                         </ul>
                     </li>
                     <li>
                         Create TXT file and rename to .jpg.
                         <ul>
-                            <li><strong>city-amsterdam-text.jpg</strong> (This is text file with jpg extension.)</li>
+                            <li><strong>source-image-text.jpg</strong> (This is text file with jpg extension.)</li>
                         </ul>
                     </li>
                     <li>
@@ -51,8 +51,8 @@
                         , <a href="https://forums.getpaint.net/topic/119134-webp-animations-and-images-filetype-plugin-webp-awebp-latest-v14-2022-01-24/" target="paintnet_pluginwebp">2</a>
                         ) to open JPG file, resize to 1000&times;667, and add some animation (2 - 3 frames) and save as.
                         <ul>
-                            <li><strong>city-amsterdam-animated.gif</strong> (This is animation gif. You should create animation in this image.)</li>
-                            <li><strong>city-amsterdam-animated.webp</strong> (This is animation webp. You should create animation in this image.)</li>
+                            <li><strong>source-image-animated.gif</strong> (This is animation gif. You should create animation in this image.)</li>
+                            <li><strong>source-image-animated.webp</strong> (This is animation webp. You should create animation in this image.)</li>
                         </ul>
                     </li>
                     <li>
@@ -81,6 +81,7 @@
                     <li>
                         Create watermark image files. Dimension is 200&times;50 pixels and save as.
                         <ul>
+                            <li><strong>watermark.avif</strong> transparent background, write some text.</li>
                             <li><strong>watermark.gif</strong> transparent background, write some text.</li>
                             <li><strong>watermark.jpg</strong> filled background with color, write some text.</li>
                             <li><strong>watermark.png</strong> transparent background, write some text.</li>
@@ -100,9 +101,10 @@
         </ul>
         <h3>Native PHP GD functions test</h3>
         <ul>
+            <li><a href="native-gd-avif.php">process avif image</a></li>
+            <li><a href="native-gd-gif.php">process gif image</a></li>
             <li><a href="native-gd-jpg.php">process jpg image</a></li>
             <li><a href="native-gd-png.php">process png image</a></li>
-            <li><a href="native-gd-gif.php">process gif image</a></li>
             <li><a href="native-gd-webp.php">process webp image</a></li>
             <li><a href="native-gd-gif-watermark-png.php">gif image with watermark png</a></li>
         </ul>
@@ -114,13 +116,15 @@
         ?> 
         <ul>
             <li><a href="native-imagick-info.php">Imagick info</a></li>
+            <li><a href="native-imagick-avif.php">process avif image</a></li>
+            <li><a href="native-imagick-gif.php">process gif image</a></li>
             <li><a href="native-imagick-jpg.php">process jpg image</a></li>
             <li><a href="native-imagick-png.php">process png image</a></li>
-            <li><a href="native-imagick-gif.php">process gif image</a></li>
             <li><a href="native-imagick-webp.php">process webp image</a></li>
             <li><a href="native-imagick-gif-watermark-png.php">gif image with watermark png</a></li>
-            <li><a href="native-imagick-animated-gif.php">process animated gif image</a> (this is slower than process non animated gif.)</li>
-            <li><a href="native-imagick-animated-webp.php">process animated webp image</a> (this is slower than process non animated webp.)</li>
+            <li><a href="native-imagick-animated-gif.php">process animated gif image</a></li>
+            <li><a href="native-imagick-animated-webp.php">process animated webp image</a></li>
+            <li><a href="native-imagick-avif-compression-tests.php">avif compression tests</a></li>
             <li><a href="native-imagick-jpg-compression-tests.php">jpg compression tests</a></li>
             <li><a href="native-imagick-png-compression-tests.php">png compression tests</a></li>
             <li><a href="native-imagick-webp-compression-tests.php">webp compression tests</a></li>
@@ -132,10 +136,7 @@
                 <ul>
                     <?php
                     include 'include-image-source.php';
-                    $test_data_set2 = array_slice($test_data_set, 0, 2, true) +
-                        $test_data_pngnt +
-                        $test_data_set;
-                    $test_data_set2 = $test_data_set2 +
+                    $test_data_set2 = $test_data_set +
                         $test_data_falsy;
                     foreach ($test_data_set2 as $imgType => $imgItem) {
                         ?> 

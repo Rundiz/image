@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.gif';
+$sourceImageFile = '../source-images/source-image.gif';
 $watermarkImageFile = '../source-images/watermark.png';
 
 include_once 'includes/include-functions.php';

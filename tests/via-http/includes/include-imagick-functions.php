@@ -22,10 +22,10 @@ function calculateCounterClockwise($value)
 
 
 /**
- * Check if image is animated GIF or WEBP.
+ * Check if image is animated image.
  * 
  * @param string $image Full path to image.
- * @return mixed Return number of frames. There is 1 frame if it is not animated gif, 2 or more if it is animated gif. Return `false` for otherwise.
+ * @return mixed Return number of frames. There is 1 frame if it is not animated, 2 or more if it is animated. Return `false`  for otherwise.
  */
 function isAnimated($image)
 {
@@ -43,7 +43,7 @@ function isAnimated($image)
     }
 
     if (is_numeric($number)) {
-        return $number;
+        return intval($number);
     }
     return false;
 }// isAnimated

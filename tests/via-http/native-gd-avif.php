@@ -1,5 +1,5 @@
 <?php
-$sourceImageFile = '../source-images/city-amsterdam.webp';
+$sourceImageFile = '../source-images/source-image.avif';
 
 include_once 'includes/include-functions.php';
 
@@ -13,7 +13,11 @@ include_once 'includes/include-functions.php';
 function newGdFromFile()
 {
     global $sourceImageFile;
-    return imagecreatefromwebp($sourceImageFile);
+    if (!function_exists('imagecreatefromavif')) {
+        return false;
+    }
+
+    return imagecreatefromavif($sourceImageFile);
 }// newGdFromFile
 
 
@@ -44,6 +48,41 @@ function fillTransparentWhite($image)
     imagefill($image, 0, 0, imagecolorallocatealpha($image, 255, 255, 255, 127));
     imagecolortransparent($image, imagecolorallocatealpha($image, 255, 255, 255, 127));
 }// fillTransparentWhite
+
+
+/**
+ * Destroy GD image resource/object
+ * 
+ * @see imagedestroy()
+ * @param resource|object $image
+ * @return bool
+ */
+function destroyGdImage($image)
+{
+    if (is_resource($image) || is_object($image)) {
+        return imagedestroy($image);
+    }
+    return false;
+}// destroyGdImage
+
+
+/**
+ * Save AVIF file.
+ * 
+ * @see imageavif()
+ * @param \GdImage $image
+ * @param string $filename
+ * @param int $quality
+ * @return bool
+ */
+function saveAvif($image, $filename, $quality = 100)
+{
+    if (function_exists('imageavif')) {
+        return imageavif($image, $filename, $quality);
+    } else {
+        return false;
+    }
+}// saveAvif
 ?>
 <!DOCTYPE html>
 <html>
@@ -55,9 +94,7 @@ function fillTransparentWhite($image)
     <body>
         <h1>Native PHP GD functions</h1>
         <p>
-            <?php if (version_compare(PHP_VERSION, '5.6', '<')) { ?>PHP &lt; 5.6 does not fully supported non-transparent WEBP.<br><?php } ?> 
-            <?php if (version_compare(PHP_VERSION, '7.0', '<')) { ?>PHP &lt; 7.0 does not supported transparent WEBP.<br><?php } ?> 
-            PHP all version (last checked 8.3) does not supported animated WEBP.
+            <?php if (version_compare(PHP_VERSION, '8.1', '<')) { ?>PHP &lt; 8.1 does not supported AVIF.<br><?php } ?> 
         </p>
         <hr>
         <table>
@@ -89,9 +126,11 @@ function fillTransparentWhite($image)
                         $newDimension = [900, 600];
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -105,16 +144,18 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
                         $newDimension = [700, 467];
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -130,7 +171,7 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -138,8 +179,8 @@ function fillTransparentWhite($image)
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
                         imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1]);
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -152,8 +193,8 @@ function fillTransparentWhite($image)
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
@@ -161,9 +202,11 @@ function fillTransparentWhite($image)
                         $newDimension = [460, 460];
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
-                        imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1]);
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1]);
+                        }
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-crop-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source' . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -179,14 +222,14 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
                         $rotate = 90;
                         $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-crop-' . $previousDimension[0] . 'x' . $previousDimension[1] . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -200,16 +243,20 @@ function fillTransparentWhite($image)
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
 
                         $rotate = 270;
-                        $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
-                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.webp';
-                        $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
+                        } else {
+                            $imgDestinationObject = false;
+                        }
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-rotate-' . $rotate . '-from-source' . '.avif';
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
@@ -226,9 +273,11 @@ function fillTransparentWhite($image)
                         <?php
                         if (function_exists('imageflip')) {
                             $flip = 'horizontal';
-                            imageflip($imgDestinationObject, IMG_FLIP_HORIZONTAL);
-                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.webp';
-                            $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                            if (is_resource($imgDestinationObject) || is_object($imgDestinationObject)) {
+                                imageflip($imgDestinationObject, IMG_FLIP_HORIZONTAL);
+                            }
+                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-rotate-' . 270 . '.avif';
+                            $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                             debugImage($saveImgLink);
                             echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                             unset($saveImgLink, $saveResult);
@@ -246,21 +295,25 @@ function fillTransparentWhite($image)
                         <?php
                         if (function_exists('imageflip')) {
                             // clear everything before begins again from source.
-                            imagedestroy($imgSourceObject);
-                            imagedestroy($imgDestinationObject);
+                            destroyGdImage($imgSourceObject);
+                            destroyGdImage($imgDestinationObject);
                             unset($imgDestinationObject, $imgSourceObject);
 
                             $imgSourceObject = newGdFromFile();
 
                             $flip = 'both';
-                            imageflip($imgSourceObject, IMG_FLIP_BOTH);
-                            // create new canvas for be able to use with next process.
-                            $imgDestinationObject = imagecreatetruecolor(imagesx($imgSourceObject), imagesy($imgSourceObject));
-                            fillTransparentWhite($imgDestinationObject);
-                            imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, imagesx($imgSourceObject), imagesy($imgSourceObject));
+                            if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                                imageflip($imgSourceObject, IMG_FLIP_BOTH);
+                                // create new canvas for be able to use with next process.
+                                $imgDestinationObject = imagecreatetruecolor(imagesx($imgSourceObject), imagesy($imgSourceObject));
+                                fillTransparentWhite($imgDestinationObject);
+                                imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, imagesx($imgSourceObject), imagesy($imgSourceObject));
+                            } else {
+                                $imgDestinationObject = false;
+                            }
                             // end create new canvas for be able to use with next process.
-                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-source' . '.webp';
-                            $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
+                            $saveImgLink = '../processed-images/' . autoImageFilename() . '-flip-' . $flip . '-from-source' . '.avif';
+                            $saveResult = saveAvif($imgDestinationObject, $saveImgLink, 100);
                             debugImage($saveImgLink);
                             echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                             unset($saveImgLink, $saveResult);
@@ -270,8 +323,8 @@ function fillTransparentWhite($image)
                         }
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -286,10 +339,39 @@ function fillTransparentWhite($image)
                         $imgSourceObject = newGdFromFile();
 
                         $newDimension = [800, 534];
+                        $saveAs = 'avif';
+                        $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
+                        fillTransparentWhite($imgDestinationObject);
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
+                        $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
+                        $saveResult = saveAvif($imgDestinationObject, $saveImgLink);
+                        debugImage($saveImgLink);
+                        echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
+                        unset($saveImgLink, $saveResult);
+
+                        // clear everything before begins again from source.
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
+                        unset($imgDestinationObject, $imgSourceObject);
+                        ?> 
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resize &amp; save as&hellip;</th>
+                    <td>Source</td>
+                    <td>
+                        <?php
+                        $imgSourceObject = newGdFromFile();
+
+                        $newDimension = [800, 534];
                         $saveAs = 'gif';
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
                         $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $saveResult = imagegif($imgDestinationObject, $saveImgLink);
                         debugImage($saveImgLink);
@@ -297,8 +379,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -314,13 +396,15 @@ function fillTransparentWhite($image)
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
                         makeTransparent($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
                         // Fix transparent WEBP becomes like transparent GIF+fill white.
                         // Fix by fill real white to the image.
                         $newImage = imagecreatetruecolor(imagesx($imgDestinationObject), imagesy($imgDestinationObject));
                         imagefill($newImage, 0, 0, imagecolorallocate($newImage, 255, 255, 255));
                         imagecopy($newImage, $imgDestinationObject, 0, 0, 0, 0, imagesx($imgDestinationObject), imagesy($imgDestinationObject));
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgDestinationObject);
                         $imgDestinationObject = $newImage;
                         unset($newImage);
                         // End fix transparent WEBP becomes like transparent GIF+fill white.
@@ -331,8 +415,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -348,7 +432,9 @@ function fillTransparentWhite($image)
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
                         makeTransparent($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
                         $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $saveResult = imagepng($imgDestinationObject, $saveImgLink, 0);
                         debugImage($saveImgLink);
@@ -356,8 +442,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -372,7 +458,9 @@ function fillTransparentWhite($image)
                         $saveAs = 'webp';
                         $imgDestinationObject = imagecreatetruecolor($newDimension[0], $newDimension[1]);
                         fillTransparentWhite($imgDestinationObject);
-                        imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        if (is_resource($imgSourceObject) || is_object($imgSourceObject)) {
+                            imagecopyresampled($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, $newDimension[0], $newDimension[1], imagesx($imgSourceObject), imagesy($imgSourceObject));
+                        }
                         $saveImgLink = '../processed-images/' . autoImageFilename() . '-resize-' . $newDimension[0] . 'x' . $newDimension[1] . '-from-source-saveas-' . $saveAs . '.' . $saveAs;
                         $saveResult = imagewebp($imgDestinationObject, $saveImgLink, 100);
                         debugImage($saveImgLink);
@@ -380,8 +468,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
