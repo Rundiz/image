@@ -38,6 +38,9 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
         if ($check_file_ext === 'jpg' || $check_file_ext === 'webp') {
             // if show as JPG or WEBP.
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
+        } elseif ($check_file_ext === 'avif') {
+            // if save as AVIF.
+            $this->ImagickD->Imagick->setCompressionQuality($this->ImagickD->jpg_quality);
         } elseif ($check_file_ext === 'png') {
             // if show as PNG.
             $this->ImagickD->Imagick->setCompressionQuality(intval($this->ImagickD->png_quality . 5));
