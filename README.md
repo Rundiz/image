@@ -5,6 +5,7 @@ Simple image manipulation that use GD or Imagick as drivers.
 ## Features:
 ### File extensions supported
 
+* AVIF (AVIFS)`*`
 * GIF
 * JPG (JPEG)
 * PNG
@@ -18,7 +19,7 @@ Simple image manipulation that use GD or Imagick as drivers.
 * Rotate
 * Watermark image (including alpha transparency.)
 * Watermark text (including alpha transparency.)
-* Supported transparent GIF, PNG, WEBP.
+* Supported alpha transparency or transparent AVIF, GIF, PNG, WEBP.
 * Supported animated GIF, WEBP`*` (Imagick only).
 
 [![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
@@ -96,14 +97,23 @@ For more details, please look in tests folder or see [API doc][1]
 ---
 Remark:
 
-* `*` WEBP<br>
-    * PHP all version ([last checked 8.3][animatedwebpbug]) with GD doesn't support animated WEBP.
-    * PHP and Imagick that compiled against [ImageMatick prior 7.0.8.68][imagematickanimatedwebp] doesn't supported open or save animated WEBP.
+* `*`AVIF<br>
+    * PHP and Imagick that use [ImageMagick prior 7.0.10-25][imagemagickavifsupport] doesn't supported open or save AVIF.   
+        Some older system may be able to save but the file's mime type will not changed.
+    * PHP and [Imagick (depend on ImageMagick)][imagemagickanimatedavif] doesn't supported animated AVIF (AVIFS).
+    * PHP all version ([last checked 8.3][somekindavifbug]) with GD doesn't supported some kind of AVIF.
+    * PHP prior 8.1 with GD doesn't supported AVIF.
+* `*`WEBP<br>
+    * PHP and Imagick that use [ImageMagick prior 7.0.8.68][imagemagickanimatedwebp] doesn't supported open or save animated WEBP.
+    * PHP all version ([last checked 8.3][animatedwebpbug]) with GD doesn't supported animated WEBP.
     * PHP prior 7.0 with GD ([1][oldgdwebpbug], [2][oldgdwebpbug2]) doesn't supported open or save transparent WEBP.
     * PHP prior 5.6 with GD doesn't fully supported WEBP and may cause image becomes green. Tested with PHP on Windows.
 
 [1]: http://apidocs.rundiz.com/image/
+[animatedwebpbug]: https://www.php.net/manual/en/function.imagecreatefromwebp.php
+[imagemagickanimatedwebp]: https://github.com/ImageMagick/ImageMagick/pull/1708
+[imagemagickanimatedavif]: https://github.com/ImageMagick/ImageMagick/issues/6380
+[imagemagickavifsupport]: https://github.com/ImageMagick/ImageMagick/issues/1432
 [oldgdwebpbug]: https://github.com/rosell-dk/webp-convert/issues/238#issuecomment-545928597
 [oldgdwebpbug2]: https://stackoverflow.com/a/58543717/128761
-[animatedwebpbug]: https://www.php.net/manual/en/function.imagecreatefromwebp.php
-[imagematickanimatedwebp]: https://github.com/ImageMagick/ImageMagick/pull/1708
+[somekindavifbug]: https://github.com/php/php-src/issues/13919

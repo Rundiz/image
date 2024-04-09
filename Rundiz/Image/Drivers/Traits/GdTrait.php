@@ -83,7 +83,11 @@ trait GdTrait
      */
     protected function setupSourceFromFile($file, $imageType)
     {
-        if (IMAGETYPE_GIF === $imageType) {
+        if (IMAGETYPE_AVIF === $imageType) {
+            if (function_exists('imagecreatefromavif')) {
+                return @imagecreatefromavif($file);
+            }
+        } elseif (IMAGETYPE_GIF === $imageType) {
             return imagecreatefromgif($file);
         } elseif (IMAGETYPE_JPEG === $imageType) {
             return imagecreatefromjpeg($file);

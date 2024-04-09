@@ -37,17 +37,9 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
         // set compression. -----------------------------
         if ($check_file_ext === 'jpg' || $check_file_ext === 'webp') {
             // if show as JPG or WEBP.
-            $this->ImagickD->jpg_quality = intval($this->ImagickD->jpg_quality);
-            if ($this->ImagickD->jpg_quality < 1 || $this->ImagickD->jpg_quality > 100) {
-                $this->ImagickD->jpg_quality = 100;
-            }
             $this->ImagickD->Imagick->setImageCompressionQuality($this->ImagickD->jpg_quality);
         } elseif ($check_file_ext === 'png') {
             // if show as PNG.
-            $this->ImagickD->png_quality = intval($this->ImagickD->png_quality);
-            if ($this->ImagickD->png_quality < 0 || $this->ImagickD->png_quality > 9) {
-                $this->ImagickD->png_quality = 0;
-            }
             $this->ImagickD->Imagick->setCompressionQuality(intval($this->ImagickD->png_quality . 5));
         }// endif;
         // end set compression. ------------------------

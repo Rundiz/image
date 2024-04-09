@@ -37,18 +37,10 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
         } elseif ($check_file_ext === 'jpg') {
             // if save as jpg
             $this->fillWhiteBgOnDestination();
-            $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
-            if ($this->Gd->jpg_quality < 0 || $this->Gd->jpg_quality > 100) {
-                $this->Gd->jpg_quality = 100;
-            }
 
             $save_result = imagejpeg($this->Gd->destination_image_object, $file_name, $this->Gd->jpg_quality);
         } elseif ($check_file_ext === 'png') {
             // if save as png
-            $this->Gd->png_quality = intval($this->Gd->png_quality);
-            if ($this->Gd->png_quality < 0 || $this->Gd->png_quality > 9) {
-                $this->Gd->png_quality = 0;
-            }
 
             $save_result = imagepng($this->Gd->destination_image_object, $file_name, $this->Gd->png_quality);
         } elseif ($check_file_ext === 'webp') {
@@ -64,12 +56,10 @@ class Save extends \Rundiz\Image\Drivers\AbstractGdCommand
                 }
             }
 
-            $this->Gd->jpg_quality = intval($this->Gd->jpg_quality);
-            if ($this->Gd->jpg_quality < 0 || $this->Gd->jpg_quality > 100) {
-                $this->Gd->jpg_quality = 100;
-            }
-
             $save_result = imagewebp($this->Gd->destination_image_object, $file_name, $this->Gd->jpg_quality);
+        } elseif (function_exists('imageavif') && $check_file_ext === 'avif') {
+            // if save as avif
+            $save_result = imageavif($this->Gd->destination_image_object, $file_name, $this->Gd->jpg_quality);
         } else {
             $Gds = $this->Gd->getStatic();
             $this->setErrorMessage(sprintf('Unable to save this kind of image. (%s)', $check_file_ext), $Gds::RDIERROR_SAVE_UNSUPPORT);

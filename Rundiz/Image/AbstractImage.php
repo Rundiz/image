@@ -85,9 +85,14 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
             $source_image_path = (string) $source_image_path;
         }
 
+        // check required PHP predefined constants. -------------------
         $WebP = new Extensions\WebP();
         $WebP->checkWebPConstant();
         unset($WebP);
+        $Avif = new Extensions\Avif();
+        $Avif->checkWebPConstant();
+        unset($Avif);
+        // end check required PHP predefined constants. ---------------
 
         if (is_file($source_image_path)) {
             $source_image_path = realpath($source_image_path);

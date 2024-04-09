@@ -40,13 +40,17 @@ class WebP
 
 
     /**
-     * Check that WEBP constant (`IMAGETYPE_WEBP`) is already define, if not then define it.
-     * 
-     * This constant is not define prior PHP 7.1.
+     * Check that WEBP constants are already define, if not then define it.
      */
     public function checkWebPConstant()
     {
+        if (!defined('IMG_WEBP')) {
+            // IMG_WEBP available as of PHP 7.0.10
+            define('IMG_WEBP', 32);
+        }
+
         if (!defined('IMAGETYPE_WEBP')) {
+            // IMAGETYPE_WEBP available as of PHP 7.1.0
             define('IMAGETYPE_WEBP', 18);
         }
     }// checkWebPConstant

@@ -334,6 +334,8 @@ class Imagick extends AbstractImage
             return false;
         }
 
+        $this->verifyQualityValue();
+
         $Save = new Imagick\Save($this);
         return $Save->execute($file_name);
     }// save
@@ -410,6 +412,8 @@ class Imagick extends AbstractImage
         if ($this->isPreviousError() === true) {
             return false;
         }
+
+        $this->verifyQualityValue();
 
         $Show = new Imagick\Show($this);
         return $Show->execute($file_ext);

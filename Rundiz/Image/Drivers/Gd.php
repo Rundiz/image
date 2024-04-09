@@ -288,6 +288,8 @@ class Gd extends AbstractImage
             return false;
         }
 
+        $this->verifyQualityValue();
+
         $Save = new Gd\Save($this);
         return $Save->execute($file_name);
     }// save
@@ -395,6 +397,8 @@ class Gd extends AbstractImage
         if ($this->isPreviousError() === true) {
             return false;
         }
+
+        $this->verifyQualityValue();
 
         $Show = new Gd\Show($this);
         return $Show->execute($file_ext);

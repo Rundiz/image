@@ -45,8 +45,10 @@ trait ImageTrait
                     is_array($imgResult) 
                     && array_key_exists(0, $imgResult) 
                     && is_numeric($imgResult[0]) 
+                    && $imgResult[0] > 0
                     && array_key_exists(1, $imgResult) 
                     && is_numeric($imgResult[1]) 
+                    && $imgResult[1] > 0
                     && array_key_exists(2, $imgResult) 
                     && array_key_exists('mime', $imgResult)
             ) {
@@ -57,7 +59,8 @@ trait ImageTrait
             unset($imgResult);
 
             // Come to this means, it couldn't get image data. Some older version of PHP can't get image data for example WEBP and PHP <= 7.0.
-            if (strtolower(pathinfo($imagePath, PATHINFO_EXTENSION)) === 'webp') {
+            $fileExtension = pathinfo($imagePath, PATHINFO_EXTENSION);
+            if (strtolower($fileExtension) === 'webp') {
                 // if it is WEBP.
                 $WebP = new \Rundiz\Image\Extensions\WebP($imagePath);
                 $webpInfo = $WebP->webPInfo();
@@ -66,14 +69,16 @@ trait ImageTrait
                     is_array($webpInfo) 
                     && array_key_exists('HEIGHT', $webpInfo)
                     && is_numeric($webpInfo['HEIGHT'])
+                    && $webpInfo['HEIGHT'] > 0
                     && array_key_exists('WIDTH', $webpInfo)
                     && is_numeric($webpInfo['WIDTH'])
+                    && $webpInfo['WIDTH'] > 0
                 ) {
                     $output[0] = $webpInfo['WIDTH'];
                     $output[1] = $webpInfo['HEIGHT'];
                     $output[2] = IMAGETYPE_WEBP;
                     $output['mime'] = 'image/webp';
-                    $output['ext'] = '.webp';
+                    $output['ext'] = '.' . strtolower($fileExtension);
                     unset($webpInfo);
                     return $output;
                 }
@@ -89,7 +94,32 @@ trait ImageTrait
                     throw new \DomainException('Current version of PHP does not support alpha transparency WebP.', static::RDIERROR_SRC_WEBP_ALPHA_NOTSUPPORTED);
                 }
                 unset($WebP, $webpInfo);
-            }// endif; it is WEBP.
+            } elseif (strtolower($fileExtension) === 'avif' || strtolower($fileExtension) === 'avifs') {
+                // if it is AVIF.
+                $Avif = new \Rundiz\Image\Extensions\Avif($imagePath);
+                $avifInfo = $Avif->avifInfo();
+
+                if (
+                    is_array($avifInfo) 
+                    && array_key_exists('HEIGHT', $avifInfo)
+                    && is_numeric($avifInfo['HEIGHT'])
+                    && $avifInfo['HEIGHT'] > 0
+                    && array_key_exists('WIDTH', $avifInfo)
+                    && is_numeric($avifInfo['WIDTH'])
+                    && $avifInfo['WIDTH'] > 0
+                ) {
+                    $output[0] = $avifInfo['WIDTH'];
+                    $output[1] = $avifInfo['HEIGHT'];
+                    $output[2] = IMAGETYPE_AVIF;
+                    $output['mime'] = 'image/avif';
+                    $output['ext'] = '.' . strtolower($fileExtension);
+                    unset($webpInfo);
+                    return $output;
+                }
+
+                unset($Avif, $avifInfo);
+            }// endif; $fileExtension
+            unset($fileExtension);
         }// endif; file exists.
 
         return false;
@@ -146,6 +176,25 @@ trait ImageTrait
 
         return [$width, $height];
     }// normalizeWidthHeight
+
+
+    /**
+     * Verify image save quality value.
+     * 
+     * @since 3.1.5
+     */
+    protected function verifyQualityValue()
+    {
+        $this->jpg_quality = intval($this->jpg_quality);
+        if ($this->jpg_quality < 0 || $this->jpg_quality > 100) {
+            $this->jpg_quality = 100;
+        }
+
+        $this->png_quality = intval($this->png_quality);
+        if ($this->png_quality < 0 || $this->png_quality > 9) {
+            $this->png_quality = 0;
+        }
+    }// verifyQualityValue
 
 
 }
