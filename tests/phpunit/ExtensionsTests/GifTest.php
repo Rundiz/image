@@ -11,9 +11,7 @@ class GifTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGifInfo()
     {
         $Gif = new \Rundiz\Image\Extensions\Gif();

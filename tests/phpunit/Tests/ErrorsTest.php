@@ -11,9 +11,7 @@ class ErrorsTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testSourceErrors()
     {
         // normal image, shoud have no errors.

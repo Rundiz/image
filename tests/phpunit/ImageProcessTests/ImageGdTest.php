@@ -31,9 +31,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// gdTestSkipAnimatedGif
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGdResize()
     {
         if (is_array($source_images_set = $this->gdTestSkipAnimatedGif())) {
@@ -100,9 +98,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testGdResize
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGdRotate()
     {
         if (is_array($source_images_set = $this->gdTestSkipAnimatedGif())) {
@@ -143,9 +139,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testGdRotate
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGdCrop()
     {
         if (is_array($source_images_set = $this->gdTestSkipAnimatedGif())) {
@@ -189,9 +183,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testGdCrop
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGdWatermarkImage()
     {
         if (is_array($source_images_set = $this->gdTestSkipAnimatedGif())) {
@@ -236,9 +228,7 @@ class ImageGdTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testGdWatermarkImage
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testGdWatermarkText()
     {
         if (is_array($source_images_set = $this->gdTestSkipAnimatedGif())) {

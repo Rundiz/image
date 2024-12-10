@@ -11,9 +11,7 @@ class AbstractImageTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testBuildSourceImageData()
     {
         foreach (static::$source_images_set as $source_image) {

@@ -11,9 +11,7 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testIsAnimated()
     {
         $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'source-image-non-transparent.webp');
@@ -36,9 +34,7 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testIsAnimated
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testIsGDSupported()
     {
         // non-transparent webp must be supported in all PHP version (>= 5.4) but in fact, it is not fully supported prior PHP 5.6.
@@ -69,9 +65,7 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testIsGDSupported
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testIsImagickSupportedAnimated()
     {
         $WebP = new \Rundiz\Image\Extensions\WebP(static::$source_images_dir . 'source-image-animated.webp');
@@ -86,9 +80,7 @@ class WebPTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testIsImagickSupportedAnimated
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testWebPInfo()
     {
         $Webp = new \Rundiz\Image\Extensions\WebP();

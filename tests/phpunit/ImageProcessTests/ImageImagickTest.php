@@ -8,9 +8,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
 {
 
 
-    /**
-     * @depends Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists
-     */
+    #[Depends('Rundiz\Image\Tests\DependentTests\DirsFilesExistsTest::testImageExists')]
     public function testRequiredImagickImageMagickPhpVersions()
     {
         if (extension_loaded('imagick') === true) {
@@ -23,9 +21,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testRequiredImagickImageMagickPhpVersions
 
 
-    /**
-     * @depends testRequiredImagickImageMagickPhpVersions
-     */
+    #[Depends('testRequiredImagickImageMagickPhpVersions')]
     public function testImagickResize()
     {
         if (is_array($source_images_set = static::$source_images_set)) {
@@ -92,9 +88,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testImagickResize
 
 
-    /**
-     * @depends testRequiredImagickImageMagickPhpVersions
-     */
+    #[Depends('testRequiredImagickImageMagickPhpVersions')]
     public function testImagickRotate()
     {
         if (is_array($source_images_set = static::$source_images_set)) {
@@ -135,9 +129,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testImagickRotate
 
 
-    /**
-     * @depends testRequiredImagickImageMagickPhpVersions
-     */
+    #[Depends('testRequiredImagickImageMagickPhpVersions')]
     public function testImagickCrop()
     {
         if (is_array($source_images_set = static::$source_images_set)) {
@@ -181,9 +173,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testImagickCrop
 
 
-    /**
-     * @depends testRequiredImagickImageMagickPhpVersions
-     */
+    #[Depends('testRequiredImagickImageMagickPhpVersions')]
     public function testImagickWatermarkImage()
     {
         if (is_array($source_images_set = static::$source_images_set)) {
@@ -228,9 +218,7 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
     }// testImagickWatermarkImage
 
 
-    /**
-     * @depends testRequiredImagickImageMagickPhpVersions
-     */
+    #[Depends('testRequiredImagickImageMagickPhpVersions')]
     public function testImagickWatermarkText()
     {
         if (is_array($source_images_set = static::$source_images_set)) {
