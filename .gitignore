@@ -1,7 +1,7 @@
-.apidoc/
-.phpunit.cache/
+/.apidoc/
+/.phpunit.cache
 .phpunit.result.cache
-.phpdoc/
-.wiki/
-tests/via-http/dev.php
-vendor/
+/.phpdoc/
+/.wiki/
+/tests/via-http/dev.php
+/vendor/
