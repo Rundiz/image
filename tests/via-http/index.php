@@ -101,7 +101,12 @@
         </ul>
         <h3>Native PHP GD functions test</h3>
         <ul>
-            <li><a href="native-gd-avif.php">process avif image</a></li>
+            <li>
+                <a href="native-gd-avif.php">process avif image</a>
+                <ul>
+                    <li><a href="test-avif-issue-13919.php">Test AVIF supported</a></li>
+                </ul>
+            </li>
             <li><a href="native-gd-gif.php">process gif image</a></li>
             <li><a href="native-gd-jpg.php">process jpg image</a></li>
             <li><a href="native-gd-png.php">process png image</a></li>
