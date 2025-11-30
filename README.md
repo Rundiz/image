@@ -26,7 +26,7 @@ Simple image manipulation that use GD or Imagick as drivers.
 [![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
 [![Total Downloads](https://poser.pugx.org/rundiz/image/downloads)](https://packagist.org/packages/rundiz/image)
 
-Tested up to PHP 8.4.
+Tested up to PHP 8.5.
 
 ## Example
 ### Drivers
