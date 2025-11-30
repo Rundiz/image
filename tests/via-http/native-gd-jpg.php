@@ -4,6 +4,28 @@ $sourceImageFile = '../source-images/source-image.jpg';
 include_once 'includes/include-functions.php';
 
 
+if (!function_exists('destroyGdImage')) {
+    /**
+     * Destroy GD image resource/object
+     * 
+     * @see imagedestroy()
+     * @param resource|object $image
+     * @return bool
+     */
+    function destroyGdImage(&$image)
+    {
+        if (is_resource($image) || is_object($image)) {
+            if (version_compare(PHP_VERSION, '8.0', '<')) {
+                return imagedestroy($image);
+            }
+            $image = null;
+            return true;
+        }
+        return false;
+    }// destroyGdImage
+}
+
+
 /**
  * Create new resource/object (GDImage for PHP 8.0+) from image file.
  * 
@@ -70,7 +92,7 @@ function newGdFromFile()
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -94,7 +116,7 @@ function newGdFromFile()
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -115,8 +137,8 @@ function newGdFromFile()
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
@@ -141,7 +163,7 @@ function newGdFromFile()
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -162,8 +184,8 @@ function newGdFromFile()
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
@@ -208,8 +230,8 @@ function newGdFromFile()
                         <?php
                         if (function_exists('imageflip')) {
                             // clear everything before begins again from source.
-                            imagedestroy($imgSourceObject);
-                            imagedestroy($imgDestinationObject);
+                            destroyGdImage($imgSourceObject);
+                            destroyGdImage($imgDestinationObject);
                             unset($imgDestinationObject, $imgSourceObject);
 
                             $imgSourceObject = newGdFromFile();
@@ -231,8 +253,8 @@ function newGdFromFile()
                         }
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -261,8 +283,8 @@ function newGdFromFile()
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -285,8 +307,8 @@ function newGdFromFile()
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -308,8 +330,8 @@ function newGdFromFile()
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -331,8 +353,8 @@ function newGdFromFile()
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -354,8 +376,8 @@ function newGdFromFile()
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>

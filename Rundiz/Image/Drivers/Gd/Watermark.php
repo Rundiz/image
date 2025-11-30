@@ -47,10 +47,11 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         // copy watermark image on to source image (in this case, it is destination image object).
         imagecopy($this->Gd->destination_image_object, $this->Gd->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->Gd->watermark_image_width, $this->Gd->watermark_image_height);
 
-        if ($this->isResourceOrGDObject($this->Gd->watermark_image_object)) {
+        if ($this->isResourceOrGDObject($this->Gd->watermark_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             // if there is watermark image object.
             imagedestroy($this->Gd->watermark_image_object);
         }
+        $this->Gd->watermark_image_object = null;
 
         if ($this->Gd->destination_image_object == null) {
             $this->Gd->destination_image_object = $this->Gd->source_image_object;
@@ -127,8 +128,10 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         imagecopy($this->Gd->destination_image_object, $wm_txt_object, $wm_txt_start_x, $wm_txt_start_y, 0, 0, $wm_txt_width, $wm_txt_height);
         // end watermark text -----------------------------------------------------------------------------------------------
 
-        imagedestroy($wm_txt_object);
-        unset($wm_txt_height, $wm_txt_width);
+        if (version_compare(PHP_VERSION, '8.0', '<')) {
+            imagedestroy($wm_txt_object);
+        }
+        unset($wm_txt_height, $wm_txt_object, $wm_txt_width);
 
         if ($this->Gd->destination_image_object == null) {
             $this->Gd->destination_image_object = $this->Gd->source_image_object;
@@ -276,7 +279,13 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
     private function setupWatermarkImageObject($wm_img_path)
     {
         try {
-            list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
+            $imageFileData = $this->getImageFileData($wm_img_path);
+            if (is_array($imageFileData)) {
+                list($wm_width, $wm_height, $wm_type) = $imageFileData;
+            } else {
+                $wm_width = $wm_height = $wm_type = null;
+            }
+            unset($imageFileData);
         } catch (\Exception $ex) {
             $this->setErrorMessage($ex->getMessage(), $ex->getCode());
             return false;
@@ -289,9 +298,10 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
             return false;
         }
 
-        if ($this->isResourceOrGDObject($this->Gd->watermark_image_object)) {
+        if ($this->isResourceOrGDObject($this->Gd->watermark_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             imagedestroy($this->Gd->watermark_image_object);
         }
+        $this->Gd->watermark_image_object = null;
 
         $wmObject = $this->setupSourceFromFile($wm_img_path, $wm_type);
         if ($this->isResourceOrGDObject($wmObject)) {

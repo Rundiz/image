@@ -299,7 +299,13 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
     private function setupWatermarkImageObject($wm_img_path)
     {
         try {
-            list($wm_width, $wm_height, $wm_type) = $this->getImageFileData($wm_img_path);
+            $imageFileData = $this->getImageFileData($wm_img_path);
+            if (is_array($imageFileData)) {
+                list($wm_width, $wm_height, $wm_type) = $imageFileData;
+            } else {
+                $wm_width = $wm_height = $wm_type = null;
+            }
+            unset($imageFileData);
         } catch (\Exception $ex) {
             $this->setErrorMessage($ex->getMessage(), $ex->getCode());
             return false;

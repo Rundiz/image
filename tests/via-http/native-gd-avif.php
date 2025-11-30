@@ -57,10 +57,14 @@ function fillTransparentWhite($image)
  * @param resource|object $image
  * @return bool
  */
-function destroyGdImage($image)
+function destroyGdImage(&$image)
 {
     if (is_resource($image) || is_object($image)) {
-        return imagedestroy($image);
+        if (version_compare(PHP_VERSION, '8.0', '<')) {
+            return imagedestroy($image);
+        }
+        $image = null;
+        return true;
     }
     return false;
 }// destroyGdImage

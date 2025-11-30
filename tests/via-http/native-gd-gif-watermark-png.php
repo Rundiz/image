@@ -5,6 +5,28 @@ $watermarkImageFile = '../source-images/watermark.png';
 include_once 'includes/include-functions.php';
 
 
+if (!function_exists('destroyGdImage')) {
+    /**
+     * Destroy GD image resource/object
+     * 
+     * @see imagedestroy()
+     * @param resource|object $image
+     * @return bool
+     */
+    function destroyGdImage(&$image)
+    {
+        if (is_resource($image) || is_object($image)) {
+            if (version_compare(PHP_VERSION, '8.0', '<')) {
+                return imagedestroy($image);
+            }
+            $image = null;
+            return true;
+        }
+        return false;
+    }// destroyGdImage
+}
+
+
 /**
  * Make image object (usually for new canvas or `imagecreatetruecolor()`) to be transparent.
  * 
@@ -73,7 +95,7 @@ function fillTransparentWhite($image)
                         // this can prevent black border between two transparent images (based image and watermark).
                         imagecopy($newWmDestinationObject, $wmSourceObject, 0, 0, 0, 0, imagesx($wmSourceObject), imagesy($wmSourceObject));
                         // mark new canvas that is copied watermark image as watermark source.
-                        imagedestroy($wmSourceObject);
+                        destroyGdImage($wmSourceObject);
                         $wmSourceObject = $newWmDestinationObject;
                         unset($newWmDestinationObject);
                         ?> 
@@ -96,8 +118,8 @@ function fillTransparentWhite($image)
                         echo 'Save result: ' . var_export($saveResult, true) . PHP_EOL;
                         unset($saveImgLink, $saveResult);
 
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($wmSourceObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($wmSourceObject);
                         unset($imgSourceObject, $wmSourceObject);
                         unset($wmPosition);
                         ?> 

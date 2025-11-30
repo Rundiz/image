@@ -47,7 +47,9 @@ class NoOp extends \Rundiz\Image\Drivers\AbstractGdCommand
             if ($this->Gd->source_image_object != $this->Gd->destination_image_object) {
                 // if source image object is not the same as destination.
                 // this is for prevent when chaining it will be destroy both variables.
-                imagedestroy($this->Gd->source_image_object);
+                if (version_compare(PHP_VERSION, '8.0', '<')) {
+                    imagedestroy($this->Gd->source_image_object);
+                }
             }
             $this->Gd->source_image_object = null;
         }

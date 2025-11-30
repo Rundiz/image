@@ -4,6 +4,28 @@ $sourceImageFile = '../source-images/source-image.gif';
 include_once 'includes/include-functions.php';
 
 
+if (!function_exists('destroyGdImage')) {
+    /**
+     * Destroy GD image resource/object
+     * 
+     * @see imagedestroy()
+     * @param resource|object $image
+     * @return bool
+     */
+    function destroyGdImage(&$image)
+    {
+        if (is_resource($image) || is_object($image)) {
+            if (version_compare(PHP_VERSION, '8.0', '<')) {
+                return imagedestroy($image);
+            }
+            $image = null;
+            return true;
+        }
+        return false;
+    }// destroyGdImage
+}
+
+
 /**
  * Create new resource/object (GDImage for PHP 8.0+) from image file.
  * 
@@ -87,7 +109,7 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -112,7 +134,7 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -134,8 +156,8 @@ function fillTransparentWhite($image)
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
@@ -161,7 +183,7 @@ function fillTransparentWhite($image)
                         <?php
                         // inherit previous processed.
                         $previousDimension = $newDimension;
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         unset($imgDestinationObject, $newDimension);
 
@@ -182,8 +204,8 @@ function fillTransparentWhite($image)
                     <td>
                         <?php
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
 
                         $imgSourceObject = newGdFromFile();
@@ -193,7 +215,7 @@ function fillTransparentWhite($image)
                         $imgDestinationObject = imagecreatetruecolor(imagesx($imgSourceObject), imagesy($imgSourceObject));
                         fillTransparentWhite($imgDestinationObject);
                         imagecopy($imgDestinationObject, $imgSourceObject, 0, 0, 0, 0, imagesx($imgSourceObject), imagesy($imgSourceObject));
-                        imagedestroy($imgSourceObject);
+                        destroyGdImage($imgSourceObject);
                         $imgSourceObject = $imgDestinationObject;
                         // End make source image to be transparent for GIF.
                         $imgDestinationObject = imagerotate($imgSourceObject, $rotate, imagecolorallocate($imgSourceObject, 255, 255, 255));
@@ -235,8 +257,8 @@ function fillTransparentWhite($image)
                         <?php
                         if (function_exists('imageflip')) {
                             // clear everything before begins again from source.
-                            imagedestroy($imgSourceObject);
-                            imagedestroy($imgDestinationObject);
+                            destroyGdImage($imgSourceObject);
+                            destroyGdImage($imgDestinationObject);
                             unset($imgDestinationObject, $imgSourceObject);
 
                             $imgSourceObject = newGdFromFile();
@@ -259,8 +281,8 @@ function fillTransparentWhite($image)
                         }
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -290,8 +312,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -315,8 +337,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -339,8 +361,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -363,8 +385,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>
@@ -387,8 +409,8 @@ function fillTransparentWhite($image)
                         unset($saveImgLink, $saveResult);
 
                         // clear everything before begins again from source.
-                        imagedestroy($imgSourceObject);
-                        imagedestroy($imgDestinationObject);
+                        destroyGdImage($imgSourceObject);
+                        destroyGdImage($imgDestinationObject);
                         unset($imgDestinationObject, $imgSourceObject);
                         ?> 
                     </td>

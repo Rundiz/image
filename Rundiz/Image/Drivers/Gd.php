@@ -56,15 +56,15 @@ class Gd extends AbstractImage
      */
     public function clear()
     {
-        if ($this->isResourceOrGDObject($this->destination_image_object)) {
+        if ($this->isResourceOrGDObject($this->destination_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             imagedestroy($this->destination_image_object);
         }
 
-        if ($this->isResourceOrGDObject($this->source_image_object)) {
+        if ($this->isResourceOrGDObject($this->source_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             imagedestroy($this->source_image_object);
         }
 
-        if ($this->isResourceOrGDObject($this->watermark_image_object)) {
+        if ($this->isResourceOrGDObject($this->watermark_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             imagedestroy($this->watermark_image_object);
         }
 

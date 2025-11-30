@@ -87,7 +87,7 @@ class Rotate extends \Rundiz\Image\Drivers\AbstractGdCommand
         // clear unused variable
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {
             // if there is source image object.
-            if ($this->Gd->source_image_object != $this->Gd->destination_image_object) {
+            if ($this->Gd->source_image_object != $this->Gd->destination_image_object && version_compare(PHP_VERSION, '8.0', '<')) {
                 // if source image object is not the same as destination.
                 // this is for prevent when chaining it will be destroy both variables.
                 imagedestroy($this->Gd->source_image_object);

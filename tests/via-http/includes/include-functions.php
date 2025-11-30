@@ -61,7 +61,14 @@ function debugImage($file, $options = [])
     echo '    File size: ' . humanFileSize($fileSize) . ' (' . $fileSize . ' bytes)<br>' . PHP_EOL;
     unset($fileSize);
 
-    list($width, $height) = getimagesize($file);
+    $imagesize = getimagesize($file);
+    if (is_array($imagesize)) {
+        list($width, $height) = $imagesize;
+    } else {
+        $width = $height = null;
+    }
+    unset($imagesize);
+
     if (
         (
             !is_numeric($width) 

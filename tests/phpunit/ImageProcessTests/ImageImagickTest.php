@@ -35,7 +35,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                     $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
-                    list($width, $height, $image_type) = getimagesize($save_file_name);
+                    $imagesize = getimagesize($save_file_name);
+                    if (is_array($imagesize)) {
+                        list($width, $height, $image_type) = $imagesize;
+                    } else {
+                        $width = $height = $image_type = null;
+                    }
+                    unset($imagesize);
                     $processed_image_data = array('width' => $width, 'image_type' => $image_type);
 
                     // test assert.
@@ -63,7 +69,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                     $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resize['.$resize_width.'x'.$resize_height.'].'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
-                    list($width, $height, $image_type) = getimagesize($save_file_name);
+                    $imagesize = getimagesize($save_file_name);
+                    if (is_array($imagesize)) {
+                        list($width, $height, $image_type) = $imagesize;
+                    } else {
+                        $width = $height = $image_type = null;
+                    }
+                    unset($imagesize);
                     $processed_image_data = array('height' => $height, 'image_type' => $image_type);
 
                     // test assert.
@@ -104,7 +116,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                     $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-rotate['.$rotate.']'.'.'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
-                    list($width, $height, $image_type) = getimagesize($save_file_name);
+                    $imagesize = getimagesize($save_file_name);
+                    if (is_array($imagesize)) {
+                        list($width, $height, $image_type) = $imagesize;
+                    } else {
+                        $width = $height = $image_type = null;
+                    }
+                    unset($imagesize);
                     $processed_image_data = array('width' => $width, 'image_type' => $image_type);
 
                     // test assert.
@@ -148,7 +166,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                     $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-crop['.$crop_width.'x'.$crop_height.'-'.$crop_x.','.$crop_y.']'.'.'.$save_extension;
                     $Image->save($save_file_name);
                     $Image->clear();
-                    list($width, $height, $image_type) = getimagesize($save_file_name);
+                    $imagesize = getimagesize($save_file_name);
+                    if (is_array($imagesize)) {
+                        list($width, $height, $image_type) = $imagesize;
+                    } else {
+                        $width = $height = $image_type = null;
+                    }
+                    unset($imagesize);
                     $processed_image_data = array('width' => $width, 'image_type' => $image_type);
 
                     // test assert.
@@ -191,7 +215,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                         $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkImage['.$this->getExtensionFromName($watermark_image).'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
                         $Image->save($save_file_name);
                         $Image->clear();
-                        list($width, $height, $image_type) = getimagesize($save_file_name);
+                        $imagesize = getimagesize($save_file_name);
+                        if (is_array($imagesize)) {
+                            list($width, $height, $image_type) = $imagesize;
+                        } else {
+                            $width = $height = $image_type = null;
+                        }
+                        unset($imagesize);
                         $processed_image_data = array('width' => $width, 'image_type' => $image_type);
 
                         // test assert.
@@ -236,7 +266,13 @@ class ImageImagickTest extends \Rundiz\Image\Tests\RDICommonTestCase
                         $save_file_name = static::$processed_images_dir.'rundiz-imagick-source['.$this->getExtensionFromName($source_image).']-masterdim['.$Image->master_dim.']-resizeNoRatio['.$resize_width.'x'.$resize_height.']-watermarkText['.$watermark_font.'-'.$watermark_x.','.$watermark_y.']'.'.'.$save_extension;
                         $Image->save($save_file_name);
                         $Image->clear();
-                        list($width, $height, $image_type) = getimagesize($save_file_name);
+                        $imagesize = getimagesize($save_file_name);
+                        if (is_array($imagesize)) {
+                            list($width, $height, $image_type) = $imagesize;
+                        } else {
+                            $width = $height = $image_type = null;
+                        }
+                        unset($imagesize);
                         $processed_image_data = array('width' => $width, 'image_type' => $image_type);
 
                         // test assert.
