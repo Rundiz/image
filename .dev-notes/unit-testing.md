@@ -1,6 +1,6 @@
 # Unit testing.
 
-Recomended PHPUnit version 10.
+Recomended PHPUnit version 11.
 
 Run command `phpunit` for test all units.  
 Run command `phpunit --testsuite "dependent","imgprocess-gd"` to test some test suites with dependency.  
