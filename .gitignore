@@ -2,6 +2,7 @@
 /.phpunit.cache
 .phpunit.result.cache
 /.phpdoc/
+/.vscode/
 /.wiki/
 /tests/via-http/dev.php
 /vendor/
