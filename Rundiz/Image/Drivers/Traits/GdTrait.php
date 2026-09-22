@@ -20,7 +20,7 @@ trait GdTrait
      * Fill transparent-white on selected image object.
      * 
      * @since 3.1.4
-     * @param GdImage|resource $image Image object to fill color.
+     * @param \GdImage|resource $image Image object to fill color.
      */
     protected function fillTransparentOnObject($image)
     {
@@ -55,6 +55,51 @@ trait GdTrait
         // don't `imagedestroy()` temporary canvas because it will be destroy both variables and cause the errors.
         unset($tempCanvas);
     }// fillWhiteBgOnDestination
+
+
+    /**
+     * Get image color with alpha value (transparency).
+     * 
+     * @since 3.2.0
+     * @param string $colorName The color name. Supported 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta'.
+     * @param int $alpha The alpha value.
+     * @param \GdImage|resource $image The GD image object or resource.
+     * @throws \InvalidArgumentException Throw exception if provide argument type mismatch.
+     */
+    private function getImageColorAlpha($colorName, $alpha, $image)
+    {
+        if (!is_string($colorName)) {
+            throw new \InvalidArgumentException('The argument `$colorName` must be string.');
+        }
+        
+        if (!is_numeric($alpha)) {
+            throw new \InvalidArgumentException('The argument `$alpha` must be integer.');
+        }
+
+        if (!$this->isResourceOrGDObject($image)) {
+            throw new \InvalidArgumentException('The argument `$image` must be GdImage.');
+        }
+
+        switch ($colorName) {
+            case 'black':
+                return imagecolorallocatealpha($image, 0, 0, 0, $alpha);
+            case 'red':
+                return imagecolorallocatealpha($image, 255, 0, 0, $alpha);
+            case 'green':
+                return imagecolorallocatealpha($image, 0, 255, 0, $alpha);
+            case 'blue':
+                return imagecolorallocatealpha($image, 0, 0, 255, $alpha);
+            case 'yellow':
+                return imagecolorallocatealpha($image, 255, 255, 0, $alpha);
+            case 'cyan':
+                return imagecolorallocatealpha($image, 0, 255, 255, $alpha);
+            case 'magenta':
+                return imagecolorallocatealpha($image, 255, 0, 255, $alpha);
+            case 'white':
+            default:
+                return imagecolorallocatealpha($image, 255, 255, 255, $alpha);
+        }
+    }// getImageColorAlpha
 
 
     /**

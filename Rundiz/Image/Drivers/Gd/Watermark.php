@@ -216,7 +216,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
      * @param int|string $wm_txt_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_txt_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param int $wm_txt_font_size Font size
-     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'transwhitetext')
+     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta')
      * @param int $wm_txt_font_alpha Text transparency value. (0-127)
      * @param array $options The watermark text options. (Since v.3.1.0)<br>
      *              `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
@@ -230,7 +230,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         $wm_txt_start_x = 0, 
         $wm_txt_start_y = 0, 
         $wm_txt_font_size = 10, 
-        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_color = 'white', 
         $wm_txt_font_alpha = 60,
         array $options = []
     ) {
@@ -322,44 +322,39 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
             $wm_txt_font_alpha = 60;
         }
 
-        // set color
-        $black = imagecolorallocate($wm_txt_object, 0, 0, 0);
-        $white = imagecolorallocate($wm_txt_object, 255, 255, 255);
-        $red = imagecolorallocate($wm_txt_object, 255, 0, 0);
-        $green = imagecolorallocate($wm_txt_object, 0, 255, 0);
-        $blue = imagecolorallocate($wm_txt_object, 0, 0, 255);
-        $yellow = imagecolorallocate($wm_txt_object, 255, 255, 0);
-        $cyan = imagecolorallocate($wm_txt_object, 0, 255, 255);
-        $magenta = imagecolorallocate($wm_txt_object, 255, 0, 255);
-        $colorDebugBg = imagecolorallocatealpha($wm_txt_object, 0, 0, 255, 85);
-        $transwhite = imagecolorallocatealpha($wm_txt_object, 255, 255, 255, 127);// set color transparent white
-        $transwhitetext = imagecolorallocatealpha($wm_txt_object, 255, 255, 255, $wm_txt_font_alpha);
-
-        if (!isset($$wm_txt_font_color)) {
-            $wm_txt_font_color = 'transwhitetext';
+        if ('transwhitetext' === $wm_txt_font_color) {
+            // if font color is `'transwhitetext'`. set to white.
+            // @todo remove this in v4.0
+            $wm_txt_font_color = 'white';
         }
-        $fillWmBg = $transwhite;
+
+        // set default bg color
+        $fillWmBg = $this->getImageColorAlpha('white', 127, $wm_txt_object);
 
         if (isset($options['fillBackground']) && $options['fillBackground'] === true) {
             if (isset($options['backgroundColor'])) {
-                $colorName = $options['backgroundColor'];
-                if (strtolower($colorName) === 'colordebugbg' || strtolower($colorName) === 'debug') {
-                    $colorName = 'colorDebugBg';
+                $backgroundColor = $options['backgroundColor'];
+                $backgroundAlpha = $options['backgroundAlpha'];
+                if (strtolower($backgroundColor) === 'colordebugbg' || strtolower($backgroundColor) === 'debug') {
+                    $fillWmBg = $this->getImageColorAlpha('blue', 85, $wm_txt_object);
+                } else {
+                    $fillWmBg = $this->getImageColorAlpha($backgroundColor, $backgroundAlpha, $wm_txt_object);
                 }
-                if (isset($$colorName)) {
-                    $fillWmBg = $$colorName;
-                }
-                unset($colorName);
+                unset($backgroundAlpha, $backgroundColor);
             }
         }
 
         // fill background color
         imagefill($wm_txt_object, 0, 0, $fillWmBg);
-
         unset($fillWmBg);
 
-        $textColor = $$wm_txt_font_color;
-        unset($black, $blue, $colorDebugBg, $cyan, $green, $magenta, $red, $transwhite, $transwhitetext, $white, $yellow);
+        // re-enable blending so text anti-aliasing blends into the background.
+        // the result will be look the same as using `Imagick`.
+        if (isset($options['fillBackground']) && $options['fillBackground'] === true) {
+            imagealphablending($wm_txt_object, true);
+        }
+
+        $textColor = $this->getImageColorAlpha($wm_txt_font_color, $wm_txt_font_alpha, $wm_txt_object);
 
         return [$wm_txt_object, $textColor];
     }// createWatermarkTextObject

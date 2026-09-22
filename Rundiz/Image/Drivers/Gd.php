@@ -454,12 +454,18 @@ class Gd extends AbstractImage
         $wm_txt_start_x = 0, 
         $wm_txt_start_y = 0, 
         $wm_txt_font_size = 10, 
-        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_color = 'white', 
         $wm_txt_font_alpha = 60,
         array $options = []
     ) {
         if (false === $this->isClassSetup()) {
             return false;
+        }
+
+        if ('transwhitetext' === $wm_txt_font_color) {
+            // if font color is `'transwhitetext'`.
+            // @todo Push to warning in 3.3, errors (throw exception) in 4.0.
+            trigger_error('The font color `transwhitetext` is deprecated. Use `white` instead.', E_USER_DEPRECATED);
         }
 
         // check watermark font path exists

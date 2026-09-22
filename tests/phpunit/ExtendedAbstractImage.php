@@ -93,7 +93,7 @@ class ExtendedAbstractImage extends \Rundiz\Image\AbstractImage
         $wm_txt_start_x = 0, 
         $wm_txt_start_y = 0, 
         $wm_txt_font_size = 10, 
-        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_color = 'white', 
         $wm_txt_font_alpha = 60,
         array $options = []
     ) {

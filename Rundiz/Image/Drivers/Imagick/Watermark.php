@@ -22,6 +22,9 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
     use \Rundiz\Image\Traits\ImageTrait;
 
 
+    use \Rundiz\Image\Drivers\Traits\ImagickTrait;
+
+
     /**
      * Apply watermark image to source image.
      * 
@@ -87,7 +90,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
      * @param int|string $wm_txt_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_txt_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param int $wm_txt_font_size Font size
-     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'transwhitetext')
+     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta')
      * @param int $wm_txt_font_alpha Text transparency value. (0-127)
      * @param array $options The watermark text options. (Since v.3.1.0)<br>
      *              `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
@@ -101,7 +104,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         $wm_txt_start_x = 0, 
         $wm_txt_start_y = 0, 
         $wm_txt_font_size = 10, 
-        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_color = 'white', 
         $wm_txt_font_alpha = 60,
         array $options = []
     ) {
@@ -225,34 +228,25 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         $wm_txt_font_alpha, 
         $options = []
     ) {
-        // set color
-        $black = new \ImagickPixel('black');
-        $white = new \ImagickPixel('white');
-        $red = new \ImagickPixel('rgb(255, 0, 0)');
-        $green = new \ImagickPixel('rgb(0, 255, 0)');
-        $blue = new \ImagickPixel('rgb(0, 0, 255)');
-        $yellow = new \ImagickPixel('rgb(255, 255, 0)');
-        $cyan = new \ImagickPixel('rgb(0, 255, 255)');
-        $magenta = new \ImagickPixel('rgb(255, 0, 255)');
-        $colorDebugBg = new \ImagickPixel('rgba(0, 0, 255, 0.3)');
-        $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');// set color transparent white
-        $transwhitetext = new \ImagickPixel('rgba(255, 255, 255, '.$this->convertAlpha127ToRgba($wm_txt_font_alpha).')');
-
-        if (!isset($$wm_txt_font_color)) {
-            $wm_txt_font_color = 'transwhitetext';
+        if ('transwhitetext' === $wm_txt_font_color) {
+            // if font color is `'transwhitetext'`. set to white.
+            // @todo remove this in v4.0
+            $wm_txt_font_color = 'white';
         }
-        
-        $fillWmBg = $transwhite;
+        $alphaToRgbA = $this->convertAlpha127ToRgba($wm_txt_font_alpha);
+
+        // set default bg color
+        $fillWmBg = $this->getImageColorAlpha('white', '0');
         if (isset($options['fillBackground']) && $options['fillBackground'] === true) {
             if (isset($options['backgroundColor'])) {
-                $colorName = $options['backgroundColor'];
-                if (strtolower($colorName) === 'colordebugbg' || strtolower($colorName) === 'debug') {
-                    $colorName = 'colorDebugBg';
+                $backgroundColor = $options['backgroundColor'];
+                $backgroundAlpha = $options['backgroundAlpha'];
+                if (strtolower($backgroundColor) === 'colordebugbg' || strtolower($backgroundColor) === 'debug') {
+                    $fillWmBg = $this->getImageColorAlpha('blue', '0.3');
+                } else {
+                    $fillWmBg = $this->getImageColorAlpha($backgroundColor, $this->convertAlpha127ToRgba($backgroundAlpha));
                 }
-                if (isset($$colorName)) {
-                    $fillWmBg = $$colorName;
-                }
-                unset($colorName);
+                unset($backgroundAlpha, $backgroundColor);
             }
         }
 
@@ -261,24 +255,11 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         $ImagickDraw->rectangle($wm_txt_start_x, $wm_txt_start_y, ($wm_txt_start_x + $wm_txt_width), ($wm_txt_start_y + $wm_txt_height));
         $this->ImagickD->Imagick->drawImage($ImagickDraw);
         // fill font color
-        $ImagickDraw->setFillColor($$wm_txt_font_color);
-
-        // clear
-        $black->clear();
-        $blue->clear();
-        $colorDebugBg->clear();
-        $cyan->clear();
-        $green->clear();
-        $magenta->clear();
-        $red->clear();
-        $transwhite->clear();
-        $transwhitetext->clear();
-        $white->clear();
-        $yellow->clear();
+        $ImagickDraw->setFillColor($this->getImageColorAlpha($wm_txt_font_color, $alphaToRgbA));
 
         // unset
-        unset($black, $blue, $colorDebugBg, $cyan, $green, $magenta, $red, $transwhite, $transwhitetext, $white, $yellow);
-    }// drawWatermarkTextOnCanvas
+        unset($alphaToRgbA);
+    }// createWatermarkTextObject
 
 
     /**

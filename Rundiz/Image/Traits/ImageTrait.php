@@ -178,6 +178,24 @@ trait ImageTrait
         if (array_key_exists('backgroundColor', $options) && !is_string($options['backgroundColor'])) {
             $options['backgroundColor'] = '';
         }
+
+        if (
+            (
+                array_key_exists('backgroundAlpha', $options) && 
+                !is_numeric($options['backgroundAlpha'])
+            ) ||
+            !array_key_exists('backgroundAlpha', $options)
+        ) {
+            $options['backgroundAlpha'] = 70;
+        } elseif (isset($options['backgroundAlpha']) && is_numeric($options['backgroundAlpha'])) {
+            $options['backgroundAlpha'] = intval($options['backgroundAlpha']);
+            if ($options['backgroundAlpha'] < 0) {
+                $options['backgroundAlpha'] = 0;
+            } elseif ($options['backgroundAlpha'] > 127) {
+                $options['backgroundAlpha'] = 127;
+            }
+        }
+
         if (array_key_exists('opacity', $options) && !is_numeric($options['opacity'])) {
             $options['opacity'] = 100;
         } elseif (isset($options['opacity']) && is_numeric($options['opacity'])) {

@@ -113,17 +113,19 @@ interface ImageInterface
     /**
      * Set the watermark text.
      * 
+     * @since 3.2.0 New option `backgroundAlpha`. Removed `transwhitetext` from `wm_txt_font_color` argument but allow as fallback only.
      * @param string $wm_txt_text Watermark text
      * @param string $wm_txt_font_path 'True Type Font' path
      * @param int|string $wm_txt_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_txt_start_y Position to begin in x axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param int $wm_txt_font_size Font size
-     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'transwhitetext')
-     * @param int $wm_txt_font_alpha Text transparency value. (0-127)
+     * @param string $wm_txt_font_color Font color. ('black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta')
+     * @param int $wm_txt_font_alpha Text transparency value from 0 (no transparent) to 127 (full transparent).
      * @param array $options The watermark text options. (Since v.3.1.0)<br>
-     *              `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
-     *              `backgroundColor` (string) The background color to fill for text bounding box. Available values are 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'debug'.<br>
-     *              `padding` (int) (Since v3.1.3) Padding around watermark text. Use with left, right, bottom, top but not middle, center.<br>
+     *      `fillBackground` (bool) Set to `true` to fill background color for text bounding box. Default is `false` to use transparent.<br>
+     *      `backgroundColor` (string) The background color to fill for text bounding box. Available values are 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta', 'debug'.<br>
+     *      `backgroundAlpha` (int) The background transparency value from 0 (no transparent) to 127 (full transparent). Default is 70.
+     *      `padding` (int) (Since v3.1.3) Padding around watermark text. Use with left, right, bottom, top but not middle, center.<br>
      * @return bool Return `true` on success, `false` on failed. Call to `status_msg` property to see the details on failure.
      */
     public function watermarkText(
@@ -132,7 +134,7 @@ interface ImageInterface
         $wm_txt_start_x = 0, 
         $wm_txt_start_y = 0, 
         $wm_txt_font_size = 10, 
-        $wm_txt_font_color = 'transwhitetext', 
+        $wm_txt_font_color = 'white', 
         $wm_txt_font_alpha = 60,
         array $options = []
     );
