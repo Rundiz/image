@@ -76,6 +76,7 @@ $Image->rotate('horvrt');// both horizontal and vertical
 // Watermark image
 $Image->watermarkImage('/var/www/image/watermark.png', 'center', 'middle');
 $Image->watermarkImage('/var/www/image/watermark.png', 50, 90);// watermark start from X 50 and Y 90
+$Image->watermarkImage('/var/www/image/watermark.jpg', 'center', 'middle', ['opacity' => 60]);// set watermark opacity even it is a jpeg image.
 
 // Watermark text
 $Image->watermarkText('hello world', '/var/www/fonts/myfont.ttf', 'center', 'middle', 16);
