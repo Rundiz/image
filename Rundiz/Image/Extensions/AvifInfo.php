@@ -6,6 +6,8 @@
  * PHP is already supported AVIF since v8.2, this class is for use with older version of PHP.
  * #php8.2
  * 
+ * @todo Remove usage of this class when minimum requirement is PHP >= 8.2.0
+ * 
  * Namespace must be modified from `Avifinfo` to be `Rundiz\Avifinfo` to prevent re-declare functions errors when other vendor using it.
  * 
  * Copied from commit: f50948793d6ae181d82c1255a40fb1becce6ee57
