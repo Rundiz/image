@@ -106,8 +106,6 @@ class Imagick extends AbstractImage
             $this->source_image_frames = $i;
             $this->source_image_data = array_merge($this->source_image_data, ['frames' => $i]);
             $Imagick->clear();
-        } catch (\Error $err) {
-            return false;
         } catch (\Exception $ex) {
             return false;
         }
