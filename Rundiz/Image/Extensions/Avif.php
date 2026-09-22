@@ -39,28 +39,53 @@ class Avif
 
     /**
      * Get AVIF info.
+     * 
+     * @return array Return associative array with keys: `HEIGHT`, `WIDTH`.
      */
     public function avifInfo()
     {
-        include_once __DIR__ . '/AvifInfo.php';
         $output = [];
-        $fh = fopen($this->file, 'rb');
 
-        if (is_resource($fh)) {
-            $Parser = new \Rundiz\Avifinfo\Parser($fh);
-            $success = $Parser->parse_ftyp() && $Parser->parse_file();
-            fclose($fh);
-
-            if ($success) {
-                $features = $Parser->features->primary_item_features;
-                $output['HEIGHT'] = (isset($features['height']) ? $features['height'] : null);
-                $output['WIDTH'] = (isset($features['width']) ? $features['width'] : null);
-                unset($features);
+        if (version_compare(PHP_VERSION, '8.2', '>=') || version_compare(PHP_VERSION, '8.2.0', '>=')) {
+            $imagesize = getimagesize($this->file);
+            if (is_array($imagesize)) {
+                list($width, $height) = $imagesize;
+            } else {
+                $width = $height = null;
             }
-            unset($Parser, $success);
-        }
 
-        unset($fh);
+            if (is_numeric($width)) {
+                $output['WIDTH'] = $width;
+            } else {
+                $output['WIDTH'] = null;
+            }
+            if (is_numeric($height)) {
+                $output['HEIGHT'] = $height;
+            } else {
+                $output['HEIGHT'] = null;
+            }
+            unset($height, $width);
+        } else {
+            include_once __DIR__ . '/AvifInfo.php';
+            $fh = fopen($this->file, 'rb');
+
+            if (is_resource($fh)) {
+                $Parser = new \Rundiz\Avifinfo\Parser($fh);
+                $success = $Parser->parse_ftyp() && $Parser->parse_file();
+                fclose($fh);
+
+                if ($success) {
+                    $features = $Parser->features->primary_item_features;
+                    $output['HEIGHT'] = (isset($features['height']) ? $features['height'] : null);
+                    $output['WIDTH'] = (isset($features['width']) ? $features['width'] : null);
+                    unset($features);
+                }
+                unset($Parser, $success);
+            }
+
+            unset($fh);
+        }// endif;
+
         return $output;
     }// avifInfo
 
