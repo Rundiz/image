@@ -27,7 +27,7 @@ class Show extends \Rundiz\Image\Drivers\AbstractImagickCommand
     public function execute($file_ext = '')
     {
         if ($file_ext == null) {
-            $file_ext = str_replace('.', '', $this->source_image_ext);
+            $file_ext = str_replace('.', '', $this->ImagickD->source_image_ext);
         }
         $file_ext = str_ireplace('jpeg', 'jpg', $file_ext);
         $file_ext = ltrim($file_ext, '.');

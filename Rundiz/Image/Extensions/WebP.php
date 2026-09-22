@@ -149,6 +149,8 @@ class WebP
             }
         }
         unset($immVA);
+
+        return false;
     }// isImagickSupportedAnimated
 
 

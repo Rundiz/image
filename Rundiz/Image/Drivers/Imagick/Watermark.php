@@ -312,9 +312,9 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         }
 
         if ($wm_height == null || $wm_width == null || $wm_type == null) {
-            $Gds = $this->Gd->getStatic();
-            $this->setErrorMessage('Watermark is not an image.', $Gds::RDIERROR_WMI_UNKNOWIMG);
-            unset($Gds);
+            $ImagickD = $this->ImagickD->getStatic();
+            $this->setErrorMessage('Watermark is not an image.', $ImagickD::RDIERROR_WMI_UNKNOWIMG);
+            unset($ImagickD);
             return false;
         }
 
