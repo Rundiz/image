@@ -31,11 +31,10 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
      * Class constructor.
      * 
      * @param string $source_image_path Path to source image file.
-     * @return bool Return true on success, false on failed. Call to `statusCode` or `status_msg` property to see the details on failure.
      */
     public function __construct($source_image_path)
     {
-        return $this->buildSourceImageData($source_image_path);
+        $this->buildSourceImageData($source_image_path);
     }// __construct
 
 
@@ -57,6 +56,8 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
         if (property_exists($this, $name)) {
             return $this->{$name};
         }
+
+        throw new \Exception('The property to access (' . $name . ') does not exist.');
     }// __get
 
 
@@ -70,6 +71,9 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
         if (property_exists($this, $name)) {
             $this->{$name} = $value;
         }
+
+        // properties that does not exist must not showing any info/notice/warnings/errors.
+        // they must be able to set on the fly from other class in this repo.
     }// __set
 
 
@@ -151,6 +155,8 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
         $this->watermark_image_type = null;
         $this->watermark_image_width = null;
         $this->watermark_image_height = null;
+
+        return true;
     }// clear
 
 
@@ -164,29 +170,6 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
             'width' => $this->source_image_width,
         ];
     }// getImageSize
-
-
-    /**
-     * Get source image orientation.<br>
-     * This method called by calculateImageSizeRatio().
-     * 
-     * @todo Remove in v3.2.
-     * @deprecated since v3.1.5. Will be removed in v3.2.
-     * @return string Return S for square, L for landscape, P for portrait.
-     */
-    protected function getSourceImageOrientation()
-    {
-        if ($this->source_image_height == $this->source_image_width) {
-            // square image
-            return 'S';
-        } elseif ($this->source_image_height < $this->source_image_width) {
-            // landscape image
-            return 'L';
-        } else {
-            // portrait image
-            return 'P';
-        }
-    }// getSourceImageOrientation
 
 
     /**
@@ -304,24 +287,6 @@ abstract class AbstractImage extends AbstractProperties implements ImageInterfac
         $this->status_msg = null;
         $this->statusCode = null;
     }// setStatusSuccess
-
-
-    /**
-     * Verify master dimension value must be correctly.
-     * 
-     * This method was called by `CalculationTrait::calculateImageSizeRatio()`.
-     * 
-     * @todo Remove in v3.2.
-     * @deprecated since v3.1.5. Will be removed in v3.2.
-     */
-    protected function verifyMasterDimension() 
-    {
-       $this->master_dim = strtolower($this->master_dim);
-
-       if ($this->master_dim !== 'auto' && $this->master_dim !== 'width' && $this->master_dim !== 'height') {
-           $this->master_dim = 'auto';
-       }
-    }// verifyMasterDimension
 
 
 }
