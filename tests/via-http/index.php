@@ -63,9 +63,10 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndDimensionMatch($file, $wi
  * 
  * @param string $file The image file to check. Recommend full path.
  * @param string $mime_type Expect mime type.
+ * @param bool $mismatch_mimetype_error On mismatch mime type, show errors. If `false` then it will be show warning instead.
  * @throws \InvalidArgumentException Throw exception on invalid argument type.
  */
-function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_type)
+function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_type, $mismatch_mimetype_error = true)
 {
     if (!is_string($file)) {
         throw new \InvalidArgumentException('The argument `$file` must be string.');
@@ -74,13 +75,16 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_ty
         throw new \InvalidArgumentException('The argument `$mime_type` must be string.');
     }
 
-    $chk_file_exists = (
-        file_exists($file) && 
-        is_file($file)
-    );
-
-    if (true === $chk_file_exists && $mime_type === mime_content_type($file)) {
-        echo '✅';
+    if (is_file($file)) {
+        if ($mime_type === mime_content_type($file)) {
+            echo '✅';
+        } else {
+            if (true === $mismatch_mimetype_error) {
+                echo '❌';
+            } else {
+                echo '⚠️';
+            }
+        }
     } else {
         echo '❌';
     }
@@ -140,7 +144,7 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_ty
                         (You have to use photo editor program. Not just rename the file extension.)
                         <ul>
                             <li><strong>source-image.avif</strong> (must contain transparent in the image) <?php 
-                                rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.avif'); 
+                                rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.avif', 'image/avif', false); 
                             ?></li>
                             <li><strong>source-image.gif</strong> (must contain transparent in the image) <?php 
                                 rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.gif'); 
@@ -149,10 +153,10 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_ty
                                 rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.png'); 
                             ?></li>
                             <li><strong>source-image.webp</strong> (must contain transparent in the image) <?php 
-                                rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.webp'); 
+                                rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.webp', 'image/webp', false); 
                             ?></li>
                             <li><strong>source-image-non-transparent.webp</strong> (must NOT contain transparent in the image) <?php 
-                                rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image-non-transparent.webp'); 
+                                rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image-non-transparent.webp', 'image/webp', false); 
                             ?></li>
                         </ul>
                     </li>
