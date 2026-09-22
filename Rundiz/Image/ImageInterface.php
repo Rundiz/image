@@ -3,7 +3,7 @@
  * PHP Image manipulation class.
  * 
  * @package Image
- * @version 3.2.0dev-20260922
+ * @version 3.2.0
  * @author Vee W.
  * @license http://opensource.org/licenses/MIT
  */
