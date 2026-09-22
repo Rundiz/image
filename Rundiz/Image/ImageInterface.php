@@ -103,7 +103,8 @@ interface ImageInterface
      * @param int|string $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param array $options The watermark options. (Since v3.1.3)<br>
-     *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `opacity` (int) The image opacity value from 0 (full transparent) to 100 (no transparent).<br>
      * @return bool Return `true` on success, `false` on failure. Call to `status_msg` property to see the details on failure.
      */
     public function watermarkImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = []);

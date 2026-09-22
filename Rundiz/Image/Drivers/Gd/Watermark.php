@@ -33,7 +33,8 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
      * @param int|string $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param array $options The watermark options. (Since v3.1.3)<br>
-     *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `opacity` (int) The image opacity value from 0 (full transparent) to 100 (no transparent).<br>
      * @return bool Return `true` on success, `false` on failure. Call to `status_msg` property to see the details on failure.
      */
     public function applyImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])
@@ -42,10 +43,21 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
             return false;
         }
 
+        $this->normalizeWatermarkOptions($options);
         list($wm_img_start_x, $wm_img_start_y) = $this->normalizeStartPosition($wm_img_start_x, $wm_img_start_y, null, null, $options);
 
         // copy watermark image on to source image (in this case, it is destination image object).
-        imagecopy($this->Gd->destination_image_object, $this->Gd->watermark_image_object, $wm_img_start_x, $wm_img_start_y, 0, 0, $this->Gd->watermark_image_width, $this->Gd->watermark_image_height);
+        $this->imagecopymergeAlphaPreserve(
+            $this->Gd->destination_image_object,
+            $this->Gd->watermark_image_object, 
+            $wm_img_start_x, 
+            $wm_img_start_y, 
+            0, 
+            0,
+            $this->Gd->watermark_image_width, 
+            $this->Gd->watermark_image_height,
+            (isset($options['opacity']) ? $options['opacity'] : 100)
+        );
 
         if ($this->isResourceOrGDObject($this->Gd->watermark_image_object) && version_compare(PHP_VERSION, '8.0', '<')) {
             // if there is watermark image object.
@@ -66,6 +78,133 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
 
         return true;
     }// applyImage
+
+
+    /**
+     * Merge a source image onto the destination with a forced opacity level,
+     * preserving the alpha channel of both images.
+     *
+     * Drop-in replacement for imagecopymerge(), which ignores alpha and
+     * corrupts transparency when the destination is not fully opaque.  
+     * Each source pixel's own alpha is multiplied by the forced opacity,
+     * then composited over the destination using source-over blending,
+     * so transparent areas of the destination stay transparent.
+     *
+     * Both images are converted to truecolor in place if they are palette
+     * based. The destination's alpha blending is disabled and its alpha
+     * channel is flagged to be saved.
+     *
+     * @since 3.2.10
+     * @param \GdImage|resource $dst Destination image, modified in place.
+     * @param \GdImage|resource $src Source image to merge onto the destination.
+     * @param int $dstX X coordinate in the destination to start merging at.
+     * @param int $dstY Y coordinate in the destination to start merging at.
+     * @param int $srcX X coordinate in the source to start reading from.
+     * @param int $srcY Y coordinate in the source to start reading from.
+     * @param int $width Width of the region to merge, in pixels.
+     * @param int $height Height of the region to merge, in pixels.
+     * @param int $opacity Forced opacity of the source, 0 (full transparent) to 100 (no transparent).
+     */
+    private function imagecopymergeAlphaPreserve(
+        $dst,
+        $src,
+        $dstX,
+        $dstY,
+        $srcX,
+        $srcY,
+        $width,
+        $height,
+        $opacity = 100
+    ) {
+        if (!imageistruecolor($src)) {
+            imagepalettetotruecolor($src);
+        }
+
+        if (!imageistruecolor($dst)) {
+            imagepalettetotruecolor($dst);
+        }
+
+        $opacity = max(0, min(100, $opacity));
+        $opacityFactor = $opacity / 100.0;
+
+        // We are writing alpha values ourselves.
+        imagealphablending($dst, false);
+        imagesavealpha($dst, true);
+
+        for ($y = 0; $y < $height; $y++) {
+            $dy = $dstY + $y;
+            $sy = $srcY + $y;
+
+            for ($x = 0; $x < $width; $x++) {
+                $dx = $dstX + $x;
+                $sx = $srcX + $x;
+
+                $srcPixel = imagecolorat($src, $sx, $sy);
+                $dstPixel = imagecolorat($dst, $dx, $dy);
+
+                // GD alpha: 0 = opaque, 127 = fully transparent.
+                $srcA = ($srcPixel >> 24) & 0x7F;
+                if ($srcA === 127) {
+                    continue;
+                }
+                $srcR = ($srcPixel >> 16) & 0xFF;
+                $srcG = ($srcPixel >> 8)  & 0xFF;
+                $srcB = $srcPixel & 0xFF;
+
+                $dstA = ($dstPixel >> 24) & 0x7F;
+                $dstR = ($dstPixel >> 16) & 0xFF;
+                $dstG = ($dstPixel >> 8)  & 0xFF;
+                $dstB = $dstPixel & 0xFF;
+
+                // Convert GD alpha to normal opacity: 0.0 = transparent, 1.0 = opaque.
+                $srcOpacity = (1.0 - ($srcA / 127.0)) * $opacityFactor;
+                $dstOpacity = 1.0 - ($dstA / 127.0);
+
+                // Source-over compositing.
+                $outOpacity = $srcOpacity + $dstOpacity * (1.0 - $srcOpacity);
+
+                if ($outOpacity <= 0.0) {
+                    $outR = 0;
+                    $outG = 0;
+                    $outB = 0;
+                    $outA = 127;
+                } else {
+                    $outR = (
+                        ($srcR * $srcOpacity) +
+                        ($dstR * $dstOpacity * (1.0 - $srcOpacity))
+                    ) / $outOpacity;
+
+                    $outG = (
+                        ($srcG * $srcOpacity) +
+                        ($dstG * $dstOpacity * (1.0 - $srcOpacity))
+                    ) / $outOpacity;
+
+                    $outB = (
+                        ($srcB * $srcOpacity) +
+                        ($dstB * $dstOpacity * (1.0 - $srcOpacity))
+                    ) / $outOpacity;
+
+                    // Convert normal opacity back to GD alpha.
+                    $outA = 127 * (1.0 - $outOpacity);
+                }
+
+                $outR = max(0, min(255, (int) round($outR)));
+                $outG = max(0, min(255, (int) round($outG)));
+                $outB = max(0, min(255, (int) round($outB)));
+                $outA = max(0, min(127, (int) round($outA)));
+
+                $color = imagecolorallocatealpha(
+                    $dst,
+                    $outR,
+                    $outG,
+                    $outB,
+                    $outA
+                );
+
+                imagesetpixel($dst, $dx, $dy, $color);
+            }// endfor;
+        }// endfor;
+    }// imagecopymergeAlphaPreserve
 
 
     /**
@@ -104,6 +243,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractGdCommand
         $wm_txt_width = abs($type_space[4] - $type_space[0]) + 5;// +5 for add bounding box space to the right. so, it don't get cut before character end and for the same space as Imagick.
         unset($type_space);
 
+        $this->normalizeWatermarkOptions($options);
         list($wm_txt_start_x, $wm_txt_start_y) = $this->normalizeStartPosition($wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height, $options);
 
         // begins watermark text --------------------------------------------------------------------------------------------

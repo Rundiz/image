@@ -86,7 +86,7 @@ trait CalculationTrait
      * @param int $imgHeight Latest image height. Get the dimension from latest modified image only.
      * @param int $wmWidth Latest watermark image width. Get the dimension from latest modified image only.
      * @param int $wmHeight Latest watermark image height. Get the dimension from latest modified image only.
-     * @param array $options Associative array.<br>
+     * @param array $options The watermark options. This argument must be normalized before calling this method. Value is associative array.<br>
      *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center.<br>
      * @return array Return array with width as index 0, height as index 1.
      * @throws \InvalidArgumentException Throw exception if invalid argument type was specified.
@@ -102,8 +102,6 @@ trait CalculationTrait
 
         if (!array_key_exists('padding', $options) || !is_numeric($options['padding'])) {
             $options['padding'] = 10;
-        } elseif (isset($options['padding']) && is_numeric($options['padding'])) {
-            $options['padding'] = intval($options['padding']);
         }
 
         if (is_string($wmStartX)) {

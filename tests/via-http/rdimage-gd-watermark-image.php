@@ -109,8 +109,10 @@ function displayTestWatermarkImagePositions($sourceImage)
 function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
 {
     global $saveAsExts;
+
     $positionXY = [530, 320];
     $wmExts = ['jpg', 'avif', 'gif', 'png', 'webp'];
+    $wmOpacity = 70;
 
     foreach ($test_data_set as $img_type_name => $item) {
         echo '<h4>' . $img_type_name . '</h4>' . "\n";
@@ -137,6 +139,7 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
             echo '<td></td>' . "\n";
             echo '<td>' . "\n";
             echo 'Position ' . $positionXY[0] . ',' . $positionXY[1] . '<br>';
+            echo 'Watermark opacity ' . $wmOpacity . '<br>';
             echo 'Save as' . "\n";
             echo '<table><tbody>' . "\n";
             echo '<tr>' . "\n";
@@ -145,9 +148,10 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
                 $fileName = '../processed-images/' . autoImageFilename() . '_src' . strtolower(str_replace(' ', '', $img_type_name)) .
                     '_position-' . $positionXY[0] . ',' . $positionXY[1] .
                     '_wmimg-' . $eachWmExt .
+                    '_wmopacity-' . $wmOpacity .
                     '_saveas' . $saveExt .
                     '.' . $saveExt;
-                $wmResult = $Image->watermarkImage($watermarkImage, $positionXY[0], $positionXY[1]);
+                $wmResult = $Image->watermarkImage($watermarkImage, $positionXY[0], $positionXY[1], ['opacity' => $wmOpacity]);
                 if ($wmResult !== true) {
                     $wmStatusMsg = $Image->status_msg;
                 }
@@ -178,7 +182,7 @@ function displayTestWatermarkImageDifferentWatermarkExts(array $test_data_set)
     }// endforeach;
     unset($img_type_name, $item);
 
-    unset($positionXY, $wmExts);
+    unset($positionXY, $wmExts, $wmOpacity);
 }// displayTestWatermarkImageDifferentWatermarkExts
 ?>
 <!DOCTYPE html>

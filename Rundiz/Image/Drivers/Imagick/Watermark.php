@@ -30,7 +30,8 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
      * @param int|string $wm_img_start_x Position to begin in x axis. The value is integer or 'left', 'center', 'right'.
      * @param int|string $wm_img_start_y Position to begin in y axis. The value is integer or 'top', 'middle', 'bottom'.
      * @param array $options The watermark options. (Since v3.1.3)<br>
-     *              `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `padding` (int) Padding around watermark object. Use with left, right, bottom, top but not middle, center. See `\Rundiz\Image\Traits\CalculationTrait::calculateWatermarkImageStartXY()`.<br>
+     *      `opacity` (int) The image opacity value from 0 (full transparent) to 100 (no transparent).<br>
      * @return bool Return `true` on success, `false` on failure. Call to `status_msg` property to see the details on failure.
      */
     public function applyImage($wm_img_path, $wm_img_start_x = 0, $wm_img_start_y = 0, array $options = [])
@@ -39,7 +40,11 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
             return false;
         }
 
+        $this->normalizeWatermarkOptions($options);
         list($wm_img_start_x, $wm_img_start_y) = $this->normalizeStartPosition($wm_img_start_x, $wm_img_start_y, null, null, $options);
+        if (isset($options['opacity']) && $options['opacity'] < 100) {
+            $this->applyWatermarkOpacity($options['opacity']);
+        }
 
         if ($this->ImagickD->source_image_frames > 1) {
             $this->ImagickD->Imagick = $this->ImagickD->Imagick->coalesceImages();
@@ -125,6 +130,7 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
         }
         $baseline = ($baseline - $this->ImagickD->wmTextBottomPadding);
 
+        $this->normalizeWatermarkOptions($options);
         list($wm_txt_start_x, $wm_txt_start_y) = $this->normalizeStartPosition($wm_txt_start_x, $wm_txt_start_y, $wm_txt_width, $wm_txt_height, $options);
 
         // begins watermark text --------------------------------------------------------------------------------------------
@@ -162,6 +168,37 @@ class Watermark extends \Rundiz\Image\Drivers\AbstractImagickCommand
 
         return true;
     }// applyText
+
+
+    /**
+     * Apply forced opacity to the watermark image while preserving its alpha channel.
+     *
+     * The watermark's existing alpha values are multiplied by the opacity factor,
+     * so semi-transparent pixels stay proportionally semi-transparent instead of
+     * being flattened. An opacity of 100 leaves the watermark untouched and an
+     * opacity of 0 makes it fully transparent (the composite then has no effect).
+     *
+     * @since 3.2.0
+     * @param int $opacity The opacity value from 0 (full transparent) to 100 (no transparent).
+     */
+    private function applyWatermarkOpacity($opacity)
+    {
+        if (!is_object($this->ImagickD->ImagickWatermark)) {
+            return;
+        }
+
+        $opacity = max(0, min(100, (int) $opacity));
+
+        foreach ($this->ImagickD->ImagickWatermark as $WmFrame) {
+            if (!$WmFrame->getImageAlphaChannel()) {
+                $WmFrame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_SET);
+            }
+            $WmFrame->evaluateImage(\Imagick::EVALUATE_MULTIPLY, $opacity / 100.0, \Imagick::CHANNEL_ALPHA);
+        }// endforeach;
+        unset($WmFrame);
+
+        $this->ImagickD->ImagickWatermark->setFirstIterator();
+    }// applyWatermarkOpacity
 
 
     /**
