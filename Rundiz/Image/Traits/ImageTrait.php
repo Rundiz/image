@@ -153,6 +153,45 @@ trait ImageTrait
 
 
     /**
+     * Normalize watermark options.
+     * 
+     * @since 3.2.0
+     * @see ImageInterface::watermarkImage() For reference for options argument.
+     * @see ImageInterface::watermarkText() For reference for options argument.
+     * @param array $options The watermark options to be altered.
+     * @return void
+     */
+    private function normalizeWatermarkOptions(array &$options)
+    {
+        if (array_key_exists('padding', $options) && !is_numeric($options['padding'])) {
+            $options['padding'] = 0;
+        } elseif (isset($options['padding']) && is_numeric($options['padding'])) {
+            $options['padding'] = intval($options['padding']);
+            if ($options['padding'] < 0) {
+                $options['padding'] = 0;
+            }
+        }
+
+        if (array_key_exists('fillBackground', $options) && !is_bool($options['fillBackground'])) {
+            $options['fillBackground'] = false;
+        }
+        if (array_key_exists('backgroundColor', $options) && !is_string($options['backgroundColor'])) {
+            $options['backgroundColor'] = '';
+        }
+        if (array_key_exists('opacity', $options) && !is_numeric($options['opacity'])) {
+            $options['opacity'] = 100;
+        } elseif (isset($options['opacity']) && is_numeric($options['opacity'])) {
+            $options['opacity'] = intval($options['opacity']);
+            if ($options['opacity'] < 0) {
+                $options['opacity'] = 0;
+            } elseif ($options['opacity'] > 100) {
+                $options['opacity'] = 100;
+            }
+        }
+    }// normalizeWatermarkOptions
+
+
+    /**
      * Convert width, height to integer and check if it is less than 0 then set to minimum value.
      * 
      * @param int $width Width
