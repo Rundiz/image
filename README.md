@@ -2,6 +2,10 @@
 
 Simple image manipulation that use GD or Imagick as drivers. 
 
+[![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
+[![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
+[![Total Downloads](https://poser.pugx.org/rundiz/image/downloads)](https://packagist.org/packages/rundiz/image)
+
 ## Features:
 ### File extensions supported
 
@@ -21,10 +25,6 @@ Simple image manipulation that use GD or Imagick as drivers.
 * Watermark text (including alpha transparency.)
 * Supported alpha transparency or transparent AVIF, GIF, PNG, WEBP.
 * Supported animated GIF, WEBP`*` (Imagick only).
-
-[![Latest Stable Version](https://poser.pugx.org/rundiz/image/v/stable)](https://packagist.org/packages/rundiz/image)
-[![License](https://poser.pugx.org/rundiz/image/license)](https://packagist.org/packages/rundiz/image)
-[![Total Downloads](https://poser.pugx.org/rundiz/image/downloads)](https://packagist.org/packages/rundiz/image)
 
 Tested up to PHP 8.5.
 
@@ -70,7 +70,7 @@ $Image->rotate(270);
 
 // Flip
 $Image->rotate('hor');// horizontal
-$Image->rotate('vrt');//  vertical
+$Image->rotate('vrt');// vertical
 $Image->rotate('horvrt');// both horizontal and vertical
 
 // Watermark image
