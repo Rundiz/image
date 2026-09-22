@@ -19,6 +19,9 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
     use \Rundiz\Image\Traits\CalculationTrait;
 
 
+    use \Rundiz\Image\Drivers\Traits\ImagickTrait;
+
+
     /**
      * Execute the command.
      * 
@@ -53,13 +56,15 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
         }
 
         // set color
-        $black = new \ImagickPixel('black');
-        $white = new \ImagickPixel('white');
         $transparent = new \ImagickPixel('transparent');
-        $transwhite = new \ImagickPixel('rgba(255, 255, 255, 0)');
 
         if ($fill != 'transparent' && $fill != 'white' && $fill != 'black') {
             $fill = 'transparent';
+        }
+        if ($fill === 'transparent') {
+            $fillColor = $this->getImageColorAlpha('white', 0);
+        } else {
+            $fillColor = $this->getImageColorAlpha($fill, 1);
         }
 
         if ($this->ImagickD->source_image_frames > 1) {
@@ -70,7 +75,7 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
                 foreach ($this->ImagickD->Imagick as $Frame) {
                     // fill background color.
                     if ($fill != 'transparent') {
-                        $Frame->setImageBackgroundColor($$fill);
+                        $Frame->setImageBackgroundColor($fillColor);
                         $Frame->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
                     } else {
                         $Frame->setImageBackgroundColor($transparent);
@@ -95,7 +100,7 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
             // if non-animated.
             // fill background color.
             if ($fill != 'transparent') {
-                $this->ImagickD->Imagick->setImageBackgroundColor($$fill);
+                $this->ImagickD->Imagick->setImageBackgroundColor($fillColor);
                 $this->ImagickD->Imagick->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
             } else {
                 $this->ImagickD->Imagick->setImageBackgroundColor($transparent);
@@ -112,10 +117,8 @@ class Crop extends \Rundiz\Image\Drivers\AbstractImagickCommand
             $this->ImagickD->ImagickFirstFrame = null;
         }// endif;
 
-        $black->destroy();
-        $white->destroy();
+        unset($fillColor);
         $transparent->destroy();
-        $transwhite->destroy();
 
         return true;
     }// execute

@@ -62,7 +62,7 @@ trait GdTrait
      * 
      * @since 3.2.0
      * @param string $colorName The color name. Supported 'black', 'white', 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta'.
-     * @param int $alpha The alpha value.
+     * @param int $alpha The alpha value from 0 (no transparent) to 127 (full transparent).
      * @param \GdImage|resource $image The GD image object or resource.
      * @throws \InvalidArgumentException Throw exception if provide argument type mismatch.
      */

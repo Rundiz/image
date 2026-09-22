@@ -54,20 +54,22 @@ class Crop extends \Rundiz\Image\Drivers\AbstractGdCommand
         }
 
         // set color
-        $black = imagecolorallocate($this->Gd->destination_image_object, 0, 0, 0);
-        $white = imagecolorallocate($this->Gd->destination_image_object, 255, 255, 255);
-        $transparent = imagecolorallocatealpha($this->Gd->destination_image_object, 255, 255, 255, 127);
-
-        if ($fill != 'transparent' && $fill != 'white' && $fill != 'black') {
+        if ($fill !== 'transparent' && $fill !== 'white' && $fill !== 'black') {
             $fill = 'transparent';
+        }
+        if ($fill === 'transparent') {
+            $fillColor = $this->getImageColorAlpha('white', 127, $this->Gd->destination_image_object);
+        } else {
+            $fillColor = $this->getImageColorAlpha($fill, 0, $this->Gd->destination_image_object);
         }
 
         // fill destination image object (this should be empty canvas).
-        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
+        imagefill($this->Gd->destination_image_object, 0, 0, $fillColor);
         // crop
         imagecopy($this->Gd->destination_image_object, $this->Gd->source_image_object, 0, 0, $start_x, $start_y, $width, $height);
         // fill again in case cropping size is larger than source image.
-        imagefill($this->Gd->destination_image_object, 0, 0, $$fill);
+        imagefill($this->Gd->destination_image_object, 0, 0, $fillColor);
+        unset($fillColor);
 
         // clear unused variables
         if ($this->isResourceOrGDObject($this->Gd->source_image_object)) {
