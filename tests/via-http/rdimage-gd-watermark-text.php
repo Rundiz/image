@@ -81,7 +81,7 @@ function displayTestWatermarkTextPositions($sourceImage)
             $positionXY[0], 
             $positionXY[1], 
             $fontSize, 
-            'transwhitetext',
+            'white',
             20,
             [
                 'fillBackground' => false,
@@ -166,7 +166,7 @@ function displayTestSaveCrossExts(array $test_data_set)
                     $positionXY[0], 
                     $positionXY[1], 
                     $fontSize, 
-                    'transwhitetext',
+                    'white',
                     20,
                     [
                         'fillBackground' => false,

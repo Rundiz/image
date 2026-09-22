@@ -147,10 +147,10 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_ty
                                 rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.avif', 'image/avif', false); 
                             ?></li>
                             <li><strong>source-image.gif</strong> (must contain transparent in the image) <?php 
-                                rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.gif'); 
+                                rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.gif', 'image/gif'); 
                             ?></li>
                             <li><strong>source-image.png</strong> (must contain transparent in the image) <?php 
-                                rdImageTestHttpIndexDisplayCheckImageExists($source_images_path . DIRECTORY_SEPARATOR . 'source-image.png'); 
+                                rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.png', 'image/png'); 
                             ?></li>
                             <li><strong>source-image.webp</strong> (must contain transparent in the image) <?php 
                                 rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($source_images_path . DIRECTORY_SEPARATOR . 'source-image.webp', 'image/webp', false); 

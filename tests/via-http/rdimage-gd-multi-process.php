@@ -137,7 +137,7 @@ function displayStandardMultiProcess(array $test_data_set)
                         $Image->resizeNoRatio($resize_w, $resize_h);
                         $Image->crop($crop_width, $crop_height);
                         $Image->wmTextBottomPadding = 6;
-                        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/font.ttf', 'right', 'bottom', 14, 'transwhitetext', 20);
+                        $Image->watermarkText('Rundiz watermark สั้น ญู ให้ ทดสอบสระ.', '../source-images/font.ttf', 'right', 'bottom', 14, 'white', 20);
                         $Image->save($file_name);
                         $Image->clear();
                         debugImage($file_name);
