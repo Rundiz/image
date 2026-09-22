@@ -64,7 +64,7 @@ $Image->resize(600, 400);
 $Image->resizeNoRatio(500, 300);
 
 // Rotate
-$Image->rotate();// 90 degree
+$Image->rotate();// 90 degree, start from counter-clockwise.
 $Image->rotate(180);
 $Image->rotate(270);
 
