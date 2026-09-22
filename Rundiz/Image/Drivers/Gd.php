@@ -16,9 +16,9 @@ use Rundiz\Image\AbstractImage;
  * GD driver for image manipulation.
  *
  * @since 3.0
- * @property-read mixed $destination_image_object
- * @property-read mixed $source_image_object
- * @property-read mixed $watermark_image_object
+ * @property-write resource|\GdImage|null|false $destination_image_object Image resource identifier
+ * @property-write resource|\GdImage|null|false $source_image_object Image resource identifier
+ * @property-write resource|\GdImage|null|false $watermark_image_object Image resource identifier for watermark image.
  */
 class Gd extends AbstractImage
 {

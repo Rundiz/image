@@ -18,8 +18,8 @@ use Rundiz\Image\AbstractImage;
  * ImageMagick driver for image manipulation.
  *
  * @since 3.0
- * @property-read \Imagick $ImagickFirstFrame
- * @property-read int $source_image_frames
+ * @property-write \Imagick|null $ImagickFirstFrame
+ * @property-write int $source_image_frames
  */
 class Imagick extends AbstractImage
 {
@@ -43,7 +43,7 @@ class Imagick extends AbstractImage
      */
     public $Imagick;
     /**
-     * @var \Imagick Imagick first frame object. (works with animated gif only.)
+     * @var \Imagick|null Imagick first frame object. (works with animated gif only.) It is `null` on initialize.
      */
     protected $ImagickFirstFrame;
 
@@ -69,10 +69,8 @@ class Imagick extends AbstractImage
         $this->verifyImagickVersion();
 
         if ($this->status == false && ($this->statusCode != null || $this->status_msg != null)) {
-            return false;
         } else {
             $this->buildSourceImageData($source_image_path);
-            return true;
         }
     }// __construct
 

@@ -13,19 +13,19 @@ namespace Rundiz\Image;
  * For use properties between classes without implement interface.
  * 
  * @since 3.1.0
- * @property-read int $destination_image_height
- * @property-read int $destination_image_width
- * @property-read string $source_image_ext
- * @property-read int $source_image_height
- * @property-read string $source_image_mime
- * @property-read string $source_image_path
- * @property-read string $source_image_type
- * @property-read int $source_image_width
- * @property-read int $last_modified_image_height
- * @property-read int $last_modified_image_width
- * @property-read int $watermark_image_height
- * @property-read int $watermark_image_width
- * @property-read string $watermark_image_type
+ * @property-write int $destination_image_height Destination image height. For internal use only.
+ * @property-write int $destination_image_width Destination image width. For internal use only.
+ * @property-write string $source_image_ext Source image file extension. For internal use only.
+ * @property-write int $source_image_height Source image height. For internal use only.
+ * @property-write string $source_image_mime Source image mime type. Example `image/jpeg`. For internal use only.
+ * @property-write string $source_image_path Real full path to source image file. For internal use only.
+ * @property-write string $source_image_type Source image type. Use with PHP predefined constants `IMAGETYPE_XXX` only. For internal use only.
+ * @property-write int $source_image_width Source image width. For internal use only.
+ * @property-write int $last_modified_image_height Last modified image height. For internal use only.
+ * @property-write int $last_modified_image_width Last modified image width. For internal use only.
+ * @property-write int $watermark_image_height Watermark image height. For internal use only.
+ * @property-write int $watermark_image_width Watermark image width. For internal use only.
+ * @property-write string $watermark_image_type Watermark image type. Use with PHP predefined constants `IMAGETYPE_XXX` only. For internal use only.
  */
 abstract class AbstractProperties
 {
@@ -129,12 +129,12 @@ abstract class AbstractProperties
     public $source_image_data;
 
     /**
-     * @var int Last modified image width
+     * @var int Last modified image width.
      */
     protected $last_modified_image_width;
 
     /**
-     * @var int Last modified image height
+     * @var int Last modified image height.
      */
     protected $last_modified_image_height;
 
@@ -155,12 +155,12 @@ abstract class AbstractProperties
     protected $watermark_image_type;
 
     /**
-     * @var int Watermark image width
+     * @var int Watermark image width.
      */
     protected $watermark_image_width;
 
     /**
-     * @var int Watermark image height
+     * @var int Watermark image height.
      */
     protected $watermark_image_height;
 
