@@ -142,8 +142,8 @@ function debugImage($file, $options = [])
  *
  * @link https://stackoverflow.com/a/23888858/128761 Original source code.
  * @param int $bytes Number of file size in bytes.
- * @param int $dec
- * @return void
+ * @param int $dec Decimal point. Default is 2 and the result will be nnn.mm.
+ * @return string Return formatted to human readable file size.
  */
 function humanFileSize($bytes, $dec = 2)
 {
