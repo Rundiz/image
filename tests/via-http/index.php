@@ -99,6 +99,13 @@ function rdImageTestHttpIndexDisplayCheckImageExistsAndMimeMatch($file, $mime_ty
         <h1>Rundiz Image manipulation class</h1>
         <h2>Instruction before test</h2>
         <ul>
+            <li>Recommend PHP 8.2 or newer. <?php 
+            if (version_compare(PHP_VERSION, '8.2', '>=')) {
+                echo '✅';
+            } else {
+                echo '⚠️';
+            }
+            ?></li>
             <li>Please verify that your php.ini display the errors and report all error level.</li>
             <li><?php
                 $processed_images_path = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'processed-images';
