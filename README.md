@@ -26,7 +26,7 @@ Simple image manipulation that use GD or Imagick as drivers.
 * Supported alpha transparency or transparent AVIF, GIF, PNG, WEBP.
 * Supported animated GIF, WEBP`*` (Imagick only).
 
-Tested up to PHP 8.5.
+Tested up to PHP 8.6 (GD), 8.5 (GD & Imagick).
 
 ## Example
 ### Drivers
@@ -101,14 +101,14 @@ For more details, please look in tests folder or see [API doc][1]
 Remark:
 
 * `*`AVIF<br>
-    * PHP and Imagick that use [ImageMagick prior 7.0.10-25][imagemagickavifsupport] doesn't supported open or save AVIF.   
+    * PHP with Imagick that use [ImageMagick prior 7.0.10-25][imagemagickavifsupport] doesn't supported open or save AVIF.   
         Some older system may be able to save but the file's mime type will not changed.
-    * PHP and [Imagick (depend on ImageMagick)][imagemagickanimatedavif] doesn't supported animated AVIF (AVIFS).
+    * PHP with [Imagick (depend on ImageMagick)][imagemagickanimatedavif] doesn't supported animated AVIF (AVIFS).
     * PHP 8.3 and older with GD doesn't supported some kind of AVIF ([reference][somekindavifbug]).
     * PHP prior 8.1 with GD doesn't supported AVIF.
 * `*`WEBP<br>
-    * PHP and Imagick that use [ImageMagick prior 7.0.8.68][imagemagickanimatedwebp] doesn't supported open or save animated WEBP.
-    * PHP all version ([last checked 8.5][animatedwebpbug]) with GD doesn't supported animated WEBP.
+    * PHP with Imagick that use [ImageMagick prior 7.0.8.68][imagemagickanimatedwebp] doesn't supported open or save animated WEBP.
+    * PHP with GD doesn't supported animated WEBP.
     * PHP prior 7.0 with GD (ref. [1][oldgdwebpbug], [2][oldgdwebpbug2]) doesn't supported open or save transparent WEBP.
     * PHP prior 5.6 with GD doesn't fully supported WEBP and may cause image becomes green. Tested with PHP on Windows.
 
