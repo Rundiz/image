@@ -47,7 +47,7 @@ class Gd extends AbstractImage
      */
     public function __construct($source_image_path)
     {
-        return parent::__construct($source_image_path);
+        parent::__construct($source_image_path);
     }// __construct
 
 

@@ -248,7 +248,7 @@ class Calculation
             throw new \InvalidArgumentException('The argument $source_image_width must be number.');
         }
 
-        if (doubleval($source_image_height) === doubleval($source_image_width)) {
+        if (floatval($source_image_height) === floatval($source_image_width)) {
             // square image
             return 'S';
         } elseif ($source_image_height < $source_image_width) {
