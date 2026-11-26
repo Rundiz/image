@@ -109,10 +109,17 @@ if ($Image->status === false) {
     die($Image->status_msg);
 }
 
-header('Content-type: ' . $mimetype);
+if (!headers_sent()) {
+    header('Content-type: ' . $mimetype);
+} else {
+    exit(1);
+}
+
 $Image->show($show_ext);
 if ($Image->status === false) {
-    header('Content-type: text/plain');
+    if (!headers_sent()) {
+        header('Content-type: text/plain');
+    }
     die($Image->status_msg);
 }
 $Image->clear();
